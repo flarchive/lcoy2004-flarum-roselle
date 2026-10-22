@@ -1,0 +1,124 @@
+{
+    "name": "lcoy/roselle",
+    "description": "Roselle — a Flarum 2 theme forked from Canela (Discourse Horizon inspired), customized for lcoy's forum",
+    "keywords": [
+        "flarum",
+        "theme",
+        "discourse",
+        "roselle"
+    ],
+    "homepage": "https://gitee.com/lcoy/flarum-roselle",
+    "type": "flarum-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lcoy",
+            "email": "1498127009@qq.com"
+        },
+        {
+            "name": "Ramon Guilherme",
+            "email": "ramon@ramonguilherme.com.br",
+            "homepage": "https://ramonguilherme.com.br",
+            "role": "Original author of Canela"
+        }
+    ],
+    "support": {
+        "issues": "https://gitee.com/lcoy/Flarum-roselle/issues",
+        "source": "https://gitee.com/lcoy/Flarum-roselle"
+    },
+    "require": {
+        "flarum/core": "^2.0.0"
+    },
+    "require-dev": {
+        "flarum/tags": "^2.0.0",
+        "phpunit/phpunit": "^11.5 || ^12.0 || ^13.2.0",
+        "phpstan/phpstan": "^2.1",
+        "roave/security-advisories": "dev-latest",
+        "fof/pages": "^2.0",
+        "fof/polls": "^3.0"
+    },
+    "suggest": {
+        "flarum/tags": "Categorias e etiquetas na barra lateral, na lista e na página de categorias.",
+        "flarum/subscriptions": "Link \"Seguindo\" e o sino de notificações do tópico.",
+        "flarum/likes": "Curtidas no mapa do tópico e no resumo do perfil.",
+        "flarum/messages": "Aba de mensagens no menu do usuário e no perfil.",
+        "fof/polls": "Enquetes no estilo do plugin poll do Discourse.",
+        "fof/best-answer": "Solução aceita (discourse-solved).",
+        "fof/reactions": "Reações (discourse-reactions).",
+        "fof/upload": "Envio de imagens e arquivos no editor.",
+        "fof/follow-tags": "Observar/silenciar categorias e etiquetas.",
+        "fof/split": "Dividir tópicos.",
+        "fof/merge-discussions": "Mesclar tópicos.",
+        "fof/ignore-users": "Ignorar usuários.",
+        "fof/terms": "Termos e diretrizes no cadastro.",
+        "fof/formatting": "Spoiler, detalhes e mais formatação.",
+        "fof/links": "Links personalizados.",
+        "fof/oauth": "Login social.",
+        "fof/discussion-thumbnail": "Miniaturas na lista de tópicos."
+    },
+    "autoload": {
+        "psr-4": {
+            "Lcoy\\Roselle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lcoy\\Roselle\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=2G"
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Roselle",
+            "category": "theme",
+            "optional-dependencies": [
+                "flarum/tags",
+                "flarum/sticky",
+                "flarum/subscriptions",
+                "flarum/likes",
+                "flarum/mentions",
+                "flarum/lock",
+                "flarum/approval",
+                "flarum/flags",
+                "flarum/messages",
+                "flarum/realtime",
+                "flarum/suspend",
+                "flarum/nicknames",
+                "fof/polls",
+                "fof/best-answer",
+                "fof/reactions",
+                "fof/upload",
+                "fof/follow-tags",
+                "fof/split",
+                "fof/merge-discussions",
+                "fof/ignore-users",
+                "fof/terms",
+                "fof/formatting",
+                "fof/links",
+                "fof/oauth",
+                "fof/discussion-thumbnail"
+            ],
+            "icon": {
+                "image": "icon.png",
+                "backgroundColor": "#fff",
+                "backgroundSize": "cover"
+            }
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": true,
+                "css": true,
+                "locale": true,
+                "typescript": true
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
