@@ -1,0 +1,1571 @@
+lcoy-roselle:
+  admin:
+    settings:
+      group_appearance: Appearance
+      group_list: Discussion list
+      group_topic: Discussion
+      group_community: Community
+      group_composer: Composer and search
+      section_colors: Colors
+      colors_help: 'The theme has no colors of its own: the whole palette comes from Flarum’s primary color, the way Discourse’s Horizon theme does with its tertiary color. The tinted background, selection, links and focus ring are all derived from it, in light and dark mode.'
+      colors_link: Change the color in Appearance
+      section_font: Font
+      font_label: Forum font
+      font_help: The typeface used across the whole forum. Inter and Plus Jakarta Sans ship with the theme and cover Latin scripts; the system font downloads nothing and covers every script.
+      font_inter: 'Inter: theme default'
+      font_jakarta: Plus Jakarta Sans
+      font_system: System font
+      font_notice: Changing the font recompiles the forum CSS, so saving takes a few seconds.
+      section_surfaces: Background & card
+      tinted_background_label: Background tinted with the primary color
+      tinted_background_help: The background behind the content and the sidebar gets a light touch of the primary color, as in Horizon. Off, it stays a neutral grey.
+      content_card_label: Content inside a card
+      content_card_help: The list, the discussion and the profile sit on a rounded card over the background. Off, the content fills the whole area with no frame.
+      pill_buttons_label: Pill buttons
+      pill_buttons_help: Buttons with fully rounded ends, as in Horizon. Off, they get slightly rounded corners.
+      show_title_with_logo_label: Show the forum title next to the logo
+      show_title_with_logo_help: With a logo uploaded in Appearance, the title only shows next to it when this is on. Without a logo, the title always shows.
+      section_sidebar: Sidebar
+      sidebar_enabled_help: The left column with the navigation and tags, as in Discourse. Off, the forum goes back to Flarum’s default navigation.
+      sidebar_open_default_label: Start open
+      sidebar_open_default_help: How the sidebar looks for anyone who has not opened or closed it with the header button yet. After that, each visitor’s choice wins, kept in their browser.
+      sidebar_new_topic_label: '"Start a Discussion" button'
+      sidebar_new_topic_help: The button at the top of the sidebar that opens the composer for a new discussion.
+      sidebar_footer_label: Sidebar footer
+      sidebar_footer_help: 'The buttons at the bottom of the sidebar: light or dark theme, new discussion and keyboard shortcuts.'
+      section_sidebar_tags: Tags
+      sidebar_categories_label: Tags section
+      sidebar_categories_help: The primary tags, each with its color or icon, plus the link to all tags.
+      sidebar_tags_label: Secondary tags section
+      sidebar_tags_help: The secondary tags, plus the link to all tags.
+      sidebar_tags_limit_label: Secondary tags in the sidebar
+      sidebar_tags_limit_help: How many secondary tags to list before the "All tags" link, from {min} to {max}.
+      section_header_search: Header search
+      header_search_help: The search pill in the middle of the header, as in Discourse. Off, the header goes back to Flarum’s default search.
+      section_shortcuts: Keyboard shortcuts
+      keyboard_shortcuts_help: 'The Discourse shortcuts: / search, c new discussion, r reply, j and k move through the list, g h goes home, = opens or closes the sidebar and ? shows the full list. They do nothing while typing in a field.'
+      section_welcome_banner: Welcome banner
+      welcome_banner_help: The welcome title and message from Appearance in a banner over the tinted background, as in Horizon. Off, the page starts straight at the list.
+      welcome_banner_guests_only_label: Guests only
+      welcome_banner_guests_only_help: Logged-in members go straight to the list; the banner is for first-time visitors.
+      welcome_banner_search_label: Search field in the banner
+      welcome_banner_search_help: A large search field in the middle of the banner that opens the forum search.
+      section_category_hero: Tag header
+      category_hero_help: On a tag page, a header with its icon, color, name and description before the list.
+      category_hero_children_label: Child tags as cards
+      category_hero_children_help: Below the header, the child tags show up as clickable cards.
+      section_nav: List tabs
+      nav_unread_label: Unread tab
+      nav_unread_help: Discussions with replies the person has not read yet. Only shown to logged-in members.
+      nav_hot_label: Hot tab
+      nav_hot_help: The discussions with the most replies among those started in the last few days.
+      hot_days_label: Days counted in Hot
+      hot_days_help: The period considered, from {min} to {max} days.
+      section_nav_categories: Tag filters
+      nav_dropdowns_label: Tag menus
+      nav_dropdowns_help: The menus to the left of the tabs, to filter the list by primary tag and by secondary tag, as in Discourse.
+      nav_categories_link_label: Tags tab
+      nav_categories_link_help: A tab leading to the page with all tags.
+      section_list_columns: List columns
+      list_header_label: Column header
+      list_header_help: The row with Discussion, Replies, Views and Activity above the list.
+      list_posters_label: Avatars of who took part
+      list_posters_help: The avatars of the author and of the last person to reply next to each discussion, like the Discourse posters column.
+      list_views_label: Views column
+      list_views_help: How many times each discussion was viewed, counted by fof/discussion-views. Without the extension the column does not appear.
+      list_heat_label: Highlight high counts
+      list_heat_help: Paints the counts orange or red when they are well above the rest, like the Discourse heatmap.
+      list_excerpts_label: Excerpt of pinned discussions
+      list_excerpts_help: Below the title, the start of the first post of pinned discussions.
+      section_categories_page: Tags page
+      categories_layout_label: Layout
+      categories_layout_help: How the page with all tags presents them.
+      categories_layout_boxes: 'Boxes: cards with the color, description and child tags'
+      categories_layout_list: 'List: a table of tags with their latest discussions'
+      section_topic_map: Discussion map
+      topic_map_help: Below the first post, a summary with the creation date, the last reply, the number of replies and who took part.
+      section_topic_timeline: Timeline
+      topic_timeline_help: The bar on the right that shows where you are in the discussion and jumps to any of its posts.
+      section_topic_footer: Discussion footer
+      topic_footer_help: Reply, share and follow after the last post, as in Discourse. Follow needs the Subscriptions extension.
+      section_suggested: Suggested discussions
+      suggested_topics_help: At the end of the discussion, a short list of other discussions to keep reading, preferably from the same tag.
+      suggested_count_label: Number of discussions
+      suggested_count_help: How many discussions to suggest, from {min} to {max}.
+      section_user_page: Profile page
+      user_cover_label: Cover at the top of the profile
+      user_cover_help: A wide band behind the large avatar and the name, as in Discourse.
+      user_stats_label: Stats
+      user_stats_help: Join date, last visit and post and discussion counts below the name. Likes only show with the Likes extension.
+      user_summary_label: Summary tab
+      user_summary_help: A first tab with the user’s numbers and their top discussions and replies.
+      user_activity_read_label: Read tab
+      user_activity_read_help: Under Activity, the discussions the person has read, most recent first. Only the person and administrators can see it.
+      user_activity_reactions_label: Reactions tab
+      user_activity_reactions_help: Under Activity, the likes and reactions the person has given in a single list, replacing Likes, with the emoji and an excerpt of the post. Reactions are only shown to those allowed to see who reacted.
+      user_activity_votes_label: Votes tab
+      user_activity_votes_help: Under Activity, the posts with polls the person has voted in. Others only see polls that show their voters.
+      user_activity_solved_label: Solved tab
+      user_activity_solved_help: 'Under Activity, the person''s replies chosen as best answer.'
+      section_user_card: User card
+      user_card_help: A compact card with the photo, the numbers and the profile link, opened from someone’s avatar or name without leaving the page.
+      groups_aria: Settings groups
+      search_placeholder: Search settings…
+      search_clear: Clear search
+      search_empty: No settings found.
+      palette_accent: Accent
+      palette_background: Tinted background
+      palette_selected: Selection
+      palette_accent_low: Soft accent
+      palette_ring: Focus ring
+      palette_link: Link
+      colors_current: Current primary color
+      palette_light: Light
+      palette_dark: Dark
+      shell:
+        group_navigation: Header and sidebar
+        group_people: Profile and users
+        group_moderation: Moderation
+        group_integrations: Integrations
+        more_groups: More settings
+        fewer_groups: Fewer settings
+        group_appearance_desc: Colors, font, surfaces, buttons, icons and toasts.
+        group_navigation_desc: Header search and menu, log in, keyboard shortcuts and the Discourse sidebar.
+        group_list_desc: The home page, tabs, columns, tags and counters of the discussion list.
+        group_topic_desc: Posts, timeline, discussion map, footer and reading features.
+        group_composer_desc: The Discourse composer, drafts, hashtags and advanced search.
+        group_people_desc: Profile page, user card, extra fields and activity.
+        group_community_desc: About, guidelines, users, groups and invites.
+        group_moderation_desc: 'Staff tools: bulk actions, edit history and notices to the author.'
+        group_integrations_desc: The Discourse look for third-party extensions. Each one only works with its extension enabled.
+        'on': 'On'
+        'off': 'Off'
+        locked: Unavailable
+        saved: Saved
+        saving: Saving…
+        saved_all: Changes saved
+        save_error: Could not save
+        autosave: Everything saves automatically
+        requires_extension: Requires the {name} extension
+        extension_disabled: Requires the {name} extension, which is installed but disabled.
+        extension_missing: Requires the {name} extension, which is not installed.
+        open_extension: Open the extension
+        depends_on: Depends on "{name}", which is off.
+        go_enable: Go there
+        hidden_title: Hidden because they depend on something that is off
+        needs: needs "{name}"
+        active_count: '{active} of {total} features on'
+        search_results: Results for "{query}"
+        auth_backend_off: 'The /login and /signup pages (extend/auth.php) are not loaded on the server yet: the buttons keep opening the modals.'
+      logo_colored_label: Paint the logo
+      logo_colored_help: The uploaded logo becomes just its shape, painted in the accent color (and in the tag color on tag pages and discussions). Works best with an SVG or a PNG with a transparent background.
+      loading_slider_label: Loading bar at the top
+      loading_slider_help: When changing pages, a thin bar runs along the top of the screen until the page arrives, as in Discourse, instead of Flarum's "Loading…" alert.
+      loader:
+        title: Loading indicator
+        preview_save: Save
+        help: "What shows while something loads: in the list, posts, profile, modals, menus, buttons, composer, extensions and the first page load. Swap Flarum's grey ring for an animated SVG."
+        style_label: Design
+        style_default: Flarum default
+        style_avocado: Avocado
+        style_orbital: Orbital
+        style_ring: Discourse ring
+        style_dots: Dots
+        style_bars: Bars
+        style_pulse: Pulse
+        style_custom: Custom SVG
+        custom_label: SVG code
+        custom_help: "Paste the code of an animated SVG or upload an .svg file (up to 64 KB). It is cleaned on the server before saving: scripts, events and external links are removed; CSS and SMIL animations stay."
+        custom_upload: Upload SVG file
+        custom_apply: Apply SVG
+        custom_clear: Remove
+        custom_too_big: The file is larger than 64 KB.
+        custom_not_svg: The file does not look like an SVG.
+        custom_empty: Paste or upload an SVG to use this design. Until then, the forum keeps Flarum's spinner.
+        tint_label: Paint with the indicator color
+        tint_help: The SVG becomes just a shape, painted with the color below (or the text color, in buttons). Off, the file keeps its own colors.
+        color_label: Color
+        color_help: With no color chosen, the theme accent is used (the primary color, or the tag color on tag pages). In buttons the indicator follows the button text color.
+        color_primary: Use the theme color
+        size_label: Size
+        size_help: "Relative to Flarum's spinner, from {min}% to {max}%. In buttons the indicator follows the text."
+        preview: Preview
+        notice: Changing the indicator recompiles the forum CSS; saving takes a few seconds.
+      toast_auto_close_label: Toasts that close on their own
+      toast_auto_close_help: Corner notices ("Saved", "Link copied"…) disappear after a few seconds, with a timer bar, like Discourse toasts. When off, they stay until closed.
+      user_menu_label: Discourse user menu
+      user_menu_help: The header avatar opens the panel with tabs for notifications, replies, likes, messages, bookmarks, review and profile (instead of Flarum's bell and session menu).
+      nav_sticky_label: Sticky tabs
+      nav_sticky_help: While scrolling the list, the tab bar sticks below the header, as in Horizon. meta.discourse.org does not stick.
+      list_infinite_scroll_label: Infinite scroll
+      list_infinite_scroll_help: The next page of the list loads by itself when the end gets close to the screen, as in Discourse. When off, Flarum's "Load more" button stays.
+      post_actions_label: Discourse post actions
+      post_actions_help: Like, copy link, bookmark, reply and the "…" that expands the rest, in each post's bar, as in Discourse. When off, Flarum's controls menu comes back.
+      embedded_replies_label: Embedded replies
+      embedded_replies_help: Each post's "N replies" opens the replies right below it, and the quoted post shows above, as in Discourse.
+      post_style_label: Post style
+      post_style_help: 'With the timeline, posts stay the same as in Discourse, but a vertical line, like the avocado theme''s, links one post''s avatar to the next, runs through the event notices and marks the time gaps ("a month later") with a circle. From tablet width up; on phones the post stays the same.'
+      post_style_discourse: Discourse (default)
+      post_style_direct: With the timeline (avocado style)
+      topic_reply_to_style_label: '"In reply to" on posts'
+      topic_reply_to_style_help: 'How a post that replies to another shows who it replies to. In Discourse, "↩ Name" on the right of the header (only when the replied post is not the one above). In avocado, a line under the name, "↳ In reply to [avatar] Name", on every reply. Clicking shows the replied post.'
+      topic_reply_to_style_discourse: 'Discourse (default: ↩ name on the right of the header)'
+      topic_reply_to_style_avocado: Line under the name (avocado style)
+      new_replies_bar_label: New replies notice
+      new_replies_bar_help: Whoever is in the middle of a discussion when real-time replies arrive sees the "There are N new replies" bar, which takes them there, as in Discourse.
+      content_width_label: 'Content width'
+      content_width_default: 'Default'
+      content_width_wide: 'Wide'
+      content_width_wider: 'Extra wide'
+      content_width_90: '90%'
+      content_width_full: 'Full width'
+      content_width_custom: 'Custom'
+      content_width_help: 'The maximum width of the content card (list, discussion, profile); in discussions, the posts column grows with it. The default is 1110px, like Discourse; 90% and Full width follow the screen. The preview shows the real forum on a {width}px screen.'
+      content_width_caption: '{width}px screen'
+      content_width_preview_index: 'Home'
+      content_width_preview_discussion: 'Discussion'
+      topic_sticky_avatar_label: Sticky avatar in posts
+      topic_sticky_avatar_help: 'In long posts, the author avatar follows the scroll and stays visible until the end of the post, like in the avocado theme. Desktop only.'
+      topic_event_posts_label: Event posts
+      topic_event_posts_help: Show Flarum's notices such as "locked the discussion" and "pinned the discussion" in the discussion. Discourse does not show them this way.
+      community:
+        section_legal_links: Terms and privacy
+        view_page: View the page on the forum
+        section_about: About page
+        about_enabled_help: Discourse's page with the forum description, your own text, contact details, the staff and the site's numbers. Adds a link to the sidebar's "More" menu.
+        about_text_label: About text
+        about_text_help: Shown below the title. Supports Markdown and BBCode (whichever the forum has enabled); if the text contains HTML tags, it is used as HTML, unformatted.
+        about_contact_email_label: Contact email
+        about_contact_email_help: 'Shown in the "Contact us" box. It is public: use a staff address.'
+        about_contact_url_label: Contact page
+        about_contact_url_help: A full address (https://…) to a contact form or page.
+        about_show_staff_label: Show the staff
+        about_show_staff_help: The "Our admins" and "Our moderators" lists. Hidden groups are left out for anyone who can't see them.
+        about_show_stats_label: Show site statistics
+        about_show_stats_help: Discussions, posts, sign-ups, active users and likes in the last 24 hours, 7 days, 30 days and all time.
+        stats_notice: The numbers only count public content and are recalculated every 30 minutes.
+        guidelines_enabled_label: Guidelines page (/guidelines)
+        guidelines_enabled_help: The forum's community rules, in a tab next to About and in the sidebar "More" menu. /faq leads to the same page, as in Discourse.
+        guidelines_page_label: fof/pages page
+        guidelines_page_none: "None: use the text below"
+        guidelines_page_help: With a page chosen, /guidelines shows its content (with fof/pages own visibility) and the text below no longer applies. The content is then edited in fof/pages.
+        guidelines_page_create: 'Create the "Guidelines" page with the current text'
+        guidelines_text_label: Guidelines text
+        guidelines_text_help: Leave empty to use the theme's default text, inspired by Discourse's guidelines. Accepts Markdown and BBCode; with HTML tags, it goes as HTML.
+        section_about_pages: About area pages
+        about_pages_help: 'Add as many fof/pages pages as you like as tabs next to About and Guidelines, each one with the rules layout: title, section index and cards.'
+        about_pages_list_help: Each page becomes a tab after About and Guidelines, in list order, at /about/id-slug and with the same layout as the Guidelines. An empty label uses the page title; the icon is a Font Awesome class. Hidden or restricted pages in fof/pages only show to people who can see them.
+        about_pages_add: Add a page…
+        about_pages_none_left: Every fof/pages page is already on the list
+        about_pages_missing: 'Page #{id} (not found)'
+        about_pages_label: Tab label
+        about_pages_icon: Icon (optional)
+        about_pages_up: Move up
+        about_pages_down: Move down
+        about_pages_remove: Remove from the About area
+        tos_url_label: Terms of Service address
+        tos_url_help: The "Terms of Service" tab and /tos lead here. A FoF Terms policy with "terms" in its name takes precedence.
+        privacy_url_label: Privacy Policy address
+        privacy_url_help: The "Privacy Policy" tab and /privacy lead here. A FoF Terms policy with "privacy" in its name takes precedence.
+        legal_notice: Without an address (here or in FoF Terms), the tab doesn't show. Other FoF Terms policies become tabs with their own names.
+        directory_guests_label: Guests can see the members too
+        directory_guests_help: By default, only those with the "View user list" permission (in Permissions) see group members. When on, guests can see them too, except on a private forum.
+        section_groups: Groups
+        groups_enabled_help: One card per group, with its icon, color and member count, and a page for each with its members. Hidden groups only appear to those who can see them.
+        groups_activity_label: Activity tab
+        groups_activity_help: Members' recent posts on the group page.
+        groups_profile_links_label: Profile groups link to the group page
+        groups_profile_links_help: The group pills on the profile card become links to /g/group-name.
+      gaps:
+        notifications_title: Notices to the author
+        mention_cards_help: Clicking an @mention opens the user card instead of going to the profile.
+        invite_permission: Invite people (invite links)
+        sidebar_category_dots_label: New-activity dot on tags
+        sidebar_category_dots_help: A dot next to each tag that has new or unread discussions, like the one on “All Discussions”.
+        timeline_back_label: “Back” button on the timeline
+        timeline_back_help: Anyone who scrolls far above the last post they read sees, on the timeline rail, the button that takes them back to the last unread post.
+        mention_cards_label: User card on mentions
+        backend_off: The backend for these features (extend/gaps.php) is not loaded on the server yet.
+        cooked_title: Post content
+        tables_notice: 'Markdown tables (| a | b |), as in Discourse: turn on PipeTables in FoF Formatting.'
+        reading_title: Reading and navigating a discussion
+        inline_title_editor_label: Edit the title in the header
+        inline_title_editor_help: "Anyone who can rename sees a pencil next to the discussion title: the title becomes a field, with the tag button and ✓/✕ to save or cancel."
+        share_modal_label: “Share discussion” modal
+        share_modal_help: "The Share button opens the Discourse dialog with the link, the copy button and the network buttons. Off, it just copies the link. On mobile, the system share sheet is used."
+        local_dates_label: Local dates
+        local_dates_help: '[date=2026-10-20 time=14:00 timezone="America/Sao_Paulo"] shows the date and time in the reader''s timezone. Applies after clearing the cache.'
+        invites_enabled_label: Invite links
+        invites_enabled_help: 'Anyone with the “Invite” permission (Permissions) creates links with an expiry and a use count, from Share and the “More” menu. People who join through a link appear as invitees and the inviter gets “Someone accepted your invite”. Requires open sign-up.'
+        invites_expire_days_label: Default validity (days)
+        invites_expire_days_help: From 1 to 90 days.
+        not_found_page_label: Discourse-style 404 page
+        not_found_page_help: '“Oops! That page doesn’t exist or is private.”, with “Back to home”, search and the popular and recent discussions, in place of the plain error page.'
+        list_title: Last visit and Dismiss
+        sidebar_home_link_label: “Home” link
+        sidebar_home_link_help: "The first link in the sidebar, as in Discourse. When it points to the discussion list, “All Discussions” starts opening the Latest list, so the two are not marked together."
+        sidebar_home_label: Destination page
+        sidebar_home_index: Discussion list (home page)
+        sidebar_home_categories: Tags
+        sidebar_home_url_option: Another address
+        sidebar_title: Extra links
+        sidebar_help: As in Discourse, the FAQ, terms and privacy links go into the “More” menu when they have an address. “Review” shows up by itself for moderators, with the flags queue.
+        code_buttons_label: Buttons on code blocks
+        code_buttons_help: "Hovering a code block shows “copy” and “full screen”, as in Discourse."
+        heading_anchors_label: Link on headings
+        heading_anchors_help: "Headings inside posts get the link icon (#) on hover, to point straight at that section."
+        table_expand_label: Expand wide tables
+        table_expand_help: "Tables that do not fit the post width get an “Expand table” button that opens them in a large window."
+        spoiler_blur_label: Blurred spoilers
+        spoiler_blur_help: "Spoilers (||text|| and >! at the start of the line) appear blurred until clicked, as in Discourse, instead of the dark bar."
+        post_read_state_label: Reading marks
+        post_read_state_help: "The “unread post” dot at the corner of each new post, which disappears as it is read, and the red “last visit” line after the last post read on the previous visit."
+        post_shortcuts_label: Post shortcuts
+        post_shortcuts_help: "j/k move between posts and l, b, s, e, r, q, d, ! act on the selected one; # jumps to a post; Home/End, shift+L, shift+R, shift+S, shift+P, f, m w/m r/m m and the sequences g n, g u, g b, g m, g d, g j, g k. The “?” window lists them all."
+        share_networks_label: Networks
+        share_networks_help: "Separated by commas, in the order they appear: x, facebook, linkedin, whatsapp, telegram, reddit, email."
+        notify_post_edited_label: Notify when your post is edited
+        notify_post_edited_help: "“Someone edited your post” to the author, when another person (a moderator, for example) changes the text."
+        notify_topic_linked_label: Notify when your discussion is linked
+        notify_topic_linked_help: "“Someone linked your discussion” when a post contains a link to a discussion of yours."
+        list_last_visit_label: “Last visit” line
+        list_last_visit_help: "In the Latest list, a red line separates discussions that changed since the previous visit from those that were already that way. The previous visit is kept on the reader's device."
+        list_dismiss_label: “Dismiss” button
+        list_dismiss_help: "In the Unread and New lists, the Discourse button that marks the discussions in the list as read (top right and at the end of the list)."
+        sidebar_home_url_label: Home address
+        sidebar_home_url_help: "A forum address (/p/welcome) or another site."
+        sidebar_faq_url_label: FAQ / Guidelines
+        sidebar_faq_url_help: Address of the frequently asked questions page or the community guidelines.
+        sidebar_tos_url_label: Terms of service
+        sidebar_tos_url_help: Address of the terms of service.
+        sidebar_privacy_url_label: Privacy
+        sidebar_privacy_url_help: Address of the privacy policy.
+        sidebar_custom_title_label: Custom section title
+        sidebar_custom_title_help: "The name of the links section (default: “Links”)."
+        sidebar_custom_links_label: Custom section links
+        sidebar_custom_links_help: "One link per line: Label | address | icon (optional, from Font Awesome). Addresses starting with / are from the forum itself. With no links, the section does not appear."
+      integrations:
+        solved_label: Accepted solution
+        solved_help: The "✓ Solution" in the post bar and the accepted answer right below the first post, like discourse-solved.
+        reactions_label: Reactions
+        reactions_help: The emoji summary in the post bar, like discourse-reactions.
+        polls_label: Polls
+        polls_help: 'Polls with the Discourse poll grid: result bars and the big vote count beside them.'
+        links_sidebar_label: Links in the sidebar
+        links_sidebar_help: FoF Links leave the header and go to a sidebar section, like Discourse custom links.
+        upload_progress_label: Upload progress
+        upload_progress_help: The "Uploading…" bar in the composer while a FoF Upload file is sent, as in Discourse.
+        profile_cover_label: Profile cover (forumaker/profile-cover)
+        profile_cover_help: 'The extension''s cover instead of the theme''s own: in the profile banner, behind the user card (as the thumbnail, when there is one) and at the position chosen in its editor, which opens from the profile "…" menu and from Settings. The theme''s own images stay stored and come back if this switch is turned off.'
+        thumbnails_label: Thumbnails in the list
+        thumbnails_help: The FoF Discussion Thumbnail image beside the title in the discussion list, where Discourse shows its own.
+      auth:
+        pages_label: Full-page log in and sign up
+        pages_help: The Log In and Sign Up header buttons open the /login and /signup pages, like Discourse. When off, they open the modals.
+      bookmarks:
+        title: Bookmarks
+        bookmarks_enabled_help: Members bookmark posts to come back to later, with an optional name and reminder, and find them all in the "Bookmarks" tab of their own profile. When off, the buttons disappear and the API answers as if the feature did not exist, existing bookmarks are kept.
+        bookmarks_topic_button_label: Bookmark discussion
+        bookmarks_topic_button_help: Adds "Bookmark discussion" to the discussion controls (the "…" menu in the footer). It bookmarks the first post, like Discourse.
+        bookmarks_user_menu_label: User menu item
+        bookmarks_user_menu_help: A "Bookmarks" shortcut in the avatar menu, right below "Profile".
+        reminders_notice: Reminders are sent by Flarum's scheduler every five minutes, the server must run "php flarum schedule:run" from cron every minute. Without cron, bookmarks work but no reminder is sent.
+      composer:
+        section_editor: Discourse composer
+        enabled_help: 'The master switch: when off, the composer is plain Flarum, without any of the features below.'
+        preview_label: Side-by-side preview
+        preview_help: On desktop, the formatted post is shown to the right of the editor. Everyone can hide it with the « button in the editor corner.
+        similar_label: Similar discussions
+        similar_help: While writing a new discussion title (three words or more), shows "Your discussion is similar to…" with up to five related discussions.
+        linked_topic_label: Reply as linked discussion
+        linked_topic_help: In the reply composer, the "↩ ▾" menu turns the reply into a new discussion with the same text, a link back and the same tags.
+        section_drafts: Drafts
+        drafts_help: 'With the FoF Drafts extension, the theme shows drafts the Discourse way: new discussions and replies are saved automatically two seconds after typing stops, replying to a discussion resumes its draft, closing with text asks whether to discard or keep it, and the Start a Discussion button gets a ⌄ with the list. They are also in the user menu and in the profile Drafts tab.'
+        drafts_note: Drafts are stored by fof/drafts (drafts table), which also handles permissions and scheduling. Post edits have no draft.
+        section_hashtags: '#tag'
+        hashtags_help: 'Typing # in the editor suggests tags and inserts a link to them; in posts, these links (and the tag mentions of the Mentions extension) become the pill with the tag symbol.'
+        hashtags_mentions_notice: 'With the Mentions extension enabled, the editor # belongs to it (tag mention); the theme only draws mentions as Discourse hashtags.'
+      extras:
+        search_title: Search page
+        search_page_enabled_help: 'Discourse’s /search page: discussion, post, tag and user tabs, advanced filters (author, primary tag, tags, title only, liked, status, dates, minimum posts) and sorting. The search modal gains an “Advanced search” link.'
+        search_notice: 'The filters also become shortcuts you can type in the search: in:title, in:likes, in:bookmarks and min-posts:5, next to Flarum’s own (author:, tag:, is:locked…).'
+        bulk_title: Bulk selection
+        bulk_select_enabled_help: 'A button in the list bar turns on checkboxes on each discussion and an action bar: mark as read, pin, close, change tags, hide and delete. It only shows for people who can moderate some discussion in the list, and each action only applies where they have permission.'
+        top_periods_title: Top by period
+        top_periods_enabled_help: The Top tab shows “All time / Year / Quarter / Month / Week / Today”, limiting the list to discussions created in that range.
+        text_size_title: Text size
+        text_size_enabled_help: In Settings, each person picks Smaller, Normal, Larger or Largest. The choice applies to the device (it is stored in the browser), as on Discourse.
+        print_title: Print discussion
+        print_topic_enabled_help: Loads every post into a clean view (no sidebar, header or timeline) and opens the browser’s print dialog, which can also save as PDF.
+        history_title: Edit history
+        post_history_enabled_help: Each edit keeps the previous text. The post’s “Edited” becomes a pencil with the number of revisions, which opens the comparison between versions (inline or side by side).
+        history_notice: Only edits made while the feature is on are recorded. When off, nothing new is stored and the history disappears from the forum, what was already stored stays in the database. The text of a hidden post’s versions is only shown to those who can edit it.
+      lucide_icons_label: Discourse icons (Lucide)
+      lucide_icons_help: Interface icons (search, bell, reply, like, menus…) drawn with Lucide's thin stroke, as on meta.discourse.org. When off, the solid Font Awesome icons come back. Icons Meta does not replace (brands and some of those picked for tags and groups) stay in Font Awesome.
+      profile:
+        section_main: Extended profile
+        profile_enabled_help: 'Title, status and birthday on the profile and the user card. When off, the fields disappear from the forum and the API, but what was filled in is kept.'
+        profile_birthday_label: Birthday
+        profile_birthday_help: Optional date of birth. Others only see the day and month unless the person chooses to show the year.
+        section_title: User title
+        profile_title_help: A short title (up to 60 characters) on the profile, the user card and next to the name on posts.
+        profile_title_self_label: Everyone picks their own title
+        profile_title_self_help: When off, only those who can edit users (moderators) set titles, a distinction given by the staff.
+        section_status: User status
+        profile_status_help: An emoji and a phrase ("🌴 On vacation until Friday") next to the name on posts, on the card and on the header avatar. People choose when the status clears itself.
+      stats:
+        section_links: Link clicks
+        stats_links_enabled_help: 'Every click on an external link in a post is counted, as in Discourse: the number shows next to the link, "Popular links" in the discussion map and "Top links" in the profile summary.'
+        links_notice: One click per link per person (or IP, for guests) every 24 hours; bots don't count. Only external links that are in the post.
+        section_views: Views column highlight
+        stats_views_enabled_help: The heat colors of the list's Views column (Discourse's heatmap). The number itself comes from fof/discussion-views.
+        topic_views_heat_low_label: Light highlight from
+        topic_views_heat_low_help: After this many views, the views field is slightly highlighted. Discourse uses 1000.
+        topic_views_heat_medium_label: Moderate highlight from
+        topic_views_heat_medium_help: After this many views, the views field is moderately highlighted. Discourse uses 2000.
+        topic_views_heat_high_label: Strong highlight from
+        topic_views_heat_high_help: After this many views, the views field is strongly highlighted. Discourse uses 3500.
+        views_suffix: views
+        section_counts: New and unread counts
+        stats_counts_enabled_help: 'For signed-in users: "New (3)" and "Unread (2)" on the list tabs, and a dot next to All Discussions in the sidebar when there is something new.'
+        stats_new_days_label: Days a discussion stays new
+        stats_new_days_help: Discussions created in this period that the person has not opened yet. 0 counts everything since sign-up or the last "mark all as read". From {min} to {max}; Discourse uses 2.
+        days_suffix: days
+        section_activity: Profile activity
+        stats_activity_enabled_help: Days visited, read time (total and last 60 days), posts read and likes given and received, in the profile summary, as in Discourse.
+        activity_notice: Read time only counts while the tab is visible and someone is using the page. The numbers start from zero on the day the feature is turned on.
+      section_colored: Colored highlights
+      colored_accents_help: "On a tag page or in a discussion, the theme's accent colour (buttons, links, active tab, tinted background) becomes the colour of the primary tag. Elsewhere it goes back to the forum's primary colour."
+      user_default_tab_label: When a profile opens
+      user_default_tab_help: Which tab the profile opens on when an avatar or name is clicked.
+      user_default_tab_activity: Activity (posts), as in Flarum
+      user_default_tab_summary: Summary, as in Discourse
+  forum:
+    auth:
+      login_page_title: Log In
+      signup_page_title: Sign Up
+      forgot_heading: Reset password
+      back_to_login: Back to log in
+      reset_heading: Reset password
+      reset_help: Choose a new password for your account (at least 8 characters).
+      reset_new_password: New password
+      reset_confirm_password: Confirm new password
+      reset_submit: Save new password
+      forgot_page_title: Reset password
+    bookmarks:
+      post:
+        add: Bookmark this post
+        edit: Edit bookmark
+        reminder: 'reminder: {date}'
+      topic:
+        add: Bookmark discussion
+        edit: Edit discussion bookmark
+      alerts:
+        added: Post bookmarked.
+        removed: Bookmark deleted.
+        set_reminder: Set a reminder
+      modal:
+        create_title: Create bookmark
+        edit_title: Edit bookmark
+        name_label: Name
+        name_placeholder: Name this bookmark to help you remember what it is for
+        reminder_label: Remind me
+        existing_reminder: You will be reminded about this bookmark on {date}.
+        custom_date: Reminder date
+        custom_time: Reminder time
+        invalid_date: Choose a date and time in the future.
+        save: Save
+        cancel: Cancel
+        delete: Delete
+      presets:
+        later_today: Later today
+        tomorrow: Tomorrow
+        next_week: Next week
+        next_month: Next month
+        custom: Pick date and time
+        none: No reminder
+      page:
+        nav: Bookmarks
+        title: Bookmarks
+        private: 'Bookmarks are private: only the owner of this profile can see theirs.'
+        search_placeholder: Search bookmarks…
+        column_topic: Discussion
+        column_date: Bookmarked
+        empty: You don't have any bookmarks yet.
+        empty_help: Use the bookmark icon on any post to save it here, with a name and a reminder if you like.
+        no_results: No bookmarks found for “{query}”.
+        load_more: Load more
+        reminder_future: 'Reminder: {date}'
+        reminder_past: 'Reminder sent: {date}'
+        actions: Bookmark actions
+        edit: Edit
+        clear_reminder: Clear reminder
+        delete: Delete
+        delete_confirm: This bookmark has a reminder set. Delete it anyway?
+      notification:
+        text: 'Bookmark reminder: {title}'
+      settings:
+        notify_reminder_label: Remind me about my bookmarks at the time I choose
+    community:
+      unavailable: This page is not available.
+      load_error: This page could not be loaded. Please try again in a moment.
+      load_more: Load more
+      about:
+        title: About
+        members: '{count, plural, one {# Member} other {# Members}}'
+        admin_count: '{count, plural, one {# Admin} other {# Admins}}'
+        moderator_count: '{count, plural, one {# Moderator} other {# Moderators}}'
+        created_ago: Created {ago}
+        our_admins: Our admins
+        our_moderators: Our moderators
+        contact_title: Contact us
+        contact_text: 'In the event of a critical issue or urgent matter affecting this site, please contact us:'
+        activity_title: Site activity
+        activity:
+          topics: '{count, plural, one {{formatted} discussion} other {{formatted} discussions}}'
+          posts: '{count, plural, one {{formatted} post} other {{formatted} posts}}'
+          users: '{count, plural, one {{formatted} sign-up} other {{formatted} sign-ups}}'
+          activeUsers: '{count, plural, one {{formatted} active user} other {{formatted} active users}}'
+          likes: '{count, plural, one {{formatted} like} other {{formatted} likes}}'
+        last_7_days: in the last 7 days
+        stats_title: Site statistics
+        period:
+          day: Last 24 hours
+          week: Last 7 days
+          month: Last 30 days
+          all: All time
+        stat:
+          topics: Discussions
+          posts: Posts
+          users: Users
+          activeUsers: Active users
+          likes: Likes
+      guidelines:
+        title: Guidelines
+      legal:
+        tos: Terms of Service
+        privacy: Privacy Policy
+      users:
+        no_results: No users found with that name.
+        period_label: Period
+        search_placeholder: Filter by username
+        total: '{count, plural, one {# user} other {# users}}'
+        period:
+          all: All time
+          yearly: Year
+          quarterly: Quarter
+          monthly: Month
+          weekly: Week
+          daily: Today
+        column:
+          username: Username
+          likesReceived: Received
+          likesGiven: Given
+          topicCount: Discussions created
+          postCount: Replies
+          daysVisited: Visits
+          postsRead: Read
+          lastSeenAt: Last seen
+      groups:
+        title: Groups
+        empty: No groups to show.
+        members: '{count, plural, one {# member} other {# members}}'
+        closed: Closed
+        filter_placeholder: All groups
+        hidden: Hidden
+        not_found: This group doesn't exist or you can't see it.
+        back: All groups
+        tabs_label: Group sections
+        tab_members: Members
+        tab_activity: Activity
+        members_forbidden: You don't have permission to view group members.
+        members_login: Log in to view the members of this group.
+        no_members: This group has no members yet.
+        no_activity: The members of this group haven't posted anything yet.
+    composer:
+      hashtags:
+        autocomplete_header: Tags
+      similar:
+        title: Your discussion is similar to…
+        close: Close
+      linked_topic:
+        menu_label: Reply actions
+        reply: Reply to discussion
+        new_topic: Reply as linked discussion
+        continuation: Continuing the discussion from {link}
+      drafts:
+        nav: Drafts
+        sidebar: My drafts
+        status_saving: Saving…
+        status_saved: Draft saved
+        status_error: Could not save the draft
+        close_title: What would you like to do with your post?
+        close_text: What you wrote can be kept as a draft to pick up later, on this or another device.
+        discard: Discard
+        save_for_later: Save draft for later
+        keep_editing: Keep editing
+        empty: You have no drafts.
+        untitled: (untitled)
+        unavailable: Discussion unavailable
+        reply_title: 'RE: {title}'
+        type_new_topic: New discussion
+        type_reply: Reply
+        type_message: Message
+        resume: Resume
+        delete: Delete draft
+        load_more: Load more
+        menu_label: Open drafts
+        view_all: View all ({count})
+      preview:
+        label: Preview
+        show: Show preview
+        hide: Hide preview
+      shell:
+        or: or
+        body_placeholder_formats: Type here. Use {formats} to format.
+        drag_images: Drag or paste images.
+        action_new_topic: Start a Discussion
+        action_reply: Discussion
+        action_edit: Editing post
+        reply_to_topic_desc: Reply to the discussion, not any specific post
+        reply_as_new_topic_desc: Create a new discussion related to this discussion
+        saved_draft: Post draft in progress. Tap to resume.
+        category_placeholder: Primary tag…
+        tags_placeholder: Optional tags…
+        title_placeholder: Type title, or paste a link here
+        body_placeholder: Type here.
+        body_placeholder_markdown: Type here. Use the toolbar or Markdown to format.
+        submit_new_topic: Post Discussion
+        submit_reply: Reply
+        submit_edit: Save edit
+        discard: Discard
+        cancel_edit: Cancel edit
+        save_and_close: Save and close
+        search_placeholder: Search…
+        no_results: No matches found.
+        no_tags: No tags available.
+        no_category: (no tag)
+        remove_tag: Remove tag
+        max_primary_tags: "{count, plural, one {Limit of 1 primary tag reached. Remove the chosen one to change it.} other {Limit of # primary tags reached. Remove one to choose another.}}"
+        max_secondary_tags: "{count, plural, one {Limit of 1 secondary tag reached (child tags count too).} other {Limit of # secondary tags reached (child tags count too).}}"
+        bold_label: B
+        switch_to_markdown: Switch to the Markdown editor
+        switch_to_rich: Show formatted text
+        more_options: Options
+        toggle_direction: Toggle direction
+        add_poll: Build poll
+        edit_poll: Edit poll
+        action_create_topic: Start a Discussion
+        create_topic_desc: Create a new discussion
+    tag_modal:
+      edit_title: Edit tags
+      primary_heading: Primary tags
+      secondary_heading: Secondary tags
+    modals:
+      login_title: Welcome back
+      signup_title: Create your account
+      identification: Email / Username
+      forgot_password: I forgot my password
+      no_account: Don't have an account?
+      sign_up: Sign Up
+      forgot_title: Reset Password
+      forgot_submit: Reset Password
+      flag_title: Thanks for keeping our community civil!
+      flag_off_topic: It's Off-Topic
+      flag_other: Something Else
+      flag_submit: Flag Post
+    extras:
+      gambits:
+        in_group: in
+        title_key: title
+        likes_key: likes
+        bookmarks_key: bookmarks
+        min_posts_key: min-posts
+        min_posts_hint: minimum number of posts in the discussion
+      search:
+        title: Search
+        meta_title: Search
+        meta_title_query: 'Search: {query}'
+        tabs_label: What to search
+        tab_topics: Discussions
+        tab_posts: Posts
+        tab_categories: Tags
+        tab_users: Users
+        input_label: Search term
+        input_placeholder: Search
+        clear: Clear search
+        submit: Search
+        advanced: Advanced filters
+        sort_by: Sort by
+        sort_relevance: Relevance
+        sort_latest_post: Latest post
+        sort_latest_topic: Latest discussion
+        sort_likes: Most liked
+        sort_views: Most viewed
+        result_count: '{count}{more} {count, plural, one {result} other {results}}'
+        result_for: for
+        no_results: No results found.
+        failed: The search could not be completed. Please try again in a moment.
+        start: Type what you are looking for, or open the advanced filters.
+        need_more: Type a search term.
+        load_more: More results
+        modal_link: Advanced search →
+        posts_filters_note: Post search only uses the author, one tag, likes and bookmarks; the other filters apply to discussions.
+        filter_author: Posted by
+        filter_author_placeholder: username
+        filter_category: In primary tag
+        filter_category_any: Any primary tag
+        filter_tags: With tags
+        filter_tags_add: Add a tag…
+        filter_tag_remove: Remove tag {name}
+        filter_where: Where
+        filter_in_title: Title only
+        filter_mine: Posted by me
+        filter_liked: Liked by me
+        filter_bookmarked: Bookmarked by me
+        filter_unread: Unread
+        filter_status: Status
+        status_any: Any
+        status_open: Open
+        status_closed: Closed
+        status_sticky: Pinned
+        filter_posted: Posted
+        filter_after: after
+        filter_before: before
+        filter_min_posts: Minimum posts
+      bulk:
+        toggle_on: Select discussions
+        toggle_off: Exit selection
+        bar_label: Actions for the selected discussions
+        selected: '{count, plural, =0 {No discussions selected} one {# selected} other {# selected}}'
+        select_all: Select all ({count})
+        select_one: Select “{title}”
+        clear: Clear
+        hint: Tick the discussions (shift+click selects a range).
+        mark_read: Mark as read
+        sticky: Pin
+        unsticky: Unpin
+        lock: Close
+        unlock: Open
+        tags: Change tags
+        hide: Delete
+        restore: Restore
+        delete: Delete forever
+        hide_confirm: '{count, plural, one {Delete # discussion?} other {Delete # discussions?}} It can be restored later.'
+        delete_confirm: '{count, plural, one {Delete # discussion forever?} other {Delete # discussions forever?}} This cannot be undone.'
+        done: '{count, plural, =0 {No discussions changed.} one {# discussion changed.} other {# discussions changed.}}'
+        skipped: '{count, plural, one {# skipped (no permission or already that way).} other {# skipped (no permission or already that way).}}'
+        failed: '{count, plural, one {# failed.} other {# failed.}}'
+      top_periods:
+        label: Period
+        all: All time
+        yearly: Year
+        quarterly: Quarter
+        monthly: Month
+        weekly: Week
+        daily: Today
+      text_size:
+        heading: Interface
+        label: Text size
+        help: Applies to this device only.
+        smaller: Smaller
+        normal: Normal
+        larger: Larger
+        largest: Largest
+      print:
+        button: Print
+        preparing: Preparing the discussion for printing…
+        print_again: Print
+        close: Close
+      history:
+        title: History
+        open: '{count, plural, one {# revision} other {# revisions}}: view history'
+        failed: The history of this post could not be loaded.
+        content_hidden: This post is hidden; the text of its versions is only shown to those who can edit it.
+        pager_label: Browse revisions
+        first: First version
+        previous: Previous revision
+        next: Next revision
+        last: Current version
+        position: Version {from} → {to} (of {total})
+        original: Original version (of {total})
+        edited_by: Edited by {name} on {date}
+        created_by: Written by {name} on {date}
+        deleted_user: deleted user
+        mode_label: Comparison mode
+        mode_inline: Inline
+        mode_side: Side by side
+        added: '{count, plural, one {+# word} other {+# words}}'
+        removed: '{count, plural, one {−# word} other {−# words}}'
+        before: Previous version
+        after: This version
+    shortcuts:
+      groups:
+        actions: Actions
+        jump_to: Jump to
+        navigation: Navigation
+        application: Application
+      actions:
+        new: New
+        unread: Unread
+        bookmarks: Bookmarks
+        messages: Messages
+        drafts: Drafts
+        next_prev_topic_jump: Next / previous discussion in the list
+        suggested: First suggested discussion
+        jump_to_post: Jump to post
+        first_last_post: First / last post
+        first_unread: First unread post
+        next_prev_section: Next / previous section
+        show_incoming: Show new or updated discussions
+        user_menu: Open the user menu
+        focus_composer: Return to the composer
+        search_global: Search (even while typing)
+        log_out: Log out
+        bookmark_topic: Bookmark the discussion
+        pin_topic: Pin / unpin the discussion
+        share_topic: Share the discussion
+        reply_topic: Reply to the discussion
+        reply_post: Reply to the post
+        quote_post: Quote the post
+        reply_linked: Reply as linked discussion
+        like_post: Like the post
+        bookmark_post: Bookmark the post
+        share_post: Share the post
+        edit_post: Edit the post
+        delete_post: Delete the post
+        flag_post: Flag the post
+        topic_menu: Open the discussion menu
+        print: Print the discussion
+        watch_topic: Watch the discussion
+        regular_topic: Normal notifications for the discussion
+        mute_topic: Mute the discussion
+        bulk_item: Select the discussion (bulk select)
+        bulk_toggle: Toggle bulk select
+        dismiss: Dismiss new or unread
+        home: Home
+        latest: Latest
+        top: Top
+        categories: Tags
+        notifications: Notifications
+        profile: Profile
+        settings: Settings
+        next_prev_topic: Next / previous discussion
+        open_topic: Open selected discussion
+        back: Go back
+        sidebar: Toggle sidebar
+        create: Start a new discussion
+        reply: Reply to discussion
+        search: Search
+        help: Show keyboard shortcuts
+      title: Keyboard shortcuts
+      or: or
+      search_placeholder: Search shortcut by key combination or description
+      no_results: No shortcuts found.
+    gaps:
+      code:
+        copy: copy code to clipboard
+        copied: copied!
+        fullscreen: show code in full screen
+        view_code: View code
+      table:
+        expand: Expand table
+        view_table: View table
+      heading_anchor: Heading link
+      spoiler:
+        reveal: 'Spoiler: click to reveal'
+      read_state:
+        unread: Post is unread
+        last_visit: last visit
+      timeline:
+        back: Back
+        back_description: Go back to your last unread post
+      jump:
+        title: Jump to…
+        post_label: Post
+        of: of {count, plural, one {# post} other {# posts}}
+        submit: Go
+      title_editor:
+        edit: Edit the title
+        label: Discussion title
+        tags: Tags
+        save: Save
+        cancel: Cancel
+      share:
+        title: Share discussion
+        post_title: 'Share post #{number}'
+        instructions: 'Share a link to this discussion:'
+        post_instructions: 'Share a link to this post:'
+        link_label: Link
+        copy: Copy
+        copied: Link copied.
+        networks:
+          x: Share on X
+          facebook: Share on Facebook
+          linkedin: Share on LinkedIn
+          whatsapp: Share on WhatsApp
+          telegram: Share on Telegram
+          reddit: Share on Reddit
+          email: Send via email
+      last_visit: last visit
+      dismiss:
+        unread: Dismiss
+        new: Dismiss
+        confirm_unread: Mark every discussion in this list as read?
+        confirm_new: Mark the new discussions in this list as read?
+      notifications:
+        post_edited: '{username} edited your post'
+        post_edited_setting: Someone edited one of my posts
+        topic_linked: '{username} linked your discussion'
+        topic_linked_setting: Someone linked to one of my discussions
+        invite_accepted: '{username} accepted your invitation'
+        invite_accepted_setting: Someone joined through my invitation
+      invites:
+        title: Invite to the forum
+        help: Generate a link and send it to whoever you want to bring in. People who sign up with it show as invited by you, and you get notified.
+        sign_up_closed: Sign up is closed on this forum; the link only works once the admins open sign up.
+        max_redemptions: How many people can use it
+        expires_days: Valid for how many days
+        create: Generate link (and copy)
+        yours: Your invitations
+        none: You haven't generated invitations yet.
+        uses: '{used} of {max} uses'
+        expires: valid until {date}
+        delete: Delete the invitation
+        sidebar: Invite
+        share_button: Invite
+        invited_by: '{username} invited you to the forum.'
+      category_notifications:
+        toggle: 'Tag notifications: {level}'
+        watching: Watching
+        watching_description: You will automatically watch all discussions in this tag and be notified of every new post.
+        watching_first_post: Watching first post
+        watching_first_post_description: You will be notified of the first post in each new discussion in this tag.
+        normal: Normal
+        normal_description: You will be notified if someone mentions your @name or replies to you.
+        muted: Muted
+        muted_description: You will never be notified of anything about discussions in this tag.
+        hidden: Muted and hidden
+        hidden_description: On top of no notifications, discussions in this tag leave the Latest list.
+      sidebar:
+        home: Home
+        my_messages: My messages
+        new_in_category: This tag has new or unread discussions
+        review: Review
+        faq: FAQ
+        tos: Terms of service
+        privacy: Privacy
+        custom_title: Links
+    list:
+      topic: Discussion
+      replies: Replies
+      views: Views
+      activity: Activity
+      new_topic: New discussion
+      unread_count: '{count, plural, one {# unread reply} other {# unread replies}}'
+      mark_read: click to mark as read
+      original_poster: Original poster
+      participant: Participant
+      more_participants: More participants
+      most_recent_poster: Most recent poster
+      replies_a11y: '{count, plural, one {# reply} other {# replies}}'
+      created_at: 'Created: {date}'
+      last_reply_at: 'Latest reply: {date}'
+      read_more: read more
+    nav:
+      label: Discussion list navigation
+      latest: Latest
+      hot: Hot
+      newest: New
+      unread: Unread
+      top: Top
+      categories_link: Tags
+      more: More sorts
+      sort_label: Choose the list
+      categories: tags
+      subcategories: child tags
+      tags: secondary tags
+      new_topic: Start a Discussion
+      remove_filter: remove filter
+      no_subcategory: no child tag
+      no_tags: no secondary tags
+      search_placeholder: Search...
+      no_results: No results found.
+      filter_for_more: Filter for more...
+    hero:
+      subcategories: Child tags
+    categories:
+      category: Tag
+      topics: Discussions
+      latest: Latest
+      tags_title: Secondary tags
+      tags_sort_by: Sort by
+      tags_sort_count: count
+      tags_sort_name: name
+      tags_all: All Tags
+      tags_none: No secondary tags yet.
+    motion:
+      link_copied: Link copied!
+    profile:
+      status:
+        label: Status
+        until: until {when}
+        choose_emoji: Choose emoji
+        custom_emoji: Other emoji
+        no_emoji: No emoji
+        clear_never: Don't clear
+        clear_30m: In 30 minutes
+        clear_1h: In 1 hour
+        clear_4h: In 4 hours
+        clear_today: Today
+        clear_week: This week
+        clear_custom: Pick date and time
+      birthday:
+        today: Birthday today!
+      settings:
+        heading: Profile
+        save: Save profile
+        discard: Discard changes
+        saved: Your profile has been saved.
+        title_label: Title
+        title_placeholder: E.g. Moderator, Photographer, Developer
+        title_help: Shown below your name on your profile and next to it on your posts.
+        title_locked: Your title is set by the moderators.
+        birthday_label: Birthday
+        birthday_show_year: Show the year (and, with it, your age)
+        birthday_help: Others only see the day and month unless you show the year.
+        status_label: Status
+        status_placeholder: E.g. On vacation, In a meeting, Slow to reply
+        status_clear: Clear status
+        status_clear_after: Clear after
+        status_custom_required: Pick the date and time when the status should disappear.
+        cover_label: Profile cover
+        cover_edit: Edit cover
+        cover_forumaker_help: A wide image at the top of your profile, also shown behind your user card. The editor lets you upload, remove and pick which part of the image stays visible.
+        no_image: No image
+      moderation:
+        clear_status: Clear status
+    review:
+      title: Review
+      empty: Nothing to review.
+      load_more: Load more
+      filter_label: Type
+      filter_all: All
+      filter_flagged: Flagged posts
+      filter_queued: Queued posts
+      type_flagged: Flagged post
+      type_queued: Queued post
+      status_pending: Pending
+      hidden_label: Hidden
+      view_post: view post
+      show_more: Show more
+      show_less: Show less
+      flagged_by: Flagged by
+      flag_type: Reason
+      flag_date: When
+      reason_off_topic: Off-topic
+      reason_inappropriate: Inappropriate
+      reason_spam: Spam
+      reason_other: Something else
+      queued_reason: This post is waiting for a moderator's approval before everyone can see it.
+      agree: Agree…
+      agree_and_hide: Agree and hide post
+      agree_and_keep: Agree and keep post
+      agree_and_keep_hidden: Agree and keep hidden
+      disagree: Disagree
+      disagree_and_restore: Disagree and restore post
+      ignore: Ignore
+      delete_post: Delete post
+      delete_confirm: Delete this post? This cannot be undone.
+      approve_post: Approve post
+      reject_post: Reject post
+      reject_confirm: Reject this post? It will be deleted.
+      done_agreed: Flags agreed. The post was kept.
+      done_agreed_hidden: Flags agreed. The post was hidden.
+      done_disagreed: Flags disagreed.
+      done_ignored: Flags ignored.
+      done_deleted: Post deleted.
+      done_approved: Post approved.
+      done_rejected: Post rejected.
+    search_menu:
+      title: Search
+      in: in
+      in_topics_posts: in all discussions and posts
+      enter_hint: or press Enter
+      mobile_enter_hint: or tap Search
+      too_short: Your search term is too short.
+      no_results: No results found.
+      open_advanced: Open advanced search
+      clear_search: Clear search
+      clear_recent: Clear Recent Searches
+      close: Close search
+      more: More
+      results: results
+      tips:
+        category_tag: filters by tag
+        author: filters by post author
+        in: filters by metadata (e.g. {examples})
+        full_search: launches full page search
+    header:
+      language: 'Language: {name}'
+    sidebar:
+      label: Sidebar
+      toggle: Toggle sidebar
+      new_topic: Start a Discussion
+      topics: All Discussions
+      my_posts: My posts
+      more: More
+      categories: Tags
+      tags: Secondary tags
+      all_categories: All tags
+      all_tags: All tags
+      recommendations: Recommended
+      recommendation_recommended: Recommended
+      recommendation_latest: Latest
+      recommendation_most_viewed: Popular
+      widgets: Updates
+      widget_news: Announcements
+      notifications: Notifications
+      settings: Settings
+      customize_categories: Customize tags
+      customize_tags: Customize secondary tags
+      customize_filter: Filter…
+      customize_community: Customize
+      customize_community_help: 'Uncheck the items that should move into "More". The choice applies to this browser.'
+      customize_save: Save
+      customize_reset: Reset to default
+      keyboard_shortcuts: Keyboard shortcuts
+      palette:
+        title: Color palette
+        default: Default
+        high_contrast: High contrast
+      theme:
+        title: Theme
+        save_failed: Could not switch theme. Please try again.
+      color_mode:
+        title: Color mode
+        light: Light
+        dark: Dark
+        auto: Auto
+    age:
+      now: now
+      minutes: '{count}m'
+      hours: '{count}h'
+      days: '{count}d'
+    stats:
+      views:
+        views_long: '{count, plural, one {this discussion has been viewed {number} time} other {this discussion has been viewed {number} times}}'
+        views_lowercase: '{count, plural, one {view} other {views}}'
+        short_thousands: '{number}k'
+        short_millions: '{number}M'
+      views_sort: Most viewed
+      unread_count: '{count, plural, one {# discussion with unread replies} other {# discussions with unread replies}}'
+      sidebar_dot: 'There is something new: {new} new and {unread} unread'
+      duration:
+        seconds: '{count} s'
+        minutes: '{count} min'
+        hours: '{count} h'
+        days: '{count} d'
+    links:
+      clicks: '{count, plural, one {# click} other {# clicks}}'
+    thirdparty:
+      solved:
+        accepted_bar: "Solution"
+        title: Solution
+        accepted: Solution
+        accepted_title: Accepted as the solution
+        accepted_by: Accepted as the solution by {username} {ago}
+        mark: Mark as solution
+        unmark: click to unmark
+        jump: Go to the answer
+        expand: Show the whole answer
+        collapse: Collapse the answer
+      reactions:
+        summary: '{count, plural, one {# reaction: see who reacted} other {# reactions: see who reacted}}'
+        picker: Pick a reaction
+        react_with: React with {reaction}
+        remove: Remove your reaction
+        like_reaction: Like
+      polls:
+        votes: '{count, plural, =0 {votes} one {vote} other {votes}}'
+      upload:
+        uploading: '{count, plural, one {Uploading the file…} other {Uploading # files…}}'
+    topic:
+      new_replies: '{count, plural, one {There is # new reply} other {There are # new replies}}'
+      embedded:
+        go_to_post: Go to post
+      post:
+        mention_unavailable: "post unavailable"
+        in_reply_to: 'In reply to: click to show the post'
+        reply_to_label: In reply to
+        remove_reply: Remove the reply
+        share_short: Copy link
+        more_short: More actions
+        replies: '{count, plural, one {# reply} other {# replies}}'
+        more_replies: '{count, plural, one {Show # more reply} other {Show # more replies}}'
+        like: Like this post
+        unlike: Undo like
+        like_guest: Sign up or log in to like this post
+        go_to_quoted: Go to the quoted post
+        who_liked: Who liked this
+        reply: Reply
+        show_more: Show more
+        show_hidden: View the deleted post content
+        hide_hidden: Hide the deleted post content
+        share: Copy a link to this post to clipboard
+      notifications:
+        toggle: 'Discussion notifications: {level}'
+        watching: Watching
+        watching_description: You will be notified of every new reply in this discussion, and a count of new replies will be shown.
+        watching_reason: You will receive notifications because you are watching this discussion.
+        normal: Normal
+        normal_description: You will be notified if someone mentions your @name or replies to you.
+        normal_reason: You will be notified if someone mentions your @name or replies to you.
+        muted: Muted
+        muted_description: You will never be notified of anything about this discussion, and it will not appear in latest.
+        muted_reason: You will never be notified of anything about this discussion.
+      author_filter:
+        showing: Showing {count, plural, one {# post} other {# posts}} by @{username}
+        show_all: Show all
+      footer:
+        aria_label: Discussion actions
+        share: Share
+        bookmark: Bookmark
+        bookmarked: Bookmarked
+        flag: Flag
+        mark_unread: Mark unread
+        more: More discussion actions
+        reply: Reply
+      suggested:
+        title: Suggested discussions
+        topic: Discussion
+        replies: Replies
+        activity: Activity
+        views: Views
+        related_title: Related discussions
+        tab_suggested: Suggested
+        tab_related: Related
+      map:
+        aria_label: Discussion summary
+        replies: '{count, plural, one {reply} other {replies}}'
+        users: '{count, plural, one {user} other {users}}'
+        likes: '{count, plural, one {like} other {likes}}'
+        frequent_posters: Frequent posters
+        most_liked: Most liked replies
+        links: '{count, plural, one {link} other {links}}'
+        popular_links: Popular links
+        show_more_links: Show more
+        posts: '{count, plural, one {# post} other {# posts}}'
+      timeline:
+        ago: '{age} ago'
+        unread: '{count, plural, one {# unread} other {# unread}}'
+      user_card:
+        read: Read
+        read_recently: '{time} recently'
+        likes_received: Likes
+        solutions: Solutions
+        posts_in_topic: '{count, plural, one {# post in discussion} other {# posts in discussion}}'
+        more: More actions
+        last_seen: Seen
+        joined: Joined
+    user:
+      age_ago:
+        now: just now
+        minutes: '{count, plural, one {# minute ago} other {# minutes ago}}'
+        hours: '{count, plural, one {# hour ago} other {# hours ago}}'
+        days: '{count, plural, one {# day ago} other {# days ago}}'
+      stats:
+        joined: Joined
+        last_post: Last post
+        seen: Seen
+        online: online now
+        posts: Posts
+        topics: Discussions
+        groups: Groups
+      nav:
+        activity: Activity
+        posts: Posts
+        discussions: Discussions
+        read: Read
+        reactions: Reactions
+        votes: Votes
+        solved: Solved
+        scroll_left: Scroll tabs left
+        scroll_right: Scroll tabs right
+        reactions_empty: No reactions yet.
+      summary:
+        nav: Summary
+        stats_heading: Stats
+        days_visited: '{count, plural, one {day visited} other {days visited}}'
+        time_read: read time
+        posts_read: posts read
+        likes_received_short: received
+        solutions: solutions
+        most_replied_to: Most Replied To
+        empty_links: "No clicked links yet."
+        empty_replied: "No replies yet."
+        empty_likes: "No likes yet."
+        most_liked_by: Most Liked By
+        most_liked: Most Liked
+        top_categories: Top Tags
+        top_links: Top Links
+        recent_time_read: recent read time
+        topics: Discussions
+        replies_column: Replies
+        days_member: '{count, plural, one {day as member} other {days as member}}'
+        topics_created: discussions created
+        posts_created: posts created
+        likes_given_short: given
+        top_replies_heading: Top replies
+        top_topics_heading: Top discussions
+        no_replies: No replies yet.
+        no_topics: No discussions yet.
+        more_replies: More replies
+        more_topics: More discussions
+        replies: '{count, plural, =0 {no replies} one {# reply} other {# replies}}'
+      preferences:
+        nav: Preferences
+        tabs:
+          account: Account
+          security: Security
+          profile: Profile
+          notifications: Notifications
+          tracking: Tracking
+          users: Ignored users
+          interface: Interface
+          navigation-menu: Navigation menu
+          other: Other
+        empty: Nothing to adjust on this tab yet.
+        username: Username
+        username_help: 'It is the name in your profile address; to call you in a post, people write @{username}.'
+        avatar: Profile picture
+        avatar_change: Change picture
+        avatar_help: A square image works best. You can also drag the file onto the picture.
+        email: Email
+        email_primary: primary
+        email_confirmed: confirmed
+        email_unconfirmed: unconfirmed
+        email_resend: Send confirmation again
+        email_resent: Confirmation sent
+        email_help: Stays between you and the staff; it never shows on your profile.
+        password_heading: Password
+        password_help: You get an email with a link to pick the new password.
+        auto_track_heading: Automatic tracking
+        nav_menu_heading: Sidebar
+        nav_menu_help: Pick which tags show in your sidebar. Applies to this device only.
+        nav_menu_default: Forum default
+        nav_menu_picked: '{count, plural, one {# picked} other {# picked}}'
+        nav_menu_edit: Customize
+    usermenu:
+      toggle: User menu
+      sr_menu_tabs: User menu tabs
+      view_all_notifications: view all notifications
+      view_all_bookmarks: view all bookmarks
+      view_all_messages: view all personal messages
+      view_all_reviewables: view all review items
+      view_all: View all
+      dismiss: Mark all as read
+      dismiss_notifications_tooltip: Mark all unread notifications as read
+      dismiss_bookmarks_tooltip: Mark all unread bookmark reminders as read
+      dismiss_messages_tooltip: Mark all unread personal message notifications as read
+      badge:
+        new_messages: '{count, plural, one {# new personal message} other {# new personal messages}}'
+        new_reviewables: '{count, plural, one {# new reviewable} other {# new reviewables}}'
+        unread: '{count, plural, one {# unread item} other {# unread items}}'
+      tabs:
+        all_notifications: All notifications
+        replies: Replies
+        replies_with_unread: '{count, plural, one {Replies - # unread reply} other {Replies - # unread replies}}'
+        likes: Likes
+        likes_with_unread: '{count, plural, one {Likes - # unread like} other {Likes - # unread likes}}'
+        messages: Personal messages
+        messages_with_unread: '{count, plural, one {Personal messages - # unread message} other {Personal messages - # unread messages}}'
+        bookmarks: Bookmarks
+        bookmarks_with_unread: '{count, plural, one {Bookmarks - # unread bookmark} other {Bookmarks - # unread bookmarks}}'
+        review_queue: Review queue
+        review_queue_with_unread: '{count, plural, one {Review queue - # item needs review} other {Review queue - # items need review}}'
+        other_notifications: Other notifications
+        other_notifications_with_unread: '{count, plural, one {Other notifications - # unread notification} other {Other notifications - # unread notifications}}'
+        profile: Profile
+      profile:
+        set_custom_status: Set custom status
+        activity: Activity
+        messages: Messages
+        dark_mode: Dark mode
+        light_mode: Light mode
+      empty:
+        generic: There are no items in this list.
+        notifications_title: You don't have any notifications yet
+        notifications_body_1: You will be notified in this panel about activity directly relevant to you, including replies to your discussions and posts, when someone <b>@mentions</b> you or quotes you, and replies to discussions you are watching. Notifications will also be sent to your email when you haven't logged in for a while.
+        notifications_body_2: Look for the {icon} to decide which specific discussions and tags you want to be notified about. For more, see your <a>notification preferences</a>.
+        page_title: You don't have any notifications yet
+        page_body_1: You will be notified about activity directly relevant to you, including replies to your discussions and posts, when someone <b>@mentions</b> you or quotes you, and replies to discussions you are watching. Notifications will also be sent to your email when you haven't logged in for a while.
+        likes_title: You haven't received any likes yet
+        likes_body_1: You will be notified here any time someone likes one of your posts so you can see what others are finding valuable. Others will see the same when you like their posts too!
+        likes_body_2: Notifications for likes are never sent to your email, but you can tune how you receive notifications about likes on the site in your <a>notification preferences</a>.
+        messages_title: You don't have any messages
+        messages_body_1: Need to have a direct personal conversation with someone, outside the normal conversational flow? Message them by selecting their avatar and using the {icon} message button.
+        messages_body_2: If you need help, you can <a>message a staff member</a>.
+        bookmarks_title: You haven't bookmarked anything yet
+        bookmarks_body: Start bookmarking posts with the {icon} button and they will be listed here for easy reference. You can schedule a reminder too!
+        other_title: You don't have any other notifications yet
+        other_body: You will be notified in this panel about other kinds of activity that may be relevant to you – for example, when someone links to or edits one of your posts.
+      page:
+        title: Notifications
+        all: All
+        replies: Replies
+        likes: Likes
+        other: Other
+        private: 'Notifications are personal: they only show on your own profile.'
+  api:
+    loader:
+      invalid_svg: The file is not a valid SVG or is larger than 64 KB after cleaning.
+    profile:
+      invalid_website: The website must be an address starting with http:// or https://.
+      invalid_status_emoji: The status accepts a single emoji.
+      invalid_status_until: The date to clear the status must be in the future.
+      invalid_image_url: The image must be an https address with no spaces, quotes or parentheses.
+      invalid_birthday: Pick a date of birth between 1900 and yesterday.
+    invites:
+      too_many: You already have too many active invitations. Delete one before generating another.
+  views:
+    not_found:
+      page_title: Page not found
+      title: Oops! That page doesn't exist or is private.
+      popular_topics: Popular discussions
+      recent_topics: Recent discussions
+      see_more: More
+      search_title: Why not try a search?
+      search_button: Search
+      home: Back to home
+      placeholder: Search discussions by title or keywords…
+# forumaker/profile-cover: the cover editor (thirdparty/profileCover), same keys in every language.
+forumaker-profile-cover:
+  forum:
+    cover: Edit cover
+    edit_cover: Edit cover
+    notice: 'Maximum size: {size}. Recommended format: 21:9, at least 1600×400 pixels.'
+    position_label: Cover position
+    save_position_button: Save position
+    added:
+      success: Profile cover updated
+      error: Image could not be uploaded
+    removed:
+      success: Profile cover removed
+      error: Failed to remove cover, try again
+# Rótulo do "sem tema" do Wardrobe.
+ernestdefoe-wardrobe:
+  admin:
+    settings:
+      flarum_title: Default
+  forum:
+    theme:
+      flarum: Default
+
+# O nome do provedor "passkey" (desativado no fórum, mas ainda vinculado
+# a contas antigas): o fof/oauth não traz a tradução dele.
+fof-oauth:
+  forum:
+    providers:
+      passkey: Passkey
+flarum-deck:
+
+  # Translations in this namespace are used by the admin interface.
+  admin:
+    permissions:
+      use_deck_label: Use Deck
+
+    settings:
+      max_columns_help: Every column is a separate request each time it refreshes. Between 1 and 12.
+      max_columns_label: Maximum columns per member
+      poll_interval_help: How often columns check for new activity when Realtime isn't connected. 0 turns this off; the minimum is 15.
+      poll_interval_label: Refresh interval (seconds)
+
+  # Translations in this namespace are used by the forum user interface.
+  forum:
+    add_column:
+      author_label: Member
+      author_placeholder: Search for a member
+      back_button: Back
+      discussion_label: Discussion
+      discussion_placeholder: Search for a discussion
+      filter_help: "Combine filters from the search, such as tag:, author:, is:unread or is:following. Plain words aren't supported."
+      filter_invalid_message: "Use filters only, such as tag:support is:unread. Plain words aren't supported."
+      filter_label: Filters
+      group_invalid_message: Choose a group.
+      group_label: Group
+      in_deck_badge: In your deck
+      in_deck_count_badge: "In your deck ×{count}"
+      filter_placeholder: e.g. tag:support is:unread
+      invalid_value_message: "Please enter a valid value for {field}."
+      pick_a_result_message: "Choose a result for {field} from the suggestions."
+      submit_button: Add column
+      title: Add a column
+      use_filters_button: Use these filters
+
+    column:
+      controls_label: "{title} column options"
+      drag_handle_label: "Drag to move {title}"
+      move_left_button: Move left
+      move_right_button: Move right
+      move_to_bottom_row_button: Move to bottom row
+      move_to_top_row_button: Move to top row
+      moved_announcement: "Moved to position {position} of {count}."
+      moved_in_bottom_row_announcement: "Moved to position {position} of {count} in the bottom row."
+      moved_in_top_row_announcement: "Moved to position {position} of {count} in the top row."
+      new_items_button: "{count, plural, one {# new} other {# new}}"
+      open_discussion_button: Open discussion
+      refresh_button: Refresh
+      remove_button: Remove column
+      reset_width_button: Reset width
+      resize_label: "Resize {title}"
+
+    column_types:
+      all: All discussions
+      author: Discussions by a member
+      author_posts: Posts by a member
+      author_posts_title: "Posts by {username}"
+      author_title: "Started by {username}"
+      discussion: A discussion
+      filter: Custom filter
+      group_posts: Posts by a group
+      group_posts_title: "Posts by {group}"
+      typing: Typing activity
+      unread: Unread
+
+    discussion_controls:
+      add_to_deck_button: Add to Deck
+      added_message: This discussion is now a column in your Deck.
+
+    index:
+      deck_link: Deck
+
+    typing:
+      empty_text: Nobody's typing right now.
+      offline_text: Typing activity needs a live connection to the realtime server.
+      replying_text: "{name} is replying in {discussion}"
+      someone: Someone
+      starting_in_text: "{name} is starting a discussion in {tags}"
+      starting_text: "{name} is starting a discussion"
+      was_replying_text: "{name} was replying in {discussion}"
+      was_starting_in_text: "{name} was starting a discussion in {tags}"
+      was_starting_text: "{name} was starting a discussion"
+
+    page:
+      add_column_button: Add column
+      column_limit_reached_text: You've reached the maximum number of columns.
+      drop_row_hint: Drop a column here to start a second row
+      empty_text: Your Deck is empty. Add a column to follow conversations live.
+      exit_fullscreen_button: Exit full screen
+      fullscreen_button: Full screen
+      hero:
+        hide_label: Hide this introduction
+        subtitle: Follow every conversation you care about, side by side and live. Add columns, drag them into place, and arrange them in up to two rows.
+      navigator_label: Columns
+      options_label: Deck options
+      reset_button: Reset columns
+      resize_rows_label: Resize rows
+      reset_confirmation: Replace your columns with the default set? This can't be undone.
+      scroll_left_label: Scroll left
+      scroll_right_label: Scroll right
+      title: Deck

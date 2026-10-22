@@ -1,0 +1,51 @@
+name: Release
+
+# Ao publicar uma tag vX.Y.Z, cria a release com o pacote distribuível.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build package and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # O pacote leva o JS já compilado (js/dist é versionado). Se a tag não
+      # tiver os arquivos, é melhor falhar do que publicar sem frontend.
+      - name: Check compiled assets
+        run: |
+          test -f js/dist/forum.js
+          test -f js/dist/admin.js
+
+      # git archive respeita o .gitattributes: tests, js/src, node_modules,
+      # configurações de dev e source maps ficam fora do zip.
+      - name: Build the package
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          git archive --format=zip --prefix="roselle-$version/" -o "roselle-$version.zip" "$GITHUB_REF_NAME"
+          unzip -l "roselle-$version.zip" | tail -n 5
+
+      - name: Create the release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Roselle ${{ env.VERSION }}
+          files: roselle-${{ env.VERSION }}.zip
+          generate_release_notes: true
+          # v1.0.0-rc.1 e afins viram pré-release.
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
