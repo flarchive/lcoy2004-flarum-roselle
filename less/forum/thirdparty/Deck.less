@@ -1,0 +1,47 @@
+// flarum/deck (/deck)：o tema entra só no que a casca atrapalha.
+//
+// O Deck calcula a própria altura como `100dvh - var(--header-height)` — os
+// 52px do cabeçalho do tema batem com os do core, então a conta fecha. O que
+// não fechava era o `.Page` do tema reservar 48px no pé para o compositor
+// (Shell.less): o Deck já cuida disso com `--deck-bottom-gap`, e os 48px
+// comiam um pedaço das colunas. Em tela cheia o Deck esconde `#header` e
+// `#app-navigation`, mas não conhece a barra lateral do tema nem a margem que
+// ela deixa no conteúdo.
+
+.Canela.App--deck {
+  // A altura do Deck é a da janela: o pé é dele, não do compositor.
+  .Page {
+    padding-bottom: 0;
+  }
+
+  // A linha de colunas rola na horizontal; a barra fina do tema some no fundo.
+  .DeckRow-columns {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cn-primary-low) transparent;
+  }
+}
+
+// Tela cheia: só o Deck. O cabeçalho e a navegação do core saem pelo próprio
+// Deck; aqui saem a barra global do tema, o fundo do painel do celular e os
+// espaçamentos que a casca deixa no conteúdo.
+.Canela.App--deckFullscreen {
+  padding-top: 0;
+
+  #canela-sidebar,
+  .CanelaSidebar-backdrop {
+    display: none;
+  }
+
+  .App-content,
+  .App-footer {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .DeckPage {
+    height: 100vh;
+    height: 100dvh;
+    padding-bottom: 0;
+  }
+}

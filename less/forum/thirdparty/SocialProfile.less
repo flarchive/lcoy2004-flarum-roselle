@@ -1,0 +1,45 @@
+// fof/socialprofile: o editor de botões sociais ("Editar redes sociais").
+//
+// O rodapé do formulário (`#submit-button-group`) é um `.Form-group` do core,
+// que é uma coluna flex — por isso os botões de adicionar/remover e o Salvar
+// ficavam empilhados. Aqui viram uma linha só: + e − à esquerda, Salvar à
+// direita (o `float: right` inline da extensão não vale dentro de um flex).
+
+.SocialButtonsModal #submit-button-group {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--cn-space-2);
+  width: 100%;
+
+  > .Button {
+    width: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  // O botão Salvar tem `float: right` inline; em flex quem manda no encosto
+  // à direita é a margem automática.
+  > .EditSocialButtons-save {
+    margin-left: auto;
+  }
+}
+
+// O seletor de ícone de cada rede é um `.Button--icon` redondo. A extensão
+// acrescenta um caret à direita e deixa a largura automática: o ícone fica
+// empurrado para a esquerda (56px de botão para um ícone de 20px). O botão
+// inteiro já abre o menu, então o caret é redundante — fica um círculo de
+// 36px com o ícone centrado.
+.form-group-social .icondropdown > button.Dropdown-toggle {
+  gap: 0;
+  width: 36px;
+  min-width: 36px;
+  padding: 0;
+
+  > .Button-caret {
+    display: none;
+  }
+
+  > .icondropdown-activeIcon {
+    margin: 0;
+  }
+}

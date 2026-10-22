@@ -1,0 +1,38 @@
+// Estatísticas: o "(N)" das abas Novos/Não lidos e o ponto do "Tópicos" na
+// barra lateral. A coluna Visualizações em si mora na lista (List.less).
+
+// "Novos (3)": o número no mesmo tom da aba, só um pouco mais leve, como no
+// Discourse — a aba ativa pinta os dois de uma vez.
+.CanelaStatsCount {
+  font-variant-numeric: tabular-nums;
+  font-weight: inherit;
+  color: inherit;
+}
+
+// O ponto da barra lateral, logo depois do rótulo. Ele mora dentro do
+// .Button-label (o LinkButton põe ali tudo o que recebe), e por isso é inline:
+// o rótulo corta o texto com reticências, e um bloco seria cortado junto.
+.CanelaSidebar .Button-label {
+  .CanelaStatsDot {
+    display: inline-block;
+    vertical-align: middle;
+    width: 6px;
+    height: 6px;
+    margin-left: var(--cn-space-2);
+    border-radius: 50%;
+    background: var(--cn-accent);
+  }
+}
+
+// O calor das visualizações fora da lista (tópicos sugeridos): as classes
+// `heatmap-*` do Discourse, com as mesmas cores da coluna da lista.
+.heatmap-low {
+  color: var(--cn-heat-low) !important;
+}
+.heatmap-med {
+  color: var(--cn-heat-med) !important;
+}
+.heatmap-high {
+  color: var(--cn-heat-high) !important;
+  font-weight: 500;
+}
