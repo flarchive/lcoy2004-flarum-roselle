@@ -1,0 +1,349 @@
+/*
+ * O cartão de usuário do Discourse: abre no clique do avatar ou do nome do
+ * autor, junto dele, com avatar grande, nomes, grupos, bio, "visto há…",
+ * "membro desde" e os botões "Ver perfil"/"Mensagem". Fecha ao clicar fora,
+ * com Esc ou ao navegar.
+ *
+ * Há um cartão só para a página inteira, montado num <div> próprio no body:
+ * dentro do post ele seria cortado pelo overflow do conteúdo e ficaria preso
+ * ao SubtreeRetainer, que não redesenha o post à toa.
+ */
+import app from 'flarum/forum/app';
+import Component, { type ComponentAttrs } from 'flarum/common/Component';
+import Avatar from 'flarum/common/components/Avatar';
+import Button from 'flarum/common/components/Button';
+import Dropdown from 'flarum/common/components/Dropdown';
+import Icon from 'flarum/common/components/Icon';
+import Link from 'flarum/common/components/Link';
+import Separator from 'flarum/common/components/Separator';
+import classList from 'flarum/common/utils/classList';
+import abbreviateNumber from 'flarum/common/utils/abbreviateNumber';
+import UserControls from 'flarum/forum/utils/UserControls';
+import type User from 'flarum/common/models/User';
+import type Mithril from 'mithril';
+
+import { fullDate, shortAge, shortDate } from '../../utils/dates';
+import { t } from '../../utils/settings';
+import { BirthdayFact, StatusLine, profileImageStyle, userTitle } from '../../features/profile';
+import { AUTHOR_FILTER_MAX_POSTS, authorPostCount, filterByAuthor } from '../authorFilter';
+import { userIcons } from '../../utils/userIcons';
+
+/** Distância do cartão até o avatar e até as bordas da janela. */
+const GAP = 8;
+const EDGE = 16;
+
+interface CardState {
+  user: User;
+  anchor: HTMLElement;
+}
+
+let state: CardState | null = null;
+let root: HTMLElement | null = null;
+const requested = new Set<string>();
+
+function onDocumentEvent(event: Event) {
+  if (!state) return;
+
+  if (event instanceof KeyboardEvent) {
+    if (event.key === 'Escape') closeUserCard();
+    return;
+  }
+
+  const target = event.target as Node;
+
+  if (root?.contains(target) || state.anchor.contains(target)) return;
+
+  closeUserCard();
+}
+
+function ensureRoot() {
+  if (root) return;
+
+  root = document.createElement('div');
+  root.className = 'CanelaUserCardRoot';
+  document.body.appendChild(root);
+
+  m.mount(root, { view: () => (state ? <CanelaUserCard user={state.user} anchor={state.anchor} /> : null) });
+
+  document.addEventListener('mousedown', onDocumentEvent, true);
+  document.addEventListener('keydown', onDocumentEvent, true);
+  window.addEventListener('popstate', () => closeUserCard());
+}
+
+export function openUserCard(user: User, anchor: HTMLElement): void {
+  ensureRoot();
+
+  // Um segundo clique no mesmo avatar fecha, como no Discourse.
+  if (state && state.user === user && state.anchor === anchor) {
+    closeUserCard();
+    return;
+  }
+
+  state = { user, anchor };
+
+  // O usuário que vem junto do post pode não ter tudo (data de entrada,
+  // contagens): busca o perfil completo uma vez por sessão.
+  const id = user.id();
+
+  if (id && !requested.has(id) && user.joinTime() === undefined) {
+    requested.add(id);
+    app.store
+      .find('users', id, {}, { errorHandler: () => {} })
+      .catch(() => {})
+      .then(() => m.redraw());
+  }
+
+  m.redraw();
+}
+
+/** O tempo de leitura (segundos) no formato curto do Discourse: "35 d", "13 h", "8 min". */
+function readTime(seconds: number): string {
+  const minutes = Math.round(seconds / 60);
+
+  if (minutes < 60) return app.translator.trans('lcoy-roselle.forum.age.minutes', { count: Math.max(1, minutes) }, true) as string;
+  if (minutes < 60 * 24) return app.translator.trans('lcoy-roselle.forum.age.hours', { count: Math.round(minutes / 60) }, true) as string;
+
+  return app.translator.trans('lcoy-roselle.forum.age.days', { count: Math.round(minutes / 60 / 24) }, true) as string;
+}
+
+export function closeUserCard(): void {
+  if (!state) return;
+
+  state = null;
+  m.redraw();
+}
+
+interface CanelaUserCardAttrs extends ComponentAttrs {
+  user: User;
+  anchor: HTMLElement;
+}
+
+class CanelaUserCard extends Component<CanelaUserCardAttrs> {
+  /**
+   * O cartão do Discourse (.user-card, 39em): o avatar de 8em subindo 3.3em
+   * acima do cartão, com o flair no canto; @nome enorme e, embaixo, o nome e
+   * o título; à direita "Mensagem" e "N postagens no tópico"; depois a bio
+   * do fof/user-bio (2 linhas), o aniversário, os metadados e os emblemas. O
+   * fundo é a imagem de fundo do perfil, sob um véu da cor do cartão.
+   */
+  view() {
+    const user = this.attrs.user;
+    const groups = ((user.groups() || []) as any[]).filter((group) => group && !group.isHidden?.());
+    const flairGroup = groups.find((group) => group.icon());
+    const lastSeen = user.lastSeenAt();
+    const joined = user.joinTime();
+    const timeRead = user.attribute<number | null | undefined>('canelaTimeRead');
+    const recentRead = user.attribute<number | null | undefined>('canelaRecentTimeRead');
+    const likes = user.attribute<number | null | undefined>('canelaLikesReceived');
+    const solutions = user.attribute<number | null | undefined>('bestAnswerCount');
+    // Só o título do perfil: o grupo já está no flair do avatar.
+    const title = userTitle(user);
+    const showName = user.displayName() !== user.username();
+
+    // A "Mensagem" do flarum/messages vira o botão primário; o resto dos
+    // controles (moderação) vai para o "…".
+    const controls = UserControls.controls(user, this);
+    const message = controls.has('sendMessage') ? (controls.get('sendMessage') as any) : null;
+    if (message) controls.remove('sendMessage');
+    const otherControls = controls.toArray().filter((item: any) => item && item.tag !== Separator);
+
+    // "N postagens no tópico", quando o cartão abre de dentro de um tópico.
+    const discussion = app.current.get('discussion');
+    const stream = app.current.get('stream');
+    const inTopic = discussion && stream ? authorPostCount(discussion, user) : 0;
+
+    const facts = [BirthdayFact(user)].filter(Boolean);
+    const meta1 = [
+      lastSeen && !user.isOnline() && this.meta('seen', t('topic.user_card.last_seen'), shortAge(lastSeen), fullDate(lastSeen)),
+      // Online: só "online agora", em verde (o "Visto" sobra).
+      user.isOnline() && (
+        <span className="CanelaUserCard-meta CanelaUserCard-online">
+          <span className="CanelaUserCard-onlineNow">{t('user.stats.online')}</span>
+        </span>
+      ),
+      joined && this.meta('joined', t('topic.user_card.joined'), shortDate(joined), fullDate(joined)),
+      // "Lido 3 meses (1 d recentemente)": o tempo dos últimos 60 dias entre
+      // parênteses, como o `.metadata .time-read` do Discourse.
+      typeof timeRead === 'number' &&
+        timeRead > 0 &&
+        this.meta(
+          'read',
+          t('topic.user_card.read'),
+          typeof recentRead === 'number' && recentRead > 0 && recentRead < timeRead
+            ? `${readTime(timeRead)} (${t('topic.user_card.read_recently', { time: readTime(recentRead) })})`
+            : readTime(timeRead)
+        ),
+    ].filter(Boolean);
+    const meta2 = [
+      typeof likes === 'number' && this.meta('likes', t('topic.user_card.likes_received'), abbreviateNumber(likes), undefined, true),
+      typeof solutions === 'number' && solutions > 0 && this.meta('solutions', t('topic.user_card.solutions'), abbreviateNumber(solutions)),
+    ].filter(Boolean);
+
+    const status = StatusLine(user);
+    // HTML já escapado e formatado pelo fof/user-bio.
+    const bio = user.attribute<string | null | undefined>('bioHtml') || null;
+
+    return (
+      <div
+        className={classList('CanelaUserCard', { 'CanelaProfile--hasCardBg': !!profileImageStyle(user)['--canela-user-card-bg'] })}
+        role="dialog"
+        aria-label={user.displayName()}
+        style={{ '--usercard-color': user.color() || undefined, ...profileImageStyle(user) }}
+      >
+        <div className="CanelaUserCard-content">
+          <div className="CanelaUserCard-first">
+            <div className="CanelaUserCard-avatarWrapper">
+              <Link className="CanelaUserCard-avatar" href={app.route.user(user)} onclick={closeUserCard}>
+                <Avatar user={user} loading="eager" />
+              </Link>
+              {flairGroup && (
+                <span className="CanelaUserCard-flair" title={flairGroup.nameSingular()} style={{ '--group-color': flairGroup.color() || undefined }}>
+                  <Icon name={flairGroup.icon()} />
+                </span>
+              )}
+            </div>
+
+            <div className="CanelaUserCard-names">
+              {/* O nome grande e, na mesma linha, os ícones (selo de verificado),
+                  fora do link: o popover do selo funciona sem levar ao perfil.
+                  O status fica só na pílula embaixo. */}
+              <div className="CanelaUserCard-nameLine">
+                <Link className="CanelaUserCard-name" href={app.route.user(user)} onclick={closeUserCard}>
+                  <span className="CanelaUserCard-username">{user.displayName() || user.username()}</span>
+                </Link>
+                {userIcons(user, 'card')}
+              </div>
+              {/* O apelido (flarum/nicknames) em destaque, como nos posts; o username embaixo. */}
+              {showName && <span className="CanelaUserCard-secondary">{user.username()}</span>}
+              {title && <span className="CanelaUserCard-secondary CanelaUserCard-title">{title}</span>}
+            </div>
+
+            <div className="CanelaUserCard-controls">
+              {message && (
+                <Button {...message.attrs} className="Button Button--primary CanelaUserCard-message" icon="far fa-envelope">
+                  {message.children}
+                </Button>
+              )}
+              {inTopic > 1 && discussion.postIds().length <= AUTHOR_FILTER_MAX_POSTS && (
+                <Button
+                  className="Button CanelaUserCard-filter"
+                  icon="fas fa-filter"
+                  onclick={() => {
+                    closeUserCard();
+                    filterByAuthor(stream, discussion, user);
+                  }}
+                >
+                  {t('topic.user_card.posts_in_topic', { count: inTopic })}
+                </Button>
+              )}
+              {otherControls.length > 0 && (
+                <Dropdown
+                  className="CanelaUserCard-more"
+                  buttonClassName="Button Button--icon"
+                  menuClassName="Dropdown-menu--right"
+                  icon="fas fa-ellipsis-h"
+                  caretIcon=""
+                  label=""
+                  helperText={null}
+                  accessibleToggleLabel={t('topic.user_card.more')}
+                >
+                  {controls.toArray()}
+                </Dropdown>
+              )}
+            </div>
+          </div>
+
+          {status && <div className="CanelaUserCard-row">{status}</div>}
+          {bio && <div className="CanelaUserCard-row CanelaUserCard-bio">{m.trust(bio)}</div>}
+          {facts.length > 0 && <div className="CanelaUserCard-row CanelaUserCard-facts">{dotted(facts)}</div>}
+          {meta1.length > 0 && <div className="CanelaUserCard-row CanelaUserCard-metadata">{dotted(meta1)}</div>}
+          {meta2.length > 0 && <div className="CanelaUserCard-row CanelaUserCard-metadata">{dotted(meta2)}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  /** "Rótulo valor" dos metadados do Discourse (.metadata .desc). */
+  meta(key: string, label: string, value: string, title?: string, accent = false) {
+    return (
+      <span className={`CanelaUserCard-meta CanelaUserCard-meta--${key}`} title={title}>
+        <span className="CanelaUserCard-metaLabel">{label}</span>{' '}
+        <span className={classList('CanelaUserCard-metaValue', { 'CanelaUserCard-metaValue--accent': accent })}>{value}</span>
+      </span>
+    );
+  }
+
+  oncreate(vnode: Mithril.VnodeDOM<CanelaUserCardAttrs, this>) {
+    super.oncreate(vnode);
+    this.position();
+  }
+
+  onupdate(vnode: Mithril.VnodeDOM<CanelaUserCardAttrs, this>) {
+    super.onupdate(vnode);
+    this.position();
+  }
+
+  /**
+   * Ao lado do avatar clicado; se não couber embaixo, em cima; e nunca fora
+   * da janela. No celular o CSS o centraliza.
+   */
+  position() {
+    const card = this.element as HTMLElement;
+    const anchor = this.attrs.anchor;
+
+    if (!anchor.isConnected) {
+      closeUserCard();
+      return;
+    }
+
+    if (app.screen() === 'phone') {
+      card.style.left = '';
+      card.style.top = '';
+      return;
+    }
+
+    const rect = anchor.getBoundingClientRect();
+    const width = card.offsetWidth;
+    const height = card.offsetHeight;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Como no Meta: o avatar grande do cartão (que sobe 3.3em acima dele,
+    // pela margem do CSS) fica à direita do avatar clicado, quase na mesma
+    // altura dele.
+    let left = rect.right + GAP;
+    let top = rect.top - 22;
+
+    if (left + width > viewportWidth - EDGE) left = Math.max(EDGE, viewportWidth - width - EDGE);
+    if (top + height > viewportHeight - EDGE && rect.top - GAP - height > EDGE) top = rect.top - GAP - height;
+
+    card.style.left = `${left + window.scrollX}px`;
+    card.style.top = `${top + window.scrollY}px`;
+
+    // A setinha à esquerda, apontando para o meio do avatar clicado; some se o
+    // cartão não ficou ao lado dele (sem espaço à direita ou virado para cima).
+    const beside = left >= rect.right;
+    const arrow = rect.top + rect.height / 2 - top;
+
+    card.classList.toggle('CanelaUserCard--arrow', beside && arrow > 16 && arrow < height - 16);
+    card.style.setProperty('--usercard-arrow', `${arrow}px`);
+  }
+}
+
+/**
+ * Intercala um "•" entre os itens. O separador é um elemento próprio, irmão dos
+ * itens: como pseudo-elemento dentro de um item que é link, ele herdava o
+ * sublinhado e o clique do link.
+ */
+function dotted(items: Mithril.Children[]): Mithril.Children[] {
+  return items.flatMap((item, index) =>
+    index === 0
+      ? [item]
+      : [
+          <span className="CanelaUserCard-sep" aria-hidden="true">
+            •
+          </span>,
+          item,
+        ]
+  );
+}

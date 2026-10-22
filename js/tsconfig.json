@@ -1,0 +1,16 @@
+{
+  "extends": "flarum-tsconfig",
+  // Três layouts: workbench/canela (vendor ao lado), CI (checkout sozinho
+  // com `composer update`) e instalado como extensão em vendor/lcoy/roselle
+  // (o vendor do fórum fica três níveis acima de js/).
+  "include": ["src/**/*", "../vendor/*/*/js/dist-typings/@types/**/*", "../../../vendor/*/*/js/dist-typings/@types/**/*", "../../../*/*/js/dist-typings/@types/**/*", "@types/**/*"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "declarationDir": "./dist-typings",
+    "baseUrl": ".",
+    "paths": {
+      "flarum/*": ["../vendor/flarum/core/js/dist-typings/*", "../../../vendor/flarum/core/js/dist-typings/*", "../../../flarum/core/js/dist-typings/*"],
+      "ext:flarum/tags/*": ["../vendor/flarum/tags/js/dist-typings/*", "../../../vendor/flarum/tags/js/dist-typings/*"]
+    }
+  }
+}
