@@ -2,7 +2,7 @@
 
 > **Read-only archive of released versions of lcoy/roselle.** Not for installation: use [Packagist](https://packagist.org/packages/lcoy/roselle) or the [upstream repository](https://github.com/Lcoy2004/Flarum-roselle).
 
-**0** versions archived · Latest: [`v1.0.6`](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.6) · License: `MIT` · Flarum: `^2.0.0`
+**0** versions archived · Latest: [`v1.0.7`](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.7) · License: `MIT` · Flarum: `^2.0.0`
 
 ## Archived Versions
 
