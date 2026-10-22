@@ -1,0 +1,277 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<FoF\\Pages\\Page\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Community/AboutPages.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<FoF\\Pages\\Page\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/GuidelinesPage.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/AboutPages.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/Api/CreateGuidelinesPageController.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/Api/ShowAboutPageController.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/Api/ShowGuidelinesController.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/GuidelinesPage.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$content_html\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/AboutPages.php
+
+		-
+			message: '#^Access to an undefined property FoF\\Pages\\Page\:\:\$content_html\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Community/GuidelinesPage.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\View\\Factory\:\:shared\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/ResetPasswordContent.php
+
+		-
+			message: '#^Call to an undefined static method Flarum\\User\\PasswordToken\:\:findOrFail\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Auth/ResetPasswordContent.php
+
+		-
+			message: '#^Static property Lcoy\\Roselle\\Bookmarks\\Api\\BookmarkBuffer\:\:\$loaded \(array\<int, array\<int, Lcoy\\Roselle\\Bookmarks\\Bookmark\|null\>\>\) does not accept array\<int, array\<int, Flarum\\Database\\AbstractModel\|stdClass\|null\>\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Bookmarks/Api/BookmarkBuffer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Bookmarks/Api/BookmarkResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Lcoy\\Roselle\\Bookmarks\\Bookmark\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Bookmarks/Api/BookmarkResource.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Bookmarks\\Api\\BookmarkResource\:\:creating\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Bookmarks/Api/BookmarkResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:with\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Bookmarks/Console/SendBookmarkReminders.php
+
+		-
+			message: '#^Parameter \#2 \$post of class Lcoy\\Roselle\\Bookmarks\\Notification\\BookmarkReminderBlueprint constructor expects Flarum\\Post\\Post, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Bookmarks/Console/SendBookmarkReminders.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Bookmarks\\Notification\\BookmarkReminderBlueprint\:\:getSubject\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Bookmarks/Notification/BookmarkReminderBlueprint.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Group\\Group\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/Api/ListDirectoryController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Group\\Group\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/Api/ListGroupActivityController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Post\\Post\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/Api/ListGroupActivityController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Group\\Group\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/Api/ShowAboutController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\User\\User\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/Api/ShowAboutController.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Flarum\\Locale\\TranslatorInterface and ''getLocale'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Community/Api/ShowGuidelinesController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\User\\User\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Community/Directory.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Post\\Post\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Gaps/Listener/NotifyPostEdited.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Post\\Post\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Gaps/Listener/NotifyTopicLinked.php
+
+		-
+			message: '#^Instanceof between Flarum\\Post\\CommentPost and Flarum\\Post\\CommentPost will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Gaps/Listener/NotifyTopicLinked.php
+
+		-
+			message: '#^Call to an undefined method Flarum\\Discussion\\Discussion\:\:tags\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Gaps/NotFound/NotFoundPage.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Discussion\\Discussion\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Gaps/NotFound/NotFoundPage.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\InviteAcceptedBlueprint\:\:getFromUser\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Gaps/Notification/InviteAcceptedBlueprint.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\InviteAcceptedBlueprint\:\:getSubject\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Gaps/Notification/InviteAcceptedBlueprint.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\PostEditedBlueprint\:\:getFromUser\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Gaps/Notification/PostEditedBlueprint.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\PostEditedBlueprint\:\:getSubject\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Gaps/Notification/PostEditedBlueprint.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\TopicLinkedBlueprint\:\:getFromUser\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Gaps/Notification/TopicLinkedBlueprint.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\TopicLinkedBlueprint\:\:getSubject\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Gaps/Notification/TopicLinkedBlueprint.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Discussion\\Discussion\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Gaps/UnreadTags.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Post\\Post\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Links/Api/RecordLinkClickController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Discussion\\Discussion\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Stats/Api/Controller/RecordReadTimeController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Post\\Post\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Stats/Api/Controller/RecordReadTimeController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Discussion\\Discussion\>\:\:whereVisibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Stats/TopicCounter.php
+
+		-
+			message: '#^Parameter \#2 \$callback of method Illuminate\\Database\\Query\\Builder\:\:when\(\) expects \(callable\(Illuminate\\Database\\Query\\Builder, Carbon\\Carbon\)\: Illuminate\\Database\\Eloquent\\Builder\)\|null, Closure\(Illuminate\\Database\\Eloquent\\Builder, mixed\)\: Illuminate\\Database\\Eloquent\\Builder given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Stats/TopicCounter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getQueryGrammar\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Stats/VisitRecorder.php
+
+		-
+			message: '#^Method Lcoy\\Roselle\\Stats\\VisitRecorder\:\:cappedSum\(\) should return Illuminate\\Database\\Query\\Expression but returns Illuminate\\Contracts\\Database\\Query\\Expression\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Stats/VisitRecorder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getSchemaBuilder\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Support/SchemaCache.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:toBase\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/UserSummary/ShowUserSummaryController.php
