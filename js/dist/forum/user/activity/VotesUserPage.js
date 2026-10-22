@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_lcoy_roselle=self.webpackChunk_lcoy_roselle||[]).push([["forum/user/activity/VotesUserPage"],{"./src/forum/user/activity/VotesUserPage.tsx"(e,s,r){r.r(s),r.d(s,{default:()=>l});var t=r("flarum/forum/components/PostsUserPage"),a=r.n(t),o=r("./src/forum/user/activity/install.tsx");class l extends(a()){show(e){(0,o.dZ)("votes",e)||super.show(e)}params(e){return{filter:{canelaVoter:e.slug()}}}}flarum.reg.add("lcoy-roselle","forum/user/activity/VotesUserPage",l)}}]);
+//# sourceMappingURL=VotesUserPage.js.map
