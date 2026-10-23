@@ -1,0 +1,93 @@
+// 后台的社区卡片："关于"文本和指向页面的链接。
+
+textarea.LcoyAdmin-textarea {
+  min-height: 160px;
+  resize: vertical;
+  font-family: var(--font-family-monospace, monospace);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+// "关于"区域的额外页面：每页一行，包含标题、排序箭头
+// 以及下方的标签和图标字段。
+.LcoyAdmin-aboutPagesList {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoyAdmin-aboutPage {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.LcoyAdmin-aboutPageHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.LcoyAdmin-aboutPageIcon {
+  width: 20px;
+  color: var(--muted-color);
+  text-align: center;
+}
+
+.LcoyAdmin-aboutPageTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoyAdmin-aboutPageView {
+  font-size: 12px;
+}
+
+.LcoyAdmin-aboutPageActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+
+  .Button:disabled {
+    opacity: 0.35;
+  }
+}
+
+.LcoyAdmin-aboutPageRemove:hover {
+  color: var(--alert-error-color, #d83e3e);
+}
+
+.LcoyAdmin-aboutPageFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted-color);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.LcoyAdmin-viewLink {
+  margin: 12px 0 0;
+  font-size: 13px;
+
+  .fa-arrow-up-right-from-square {
+    margin-left: 4px;
+    font-size: 11px;
+  }
+}

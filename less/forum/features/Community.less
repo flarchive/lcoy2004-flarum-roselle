@@ -1,0 +1,1018 @@
+// =====================================================================
+// 社区页面：关于（/about）、用户（/u）和分组（/g）。
+// 数值取自 Discourse（about.scss、directory.scss、groups.scss）：h1 标题
+// 为 2em/700，表格带小型灰色表头，行之间以
+// 内容边框分隔。
+// =====================================================================
+
+// 导航位于全局侧边栏：PageStructure 的侧列留空。
+.LcoyCommunityPage .Page-sidebar {
+  display: none;
+}
+
+.LcoyCommunityPage .Page-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+
+// Discourse 以 16px 为基准（Flarum 的正文是 15px），下面的
+// em 数值也基于此。
+.LcoyCommunityPage .Page-container {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+// ---------------------------------------------------------------------
+// 通用部件
+// ---------------------------------------------------------------------
+.LcoyCommunity-empty {
+  margin: var(--lcoy-space-6) 0;
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoyCommunity-more {
+  display: flex;
+  justify-content: center;
+  margin: var(--lcoy-space-4) 0;
+}
+
+// 宽表格在卡片内横向滚动，不撑宽页面。
+.LcoyCommunity-tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.LcoyCommunity-table {
+  width: 100%;
+  margin-top: var(--lcoy-space-1);
+  border-collapse: collapse;
+
+  // `.directory-table__cell`：12px × 8px，下方为表格边框。
+  th,
+  td {
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--lcoy-border);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  // `.directory-table__column-header`：灰色，8px，正常文字。
+  thead th {
+    padding: 8px;
+    color: var(--lcoy-primary-medium);
+    font-size: 1em;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .LcoyCommunity-num {
+    text-align: center;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 用户块（Discourse 的 `user-info`）：48px 头像，1em 间距，
+// 用户名加粗，名称在旁，头衔灰色在下
+// ---------------------------------------------------------------------
+.LcoyUserTile {
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;
+  min-width: 0;
+
+  &-avatar .Avatar {
+    --size: 48px;
+    width: var(--size);
+    height: var(--size);
+    font-size: calc(var(--size) / 2.2);
+    line-height: var(--size);
+  }
+
+  &-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.4;
+  }
+
+  &-name {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5em;
+    min-width: 0;
+    color: var(--lcoy-primary-high);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--lcoy-primary-high);
+      text-decoration: none;
+    }
+  }
+
+  &-username {
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-displayName {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-title,
+  &-meta {
+    color: var(--lcoy-primary-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 关于（about.scss）：标签页，论坛名称 font-up-1，两行之间的
+// 数字横带以及两列（650px / 200px，间距 2em）
+// ---------------------------------------------------------------------
+// 无自身宽度：关于区域占据内容卡片，其宽度跟随
+// 后台的"内容宽度"。
+.LcoyAbout {
+  max-width: none;
+
+  &-header {
+    max-width: none;
+  }
+
+  // 顶部标签页：`.nav-pills`，激活项带 2px 下划线。
+  &-nav {
+    margin-bottom: 2.5em;
+
+    ul {
+      display: flex;
+      gap: 0.5em;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      // 四个标签页在手机端放不下：横向滚动，与 Discourse 一致。
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    li {
+      flex: 0 0 auto;
+    }
+
+    li > a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0.65em 0.75em;
+      border-radius: var(--lcoy-radius);
+      background: transparent;
+      color: var(--lcoy-primary);
+      font-size: 1em;
+      line-height: 1;
+      text-decoration: none;
+      transition: none;
+
+      // 额外标签页的可选图标（fof/pages 的页面）。
+      .Button-icon {
+        margin-right: 0.45em;
+        font-size: 0.9em;
+      }
+
+      &:hover,
+      &[active="true"] {
+        color: var(--lcoy-link);
+        background: transparent;
+        text-decoration: none;
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 0.125em;
+          background: var(--lcoy-link);
+        }
+      }
+    }
+  }
+
+  .LcoyCommunityPage &-title {
+    margin: 0 0 8px;
+    font-size: 1.1487em;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--lcoy-primary);
+  }
+
+  &-description {
+    margin: 1em 0;
+    color: var(--lcoy-primary);
+    font-size: 1em;
+  }
+
+  // 两行之间的数字横带，位于左侧列。
+  &-summary {
+    display: flex;
+    margin: 0 0 1em;
+    padding: 1em;
+    border-top: 1px solid var(--lcoy-border);
+    border-bottom: 1px solid var(--lcoy-border);
+    list-style: none;
+  }
+
+  &-summaryItem {
+    flex: 1 0 fit-content;
+    color: var(--lcoy-primary);
+
+    .icon {
+      margin-right: 3px;
+      color: var(--lcoy-primary);
+    }
+  }
+
+  &-main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+    max-width: none;
+  }
+
+  &-left {
+    flex: 1 1 650px;
+    min-width: 0;
+  }
+
+  &-right {
+    flex: 1 2 200px;
+    min-width: 0;
+  }
+
+  .LcoyCommunityPage &-sectionTitle {
+    margin: 0 0 8px;
+    font-size: 1.1487em;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--lcoy-primary);
+  }
+
+  &-text {
+    margin: 1em 0;
+    font-size: 1em;
+    line-height: 1.4;
+
+    p {
+      margin: 0 0 1em;
+    }
+  }
+
+  &-staff {
+    margin-top: 3em;
+  }
+
+  &-users {
+    display: grid;
+    gap: 1em;
+    grid-template-columns: repeat(auto-fill, minmax(14em, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &-box {
+    margin: 0;
+  }
+
+  &-contactInfo {
+    margin: 1em 0;
+    color: var(--lcoy-primary);
+    word-break: break-word;
+
+    a {
+      color: var(--lcoy-link);
+    }
+  }
+
+  &-activityList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // `.about__activities-item`：1em 图标，使用文字色，距文字 1em。
+  &-activityItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5em;
+  }
+
+  &-activityIcon {
+    flex-shrink: 0;
+    margin-right: 1em;
+    color: var(--lcoy-primary);
+  }
+
+  &-activityText {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-activityCount {
+    color: var(--lcoy-primary);
+  }
+
+  &-activityPeriod {
+    color: var(--lcoy-primary);
+    font-size: 0.7579em;
+  }
+
+  &-statsSection {
+    margin-top: 3em;
+  }
+
+  &-statsTable {
+    tbody th {
+      font-weight: 400;
+      color: var(--lcoy-primary);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      color: var(--lcoy-primary-medium);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  &-statsIcon {
+    width: 1.25em;
+    margin-right: var(--lcoy-space-2);
+    color: var(--lcoy-primary-medium);
+    text-align: center;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 目录（directory.scss）：时间段作为标题在左；总数和
+// 名称筛选在右；表格中有大的灰色数字。悬停时无行
+// 高亮、无过渡——Discourse 没有。
+// ---------------------------------------------------------------------
+.LcoyDirectory-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--lcoy-space-2);
+  margin: 0 0 var(--lcoy-space-2);
+}
+
+// 筛选器在栏中分散：时间段在左，搜索在末尾。
+.LcoyDirectory-filters {
+  display: contents;
+}
+
+.LcoyDirectory-period {
+  order: 0;
+  width: auto;
+  margin-right: auto;
+}
+
+.LcoyUsers .Select:has(> .LcoyDirectory-period) {
+  order: 0;
+  margin-right: auto;
+
+  .Select-caret {
+    color: var(--lcoy-primary);
+  }
+}
+
+.LcoyUsers .LcoyDirectory-period.Select-input {
+  width: auto;
+  height: auto;
+  padding: 0 1.4em 0 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--lcoy-primary);
+  font-size: 1.5157em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.LcoyDirectory-total {
+  order: 1;
+  color: var(--lcoy-primary-medium);
+  font-weight: 400;
+}
+
+.LcoyDirectory-search {
+  position: relative;
+  order: 2;
+  display: block;
+  margin: 0;
+
+  .icon {
+    display: none;
+  }
+
+  .FormControl {
+    width: 210px;
+    max-width: 100%;
+    height: 38px;
+    padding: 8px 0.65em;
+    border-radius: var(--lcoy-radius);
+  }
+}
+
+.LcoyDirectory-table {
+  // 手机端横向滚动表格时，用户列保持不动。
+  .LcoyDirectory-userCol {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 200px;
+    background: var(--lcoy-surface);
+  }
+
+  thead .LcoyDirectory-userCol {
+    z-index: 2;
+  }
+
+  // 正在浏览者的行（`.me`）：Discourse 的黄色高亮。
+  tbody tr.is-me td {
+    background: ~"color-mix(in srgb, var(--lcoy-highlight) 35%, var(--lcoy-surface))";
+  }
+}
+
+.LcoyDirectory-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lcoy-space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+  }
+
+  &.is-static {
+    cursor: default;
+
+    &:hover {
+      color: inherit;
+    }
+  }
+
+  th.is-sorted & {
+    color: var(--lcoy-primary);
+  }
+}
+
+// 点赞列的心形，使用 `--love` 颜色。
+.LcoyDirectory-columnIcon {
+  color: var(--lcoy-love);
+  font-size: 0.8706em;
+}
+
+.LcoyDirectory-sortIcon {
+  font-size: 0.75em;
+}
+
+// Discourse 的大号灰色数字，仅在表格有空间时。
+.LcoyDirectory-value {
+  color: var(--lcoy-primary-medium);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media @tablet-up {
+  .LcoyUsers .LcoyDirectory-value {
+    font-size: 1.3195em;
+  }
+}
+
+// 分组页中数值为文字大小、文字颜色，且
+// 时间段不显示（Discourse 在那里只有名称筛选）。
+.LcoyGroup .LcoyDirectory-value {
+  color: var(--lcoy-primary);
+}
+
+.LcoyGroup .Select:has(> .LcoyDirectory-period) {
+  display: none;
+}
+
+// ---------------------------------------------------------------------
+// 分组（groups.scss）：16em 网格中的 `group-box`，40px 圆形 flair
+// ---------------------------------------------------------------------
+.LcoyGroupFlair {
+  --flair-size: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--flair-size);
+  height: var(--flair-size);
+  border-radius: 50%;
+  background: var(--lcoy-primary-low);
+  color: var(--lcoy-primary);
+  font-size: calc(var(--flair-size) * 0.5556);
+  font-weight: 700;
+
+  &--colored {
+    background: var(--group-color);
+    color: #fff;
+  }
+
+  &--large {
+    --flair-size: 50px;
+  }
+}
+
+.LcoyGroups-header {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1em;
+}
+
+.LcoyGroups-filter.FormControl {
+  width: 210px;
+  height: 38px;
+  margin: 0 0.5em 0.5em 0;
+  padding: 8px 0.65em;
+  border-radius: var(--lcoy-radius);
+}
+
+.LcoyGroups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16em, 1fr));
+  gap: 1em;
+  width: 100%;
+  margin: 1em 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoyGroups-item {
+  display: flex;
+  min-width: 0;
+}
+
+// 无过渡：边框立即变暗，与 Discourse 一致。
+.LcoyGroupCard {
+  display: flex;
+  flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--lcoy-primary-low-mid);
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 8em;
+    padding: 1em;
+  }
+
+  &-infoWrapper {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    min-height: 40px;
+    margin-bottom: 0.25em;
+    overflow: hidden;
+
+    .LcoyGroupFlair {
+      margin-right: 0.5em;
+    }
+  }
+
+  &-info {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  &-details {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  &-name {
+    font-size: 1.5157em;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  &-mention {
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  &-count {
+    display: flex;
+    align-items: center;
+    flex: none;
+    color: var(--lcoy-primary-high);
+
+    .icon {
+      margin-right: 0.25em;
+      font-size: 0.8em;
+      color: var(--lcoy-primary-medium);
+    }
+  }
+
+  &-membership {
+    margin-top: auto;
+    padding-top: 1em;
+    color: var(--lcoy-primary-medium);
+  }
+}
+
+// `group-details-container`：带边框的盒子，50px flair 和名称。
+.LcoyGroup {
+  &-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 1em;
+    padding: 16px;
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
+  }
+
+  &-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  &-headerInfo {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .LcoyCommunityPage &-name {
+    margin: 0;
+    font-size: 1.5157em;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--lcoy-primary);
+  }
+
+  &-mention {
+    margin-bottom: 0.5em;
+    color: var(--lcoy-primary);
+  }
+
+  // 标签页如 `.group-nav`（nav-pills）：激活项 2px 下划线；只有
+  // 图标有过渡（颜色，0.2s）。
+  &-tabs {
+    margin-bottom: 1em;
+    border-bottom: 1px solid var(--lcoy-border);
+
+    ul {
+      display: flex;
+      gap: 0.5em;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      display: flex;
+      flex: 1 1 auto;
+    }
+  }
+
+  &-tab.Button {
+    position: relative;
+    justify-content: center;
+    width: 100%;
+    min-height: 30px;
+    padding: 0.65em 0.75em;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--lcoy-primary);
+    font-size: 1em;
+    font-weight: 400;
+    line-height: 1;
+    transition: none;
+
+    .Button-icon {
+      margin-right: 5px;
+      color: var(--lcoy-primary-high);
+      font-size: 0.8706em;
+      transition: color 0.2s;
+    }
+
+    &:hover,
+    &.active {
+      background: transparent;
+      color: var(--lcoy-link);
+
+      .Button-icon {
+        color: var(--lcoy-link);
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 0.125em;
+        background: var(--lcoy-link);
+      }
+    }
+  }
+
+  &-tabCount {
+    margin-left: 5px;
+  }
+
+  &-body {
+    margin-top: 0;
+  }
+}
+
+// Discourse 的活动"流"（`user-stream-item`）：48px 头像，
+// 话题标题作为链接，作者和日期在下方，摘要缩进 56px。
+.LcoyStream {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &-item {
+    padding: 16px 0.53em;
+    border-bottom: 1px solid var(--lcoy-border);
+  }
+
+  &-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  &-avatar .Avatar {
+    --size: 48px;
+    width: var(--size);
+    height: var(--size);
+    font-size: calc(var(--size) / 2.2);
+    line-height: var(--size);
+  }
+
+  &-titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &-topic {
+    color: var(--lcoy-link);
+    font-size: 1em;
+    font-weight: 400;
+    line-height: 1.4;
+
+    &:hover {
+      color: var(--lcoy-link);
+      text-decoration: underline;
+    }
+  }
+
+  &-meta {
+    display: flex;
+    gap: var(--lcoy-space-2);
+    color: var(--lcoy-primary-medium);
+    font-size: 0.8706em;
+
+    a {
+      color: var(--lcoy-primary-medium);
+    }
+  }
+
+  &-excerpt {
+    margin: 12px 0 0 56px;
+    color: var(--lcoy-primary);
+    line-height: 1.4;
+    word-break: break-word;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机端
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyAbout-summary {
+    flex-direction: column;
+  }
+
+  .LcoyAbout-summaryItem {
+    margin-bottom: 1em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .LcoyDirectory-controls,
+  .LcoyDirectory-filters,
+  .LcoyDirectory-search,
+  .LcoyDirectory-search .FormControl {
+    width: 100%;
+  }
+
+  .LcoyDirectory-table .LcoyDirectory-userCol {
+    min-width: 160px;
+  }
+
+  .LcoyStream-excerpt {
+    margin-left: 0;
+  }
+
+}
+
+
+// 指南作为规则页：分节索引以胶囊（锚点）呈现，
+// 每节一张卡片，规则（列表项）编号并在悬停时
+// 高亮。占据页面卡片的整个宽度。
+.LcoyGuidelines .LcoyRules {
+  max-width: none;
+  margin: 0;
+  // 上方无间距：标签页本身已有外边距。
+  padding: 0 0 var(--lcoy-space-6, 32px);
+  line-height: 1.55;
+}
+
+// 页面标题单独位于索引上方，与主题的其他页面
+// （分类、徽章）一致：无盒子且左对齐。
+.LcoyCommunityPage .LcoyRules-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+  text-align: left;
+}
+
+.LcoyRules-intro {
+  margin: 0 0 1.25rem;
+  color: var(--lcoy-primary-medium);
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.LcoyRules-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+
+  a {
+    padding: 6px 14px;
+    border: 1px solid ~"color-mix(in oklch, var(--lcoy-accent) 45%, transparent)";
+    border-radius: 999px;
+    color: var(--lcoy-accent);
+    font-size: var(--lcoy-font-down-1);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.15s, color 0.15s;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-accent);
+      color: var(--lcoy-secondary, #fff);
+      text-decoration: none;
+    }
+  }
+}
+
+.LcoyRules-card {
+  margin-bottom: 1.125rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius-large, 12px);
+  background: var(--lcoy-surface);
+  scroll-margin-top: calc(var(--lcoy-header-height, 52px) + 16px);
+}
+
+.LcoyRules-sectionTitle {
+  margin: 0 0 0.75rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--lcoy-primary);
+}
+
+.LcoyRules-body {
+  color: var(--lcoy-primary-high);
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  // 每个列表项是一条规则：数字在小方块中，文字在旁。
+  .LcoyRules-list {
+    margin: 0.75rem 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .LcoyRules-rule {
+    position: relative;
+    margin: 0 0 0.625rem;
+    padding: 0.75rem 0.875rem 0.75rem 3.25rem;
+    border: 1px solid var(--lcoy-border);
+    border-radius: 10px;
+    background: var(--lcoy-primary-very-low);
+    transition: border-color 0.18s, transform 0.18s;
+
+    &::before {
+      content: attr(data-n);
+      position: absolute;
+      top: 0.6rem;
+      left: 0.75rem;
+      display: grid;
+      place-items: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 8px;
+      background: ~"color-mix(in oklch, var(--lcoy-accent) 14%, transparent)";
+      color: var(--lcoy-accent);
+      font-size: var(--lcoy-font-down-1);
+      font-weight: 700;
+    }
+
+    &:hover {
+      border-color: var(--lcoy-accent);
+      transform: translateY(-1px);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media @phone {
+  .LcoyRules-card {
+    padding: 1rem;
+  }
+
+  .LcoyCommunityPage .LcoyRules-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LcoyRules-body .LcoyRules-rule {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// 指南加载中（RulesPage.skeleton）：目录胶囊使用
+// 中性边框，不带真实链接的链接色。
+.LcoyRules--loading .LcoyRules-toc a {
+  border-color: var(--lcoy-border);
+  pointer-events: none;
+}

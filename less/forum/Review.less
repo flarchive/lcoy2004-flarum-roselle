@@ -1,0 +1,427 @@
+// =====================================================================
+// "审核"（/flags）：Discourse 的审核队列（reviewables.scss），
+// 位于主题卡片内。每个 `.reviewable-item` 位于
+// primary-very-low 背景上，包含胶囊形式的类型、话题、帖子和操作。
+// =====================================================================
+
+.LcoyReview {
+  width: 100%;
+  min-width: 0;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-0);
+}
+
+.LcoyReview-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: var(--lcoy-space-4);
+}
+
+.LcoyReview-title {
+  margin: 0;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-3);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+// 筛选器与通知页的标签页一致（激活项带下划线）。
+.LcoyReview-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    height: 38px;
+    padding: 0 0.65em;
+    border: 0;
+    border-radius: var(--lcoy-radius);
+    background: transparent;
+    color: var(--lcoy-primary);
+    font: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 0.125em;
+      background: transparent;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-hover);
+    }
+  }
+
+  .active button {
+    color: var(--lcoy-link);
+
+    &::after {
+      background: var(--lcoy-accent);
+    }
+  }
+}
+
+.LcoyReview-filterCount {
+  min-width: 1.4em;
+  padding: 0.1em 0.4em;
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-primary-low);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-2);
+  text-align: center;
+}
+
+.LcoyReview-empty {
+  padding: var(--lcoy-space-8) 0;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-up-1);
+  text-align: center;
+}
+
+.LcoyReview-more {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 4px;
+}
+
+// ---------------------------------------------------------------------
+// 条目
+// ---------------------------------------------------------------------
+
+.LcoyReview .reviewable-item {
+  margin: 0 0 var(--lcoy-space-6);
+  padding: 1.5rem 1.5rem 1em;
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-very-low);
+  transition: opacity 0.2s;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.is-busy {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  @media @phone {
+    padding: 1em;
+  }
+}
+
+.LcoyReview .reviewable-meta-data {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 0.5em;
+  width: 100%;
+  margin-bottom: 0.75em;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+
+  .reviewable-type {
+    padding: 0.25em 0.5em;
+    border-radius: 8px;
+    background: var(--lcoy-primary-high);
+    color: var(--lcoy-secondary);
+    font-size: var(--lcoy-font-down-2);
+    text-transform: uppercase;
+  }
+
+  .created-at {
+    margin-left: 0.5em;
+    margin-right: auto;
+
+    a {
+      color: var(--lcoy-primary-medium);
+    }
+  }
+
+  .reviewable-status {
+    color: var(--lcoy-primary-high);
+    font-weight: 600;
+  }
+}
+
+.reviewable-queued-post .reviewable-meta-data .reviewable-type {
+  background: var(--lcoy-accent);
+}
+
+.LcoyReview-reasons {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+
+.LcoyReview .reviewable-score-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.15em 0.5em;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-1);
+
+  .icon {
+    color: var(--lcoy-danger);
+  }
+}
+
+.LcoyReview-reasonCount {
+  font-weight: 700;
+}
+
+.LcoyReview .post-topic {
+  width: 100%;
+  margin-bottom: 0.75em;
+  color: var(--lcoy-primary-medium);
+
+  .title-text {
+    display: block;
+    margin-bottom: 0.25em;
+    color: var(--lcoy-primary);
+    font-size: var(--lcoy-font-up-2);
+    font-weight: 700;
+    line-height: 1.3;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      color: var(--lcoy-link);
+    }
+  }
+}
+
+.LcoyReview .post-contents-wrapper {
+  display: flex;
+  gap: 1em;
+  width: 100%;
+  margin-top: 1em;
+  word-break: break-word;
+
+  .created-by {
+    flex: 0 0 auto;
+    padding-top: 0.35em;
+
+    .Avatar {
+      --size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  @media @phone {
+    .created-by .Avatar {
+      --size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+}
+
+.LcoyReview .post-contents {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.LcoyReview .post-information {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em 0.75em;
+
+  .username {
+    color: var(--lcoy-primary-high);
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
+
+.LcoyReview-hiddenLabel,
+.LcoyReview-postLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyReview-postLink {
+  margin-left: auto;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--lcoy-link);
+  }
+}
+
+.LcoyReview .post-body {
+  position: relative;
+  margin-top: 0.5em;
+  color: var(--lcoy-primary);
+  line-height: 1.5;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  pre,
+  code {
+    word-break: break-all;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  &.is-collapsed {
+    max-height: 50vh;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 25%;
+      background: linear-gradient(to bottom, transparent, var(--lcoy-primary-very-low));
+    }
+  }
+}
+
+.reviewable-item.is-hidden .post-body {
+  opacity: 0.6;
+}
+
+.LcoyReview .post-body__toggle-btn.Button {
+  display: flex;
+  margin: 0.5em auto 0;
+  font-size: var(--lcoy-font-down-1);
+}
+
+// 举报者：Discourse 的评分表，但不含分数。
+.LcoyReview .reviewable-scores {
+  margin-top: 1rem;
+  overflow-x: auto;
+  color: var(--lcoy-primary-high);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    padding: 0.5em;
+    border-bottom: 1px solid var(--lcoy-border);
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+    font-weight: 400;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.5em;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .reviewable-score + .reviewable-score td,
+  .reviewable-score-detail + .reviewable-score td {
+    border-top: 1px solid var(--lcoy-border);
+  }
+
+  .user a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    max-width: 200px;
+    color: var(--lcoy-primary-high);
+    text-decoration: none;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .Avatar {
+      --size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .LcoyReview-reason .icon {
+    margin-right: 0.35em;
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  .LcoyReview-when {
+    color: var(--lcoy-primary-medium);
+  }
+
+  // 手机端表格能容纳在宽度内：文字换行而不横向滚动。
+  @media @phone {
+    th,
+    td {
+      padding: 0.4em 0.25em;
+      white-space: normal;
+    }
+
+    .user a {
+      max-width: 120px;
+    }
+  }
+
+  .reviewable-score-detail td {
+    padding-top: 0;
+    white-space: normal;
+  }
+
+  blockquote {
+    margin: 0;
+    padding: 0.5em 0.75em;
+    border-left: 3px solid var(--lcoy-primary-low);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+    overflow-wrap: anywhere;
+  }
+}
+
+.LcoyReview .reviewable-score-reason {
+  margin: 1em 0 0;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyReview .reviewable-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+
+  .Button {
+    white-space: nowrap;
+  }
+}

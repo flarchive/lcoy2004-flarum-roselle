@@ -1,0 +1,109 @@
+// =====================================================================
+// 基础：字体排版、文字颜色和页面背景。
+// =====================================================================
+
+// 页面背景使用 Flarum 的（`--body-bg`，来自配色方案）：主题
+// 不在内容背后绘制任何东西，因此管理员自定义的 CSS（例如固定
+// 图片）会按原样出现在背景中。这正是后台的"着色
+// 背景"不再绘制页面渐变的原因——它只对装饰性
+// 部件（.LcoyBackdrop）和卡片边框生效。
+body {
+  font-family: var(--lcoy-font);
+  // 16px，行高 1.4，与 Discourse 的 body 一致。
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Meta 上浮在内容背后的彩色模糊色块
+// （.meta-bg-icons）：位置、旋转、缩放、模糊和不透明度都相同。
+// 它们位于一切之后，且从不响应点击。
+.LcoyBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+
+  .Lcoy:not(.Lcoy--tinted) ~ & {
+    display: none;
+  }
+
+  @media @phone {
+    display: none;
+  }
+}
+
+.LcoyBackdrop-tile {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 15%;
+  background: var(--tile-bg);
+  color: var(--tile-fg, #fffef5);
+  font-size: 24px;
+  opacity: 0.4;
+  filter: blur(4px);
+
+  &--plane { top: 500px; right: -5px; --tile-bg: #28abe2; transform: rotate(25deg); }
+  &--chat { top: 300px; left: 245px; --tile-bg: var(--lcoy-accent); transform: rotate(-30deg); }
+  &--quote { top: 60px; left: 280px; --tile-bg: #fff470; --tile-fg: #6740a5; transform: rotate(190deg) scale(2); }
+  &--bell { top: 100px; right: 0; --tile-bg: #0ca64e; transform: rotate(-20deg) scale(1.5); }
+  &--sparkles { top: 1000px; right: -97px; --tile-bg: #f15d22; transform: rotate(20deg) scale(2); }
+  &--reactions { top: 850px; left: 180px; --tile-bg: #d5342a; transform: rotate(20deg); }
+}
+
+.Lcoy {
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--lcoy-primary);
+    font-family: var(--lcoy-font);
+  }
+
+  // 文本框和按钮继承主题字体，而非系统字体。
+  button, input, select, textarea {
+    font-family: inherit;
+  }
+
+  ::selection {
+    background: var(--lcoy-selected);
+  }
+
+  // 与 Discourse 一致：轮廓细线位于元素内部；按钮没有
+  // 轮廓——它们的焦点是悬停背景（Components.less）。
+  :focus-visible {
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: -1px;
+  }
+
+  .Button:focus-visible,
+  button:focus-visible {
+    outline: none;
+  }
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--lcoy-primary-300);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary-high);
+  font-family: var(--lcoy-font);
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.4;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+// 细滚动条，使用选中色，与 Horizon 一致。
+.Lcoy, .LcoySidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--lcoy-selected) transparent;
+}
