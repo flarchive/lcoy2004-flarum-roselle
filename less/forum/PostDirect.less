@@ -1,0 +1,143 @@
+// ---------------------------------------------------------------------
+// "带时间线"的帖子样式（lcoy.post_style = direct）：
+// Discourse 的帖子原样保留（相同页头、相同操作栏、相同
+// 表情回应），只有一处不同——Avocado 主题的垂直时间线
+// 连接各头像。
+//
+// 由 #app 上的 `Lcoy--postDirect` 类启用（PreBootShell 在首次绘制前
+// 加上它；topic/postStyle.tsx 在挂载时确认）；没有它，
+// 这里的一切都不匹配。
+//
+// - 线条沿头像列的中心向下；每个头像成为其上的一个节点
+// （带与卡片同色的环），它穿过事件帖并经过其图标，
+// 而每个时间间隔（"一个月后"）
+// 都会在其上获得一个圆圈。
+// - 在最佳答案的绿色卡片（fof/best-answer）上它会消失：卡片内缩
+// 并有边框，线条进出它时会偏离轴线。
+// - 仅从平板起生效，此时头像位于独立的列中。在
+// 手机端头像位于页头，文字占满整个宽度：那里的线条
+// 会从文字上方经过。
+//
+// 线条按帖子绘制（在 .Post 的 ::before 上，核心中它只是
+// clearfix；负责清除浮动的 ::after 仍然保留），以便从第一个帖子的头像
+// 开始，到最后一个帖子的头像结束，而不穿过话题结尾。
+// ---------------------------------------------------------------------
+@media @tablet-up {
+  .Lcoy--postDirect {
+    // 头像列的中心（45px），与事件帖图标的轴线相同；
+    // 48px 的头像居中其上（见下）。
+    --lcoy-direct-spine: ~"calc(var(--lcoy-post-avatar, 45px) / 2)";
+    // 从 .Post 顶部到头像中心：上内边距（13px）+ 半个头像。
+    --lcoy-direct-node: 37px;
+    --lcoy-direct-line: var(--lcoy-primary-low);
+    // 节点周围的环：使用卡片颜色，让线条看起来从它们
+    // 背后穿过。没有卡片时背景是渐变，环会消失。
+    --lcoy-direct-ring: var(--lcoy-surface);
+  }
+
+  .Lcoy--postDirect:not(.Lcoy--card) {
+    --lcoy-direct-ring: transparent;
+  }
+
+  .Lcoy--postDirect .LcoyTopic {
+    .PostStream-item > .CommentPost::before,
+    .PostStream-item > .EventPost::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: ~"calc(var(--lcoy-direct-spine) - 1px)";
+      width: 2px;
+      background: var(--lcoy-direct-line);
+      pointer-events: none;
+    }
+
+    // 从第一个帖子的头像开始……
+    .PostStream-item[data-number="1"] > .CommentPost::before {
+      top: var(--lcoy-direct-node);
+    }
+
+    // ……并在已加载的最后一个帖子的头像处结束。
+    .PostStream-item:not(:has(~ .PostStream-item > :is(.CommentPost, .EventPost))) > .CommentPost::before {
+      bottom: auto;
+      height: var(--lcoy-direct-node);
+    }
+
+    // 末尾的事件帖：线条止于其图标的中心。
+    .PostStream-item:not(:has(~ .PostStream-item > :is(.CommentPost, .EventPost))) > .EventPost::before {
+      bottom: auto;
+      height: 14px;
+    }
+
+    // 编辑器预览不会延续线条，最佳答案卡片也不会：上下
+    // 两个帖子的线条仍沿同一轴线延伸。
+    .PostStream-item > .CommentPost.editing::before,
+    .PostStream-item > .CommentPost.LcoyPost--solution::before {
+      content: none;
+    }
+
+    // 头像在列（和线条）中居中，而非贴在其边缘。
+    .LcoyPostAvatar {
+      margin-left: ~"calc((var(--lcoy-post-avatar, 45px) - 48px) / 2)";
+    }
+
+    // 节点：带与背景同色环的头像。
+    .Post-side .Post-avatar {
+      box-shadow: 0 0 0 4px var(--lcoy-direct-ring);
+    }
+
+    // 仍在加载的帖子（LoadingPost，它同样是 .CommentPost 并
+    // 获得同一条线）：骨架头像与真实头像一样是一个节点，
+    // 居中于轴线上，带环并位于线条之上（线条是绝对定位，
+    // 若没有 z-index 会覆盖圆圈）。在最后一个骨架上，线条
+    // 按上面的"最后一个帖子"规则止于其中心。
+    .LoadingPost .Post-header .PostUser-avatar {
+      position: relative;
+      z-index: 1;
+      margin-left: ~"calc((var(--lcoy-post-avatar, 45px) - 48px) / 2)";
+      box-shadow: 0 0 0 4px var(--lcoy-direct-ring);
+    }
+
+    // 时间间隔：经过它的一段线条以及其上的一个圆圈；
+    // 文字保持在原位。
+    .PostStream-timeGap {
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: ~"calc(var(--lcoy-direct-spine) - 1px)";
+        width: 2px;
+        background: var(--lcoy-direct-line);
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: ~"calc(var(--lcoy-direct-spine) - 6px)";
+        width: 12px;
+        height: 12px;
+        box-sizing: border-box;
+        border: 2px solid var(--lcoy-primary-low-mid);
+        border-radius: 50%;
+        background: var(--lcoy-surface);
+        box-shadow: 0 0 0 3px var(--lcoy-direct-ring);
+        transform: translateY(-50%);
+      }
+    }
+  }
+}
+
+// 在线状态与时间线叠加时：who's online 的绿色环在内部，
+// 卡片颜色的环（截断线条）在外部。
+.Lcoy--postDirect .LcoyTopic .LcoyPostAvatar--online .Post-avatar {
+  box-shadow:
+    0 0 0 1px var(--lcoy-surface),
+    0 0 0 3px var(--online-user-circle-color, var(--lcoy-success)),
+    0 0 0 6px var(--lcoy-direct-ring, var(--lcoy-surface));
+}
