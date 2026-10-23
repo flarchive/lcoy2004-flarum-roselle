@@ -1,0 +1,735 @@
+// =====================================================================
+// 搜索
+//
+// 1. Discourse 的搜索菜单（`.search-menu`，js/src/forum/search）：
+// 页头字段就是搜索输入框本身，面板
+// （`.search-menu-panel`）紧贴其下方展开，宽度相同
+// （550px），下落式（float-down），没有弹窗和暗色遮罩。尺寸和
+// 颜色取自 Meta 编译后的 CSS（`.search-menu`、`.search-input`、
+// `.search-link`、`.search-result-*`、`.search-random-quick-tip`、
+// `.searching`），替换为 `--lcoy-*` 令牌。全部位于
+// `.LcoySearchMenu` 内：Discourse 的类（`.results`、`.list`、
+// `.item`、`.topic`）过于通用，不适合裸露在外。
+// 2. 列表中的结果（`/?q=`），标题下方为摘要。
+// 3. 核心的 SearchModal，仍可能被其他扩展打开。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 1. 搜索菜单
+// ---------------------------------------------------------------------
+@keyframes lcoy-search-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.LcoySearchMenu {
+  // Discourse 的 `--search-result-element-padding` 和 `--shadow-dropdown`。
+  --lcoy-search-pad-y: 8px;
+  --lcoy-search-pad-x: 16px;
+  --lcoy-search-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  // 手机端的放大镜和关闭输入框的 X。
+  .LcoySearchMenu-toggle,
+  .LcoySearchMenu-cancel {
+    display: none;
+  }
+
+  .search-menu-container {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  // 字段（`.search-input--header`）：Horizon 的 38px 胶囊，左侧放大镜，
+  // 右侧是清除 X 和滑块控件。
+  .search-input {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    min-width: 0;
+    height: 38px;
+    padding: 0 0 0 40px;
+    box-sizing: border-box;
+    border: 1px solid var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius-pill);
+    background: var(--lcoy-surface);
+    cursor: text;
+
+    // `.search-input:focus-within`：焦点色的边框和 2px 轮廓。
+    &:focus-within {
+      border-color: var(--lcoy-accent);
+      outline: none;
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    display: flex;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--lcoy-primary-very-high);
+
+    .LcoyIcon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  input.search-term__input {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0 0.5em 0 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    outline: none;
+    color: var(--lcoy-primary);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.4;
+    -webkit-appearance: none;
+    appearance: none;
+
+    &::placeholder {
+      color: var(--lcoy-placeholder);
+      opacity: 1;
+    }
+
+    // `type=search` 自带的 X 被隐藏：Discourse 有自己的（`.clear-search`）。
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+      display: none;
+    }
+  }
+
+  .searching {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    height: 100%;
+
+    .spinner {
+      box-sizing: border-box;
+      width: 12px;
+      height: 12px;
+      margin: 0 0.65em 0 0;
+      border: 2px solid var(--lcoy-primary-low-mid);
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: lcoy-search-spin 1s infinite linear;
+    }
+  }
+
+  .clear-search,
+  .show-advanced-search {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--lcoy-primary-medium);
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--lcoy-primary-high);
+    }
+  }
+
+  .clear-search {
+    padding-inline: var(--lcoy-space-2);
+
+    .icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .show-advanced-search {
+    width: 36.8px;
+    border-radius: 0 var(--lcoy-radius-pill) var(--lcoy-radius-pill) 0;
+
+    .LcoyIcon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  // ---- 面板（`.menu-panel.drop-down.search-menu-panel`） -----------
+  .menu-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    max-height: ~"calc(100vh - var(--lcoy-header-height, 52px))";
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+    box-shadow: var(--lcoy-search-shadow);
+    text-align: left;
+    animation: lcoy-float-down 250ms ease forwards;
+  }
+
+  .panel-body {
+    display: flex;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  // 仅纵向滚动，使用细滚动条；侧面不会溢出。
+  .panel-body-contents {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--lcoy-primary-low-mid) transparent;
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: var(--lcoy-radius);
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .no-results {
+    padding: var(--lcoy-space-2) var(--lcoy-search-pad-x) var(--lcoy-space-3);
+    color: var(--lcoy-primary);
+  }
+
+  // ---- 行（`.search-link`） --------------------------------------
+  .search-link {
+    display: block;
+    padding: var(--lcoy-search-pad-y) var(--lcoy-search-pad-x);
+    color: var(--lcoy-link);
+    text-decoration: none;
+    outline: none;
+    overflow-wrap: anywhere;
+
+    &:hover,
+    &:focus {
+      background-color: var(--lcoy-hover);
+      text-decoration: none;
+    }
+
+    .icon {
+      color: var(--lcoy-primary-medium);
+    }
+
+    .search-item-slug,
+    .keyword {
+      color: var(--lcoy-primary);
+    }
+  }
+
+  .search-link.category,
+  .search-link.user,
+  .search-link.tag,
+  .search-menu-initial-options .search-link,
+  .search-result-tag .search-link,
+  .search-result-user .search-link,
+  .search-result-category .search-link {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--lcoy-space-2);
+  }
+
+  .search-icon-wrapper {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: var(--lcoy-primary-medium);
+  }
+
+  .search-item-wrapper {
+    min-width: 0;
+  }
+
+  .label-suffix {
+    color: var(--lcoy-primary-medium);
+  }
+
+  .extra-hint {
+    color: var(--lcoy-primary-low-mid);
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  .search-item-slug {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .search-item-tag {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--lcoy-space-2);
+    color: var(--lcoy-primary-high);
+
+    .icon,
+    .LcoyTagSymbol {
+      align-self: center;
+    }
+  }
+
+  // Flarum 标签的图标，有颜色时使用其标签色。
+  .LcoyTagSymbol {
+    display: inline-flex;
+    color: var(--tag-color, inherit);
+
+    .icon {
+      color: inherit;
+    }
+  }
+
+  .search-item-user {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--lcoy-space-1);
+
+    .Avatar {
+      --size: 20px;
+      align-self: center;
+    }
+
+    .user-titles {
+      display: inline-flex;
+    }
+  }
+
+  // 分组之间的分隔线。
+  .search-menu-initial-options + .search-result-tag,
+  .search-menu-initial-options + .search-result-category,
+  .search-menu-initial-options + .search-result-user,
+  .search-result-category + .search-result-user,
+  .search-result-tag + .search-result-user,
+  .search-menu-initial-options .search-menu-recent {
+    border-top: 1px solid var(--lcoy-border);
+  }
+
+  // ---- 最近搜索 ----------------------------------------------
+  .search-menu-recent {
+    .search-icon-wrapper {
+      font-size: var(--lcoy-font-down-1);
+    }
+  }
+
+  .clear-recent-searches {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    padding: var(--lcoy-space-1) var(--lcoy-search-pad-x);
+    border: 0;
+    background: transparent;
+    color: var(--lcoy-link);
+    font-family: inherit;
+    font-size: var(--lcoy-font-down-1);
+    line-height: 1.5;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--lcoy-hover);
+      outline: none;
+    }
+  }
+
+  // ---- 随机提示 -----------------------------------------------
+  .search-random-quick-tip {
+    padding: var(--lcoy-space-3) var(--lcoy-search-pad-x);
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-2);
+
+    .tip-label {
+      display: inline-block;
+      margin-right: var(--lcoy-space-1);
+      padding: 2px 4px;
+      border: none;
+      border-radius: 0;
+      background-color: ~"color-mix(in srgb, var(--lcoy-link) 10%, transparent)";
+      color: inherit;
+      font: inherit;
+      line-height: inherit;
+      cursor: default;
+
+      &.tip-clickable {
+        cursor: pointer;
+      }
+
+      kbd {
+        padding: 0 0.3em;
+        border: 1px solid var(--lcoy-primary-low);
+        border-radius: 3px;
+        background: var(--lcoy-surface);
+        box-shadow: 0 1px 0 var(--lcoy-primary-low);
+        color: var(--lcoy-primary-high);
+        font-family: inherit;
+        font-size: inherit;
+      }
+    }
+  }
+
+  // ---- 话题（`.search-result-topic`） -----------------------------
+  .search-result-topic .list {
+    min-width: 100px;
+  }
+
+  .search-result-topic .search-link {
+    padding-block: var(--lcoy-space-2);
+  }
+
+  .topic {
+    display: block;
+  }
+
+  .first-line {
+    display: block;
+    line-height: 1.2;
+  }
+
+  .topic-title {
+    color: var(--lcoy-link);
+    font-size: 1.1487rem;
+    overflow-wrap: anywhere;
+  }
+
+  // 状态图标：小尺寸、灰色，紧贴标题。
+  .topic-statuses {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: 0.05em;
+
+    .topic-status {
+      display: inline-flex;
+      margin-right: 0.2em;
+      color: var(--lcoy-primary-medium);
+    }
+
+    .icon {
+      width: 1em;
+      height: 1em;
+      font-size: var(--lcoy-font-down-1);
+      color: inherit;
+    }
+  }
+
+  .second-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--lcoy-space-2);
+    margin-top: 2px;
+    font-size: var(--lcoy-font-down-1);
+
+    &:empty {
+      display: none;
+    }
+
+    .LcoyCategoryBadge,
+    .LcoyTagBadge {
+      font-size: inherit;
+    }
+  }
+
+  .blurb {
+    display: block;
+    margin-top: 2px;
+    color: var(--lcoy-primary-high);
+    font-size: var(--lcoy-font-down-1);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  // 加粗的搜索词（`.search-highlight`），不带 <mark> 的背景。
+  mark {
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-weight: 700;
+  }
+
+  .search-menu__show-more .filter {
+    color: var(--lcoy-link);
+  }
+
+  // ---- 用户、分类和标签 ----------------------------
+  .search-result-user .Avatar,
+  .search-link.user .Avatar {
+    --size: 24px;
+    flex-shrink: 0;
+  }
+
+  .user-titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.2;
+    color: var(--lcoy-primary-high);
+
+    .name {
+      font-weight: 700;
+    }
+
+    .name,
+    .username {
+      color: var(--lcoy-primary-high);
+    }
+  }
+
+  .search-result-category .LcoyCategoryBadge,
+  .search-menu-assistant .LcoyCategoryBadge {
+    gap: var(--lcoy-space-2);
+    font-size: var(--lcoy-font-0);
+  }
+
+  .discourse-tag {
+    color: var(--lcoy-primary-high);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LcoySearchMenu .menu-panel {
+    animation-duration: 0s;
+  }
+}
+
+// 欢迎横幅：同样的搜索，字段 42px、圆角 8px，
+// 与 `.welcome-banner .search-input` 一致。
+.LcoySearchMenu--welcome {
+  .search-input {
+    height: 42px;
+    padding-left: 42px;
+    border-radius: var(--lcoy-radius);
+  }
+
+  .search-icon {
+    left: 16px;
+    color: var(--lcoy-primary-medium);
+  }
+
+  .show-advanced-search {
+    border-radius: 0 var(--lcoy-radius) var(--lcoy-radius) 0;
+  }
+
+  .menu-panel {
+    top: ~"calc(100% + 4px)";
+  }
+}
+
+// 手机端：页头只显示放大镜。展开后，字段覆盖页头
+// （`.search-menu.glimmer-search-menu .search-input-wrapper` 固定在顶部），
+// 面板占据其下方的屏幕。
+@media @phone {
+  .Lcoy .LcoyHeader-search {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .LcoySearchMenu--header {
+    width: auto;
+
+    .LcoySearchMenu-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.55rem;
+      height: 2.55rem;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: var(--lcoy-radius-pill);
+      background: transparent !important;
+      box-shadow: none !important;
+      color: var(--lcoy-shell-icon);
+
+      .LcoyIcon {
+        width: 24px;
+        height: 24px;
+      }
+
+      &:hover,
+      &:focus-visible {
+        color: var(--lcoy-primary);
+      }
+    }
+
+    &:not(.LcoySearchMenu--open) .search-menu-container {
+      display: none;
+    }
+
+    .search-input-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1001;
+      box-sizing: border-box;
+      height: var(--lcoy-header-height, 52px);
+      padding: 7px 0.35rem 7px var(--lcoy-space-4);
+      gap: var(--lcoy-space-1);
+      background: var(--lcoy-surface);
+    }
+
+    .search-input {
+      height: 38px;
+    }
+
+    .LcoySearchMenu-cancel {
+      position: absolute;
+      right: ~"calc(-1 * (2.4rem + var(--lcoy-space-1)))";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--lcoy-shell-icon);
+      cursor: pointer;
+
+      .icon {
+        width: 20px;
+        height: 20px;
+        color: inherit;
+      }
+    }
+
+    // 关闭用的 X 位于胶囊之外，在其右侧。
+    .search-input-wrapper .search-input {
+      margin-right: ~"calc(2.4rem + var(--lcoy-space-1))";
+    }
+
+    .menu-panel {
+      position: fixed;
+      top: var(--lcoy-header-height, 52px);
+      left: 0;
+      right: 0;
+      height: ~"calc(100dvh - var(--lcoy-header-height, 52px))";
+      max-height: none;
+      border: 0;
+      border-top: 1px solid var(--lcoy-border);
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 2. 页面结果（/?q=… 和 /posts?q=…）
+// ---------------------------------------------------------------------
+.DiscussionList--searchResults {
+  .DiscussionListItem-title mark,
+  .DiscussionListItem-info mark {
+    font-weight: 700;
+    color: var(--lcoy-primary);
+    background: none;
+    padding: 0;
+  }
+
+  // 匹配搜索的帖子摘要，最多三行。
+  .DiscussionListItem-info .item-excerpt {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    margin-top: 4px;
+    overflow: hidden;
+    white-space: normal;
+    color: var(--lcoy-primary-high);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}
+
+.PostList--searchResults {
+  mark {
+    font-weight: 700;
+    color: var(--lcoy-primary);
+    background: var(--lcoy-selected);
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 3. 核心的 SearchModal（由其他扩展打开）：胶囊形字段和
+// 与菜单同色调的结果，无横向滚动。
+// ---------------------------------------------------------------------
+@media @tablet-up {
+  .SearchModal.Modal {
+    max-width: 600px;
+    margin-top: 72px;
+  }
+}
+
+.SearchModal {
+  .Modal-body {
+    overflow-x: hidden;
+  }
+
+  .FormControl.SearchModal-input {
+    height: 42px;
+    border: 1px solid var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius-pill);
+    background: var(--lcoy-surface) !important;
+    color: var(--lcoy-primary);
+
+    &:focus {
+      border-color: var(--lcoy-accent);
+      box-shadow: none;
+      outline: none;
+    }
+  }
+
+  .SearchModal-results mark {
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-weight: 700;
+  }
+
+  .Dropdown-menu > li > a,
+  .Dropdown-menu > li > button {
+    border-radius: 0;
+  }
+}

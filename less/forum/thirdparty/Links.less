@@ -1,0 +1,37 @@
+// ---------------------------------------------------------------------
+// 侧边栏中的 fof/links（Discourse 的自定义分区）
+// ---------------------------------------------------------------------
+
+// 无图标链接：文字与有图标的对齐（24px 列 + gap）。
+.LcoySidebar-sectionContent > li > .LinksButton:not(.hasIcon) {
+  padding-left: calc(4px + 24px + var(--lcoy-space-2));
+}
+
+// 独立链接的子项：向内缩进一级。
+.LcoySidebar-sectionContent > li > .LcoySidebar-childLink {
+  padding-left: calc(4px + 24px);
+
+  &:not(.hasIcon) {
+    padding-left: calc(4px + 48px + var(--lcoy-space-2));
+  }
+}
+
+.LcoySidebar .LinksButton-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// 如果后台关闭侧边栏，链接回到头部，采用主题
+// 头部的按钮外观。
+.Header-primary .LinksButton.Button {
+  border-radius: var(--lcoy-radius-pill);
+  color: var(--lcoy-primary-high);
+
+  &:hover,
+  &:focus-visible,
+  &.active {
+    background: var(--lcoy-hover);
+    color: var(--lcoy-primary);
+  }
+}

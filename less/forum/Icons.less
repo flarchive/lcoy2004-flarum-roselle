@@ -1,0 +1,48 @@
+// ---------------------------------------------------------------------
+// Lucide 图标（主题的图标层：js/src/forum/icons）。
+//
+// 尺寸沿用 Discourse 的 `.svg-icon`（Meta 的 css-common.css）：
+// 1em × 1em、`vertical-align: -0.125em`、`line-height: 1`，不缩小，
+// 线条可超出盒子。线宽为 "Discourse Lucide Icons" 组件的
+// "medium"（2），也是 Meta 上的默认值。
+//
+// <svg> 继承 Font Awesome 的 <i> 的类（`fas fa-x`），因此 Font Awesome
+// 的 CSS 也会作用于它（`display: inline-block`、`fa-fw`）：带元素的选择器
+// 优先级更高。
+// ---------------------------------------------------------------------
+svg.LcoyLucide {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  overflow: visible;
+  line-height: 1;
+  vertical-align: -0.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  // Font Awesome 的 `fa-fw` 会加宽盒子以对齐图标列；
+  // 图形在其中居中（默认 preserveAspectRatio）。
+  &.fa-fw {
+    width: 1.25em;
+  }
+}
+
+// 已点赞用户的心形：Meta 让这个（`d-liked`）保持空心
+// 心形。Lucide 没有实心变体；填充描边可得到相同
+// 图形。点赞计数同样显示实心心形。
+.LcoyLike--liked svg.LcoyLucide.lucide-heart,
+.LcoyLikeCount svg.LcoyLucide.lucide-heart {
+  fill: currentColor;
+}
+
+// 激活的收藏标记：`fas fa-bookmark`（实心）变为实心标记，与
+// Discourse 的 `.bookmarked` 一致——出现在帖子、页脚（"已收藏"）和列表中。
+svg.LcoyLucide.fas.fa-bookmark,
+.LcoyBookmarkButton--active svg.LcoyLucide.lucide-bookmark {
+  fill: currentColor;
+}
+
