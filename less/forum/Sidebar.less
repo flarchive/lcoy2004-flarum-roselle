@@ -1,0 +1,798 @@
+// =====================================================================
+// Discourse 的侧边栏（.sidebar-wrapper），在
+// meta.discourse.org 上测量：表面色背景，2.3rem 高的行，图标位于
+// 24px 的列中，中性灰色，悬停为高亮色的淡染，激活项为
+// 浅灰色。
+// =====================================================================
+
+.LcoySidebar {
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--lcoy-primary-high);
+}
+
+// 全局侧边栏：固定在左侧，页头下方。
+#lcoy-sidebar {
+  position: fixed;
+  top: var(--lcoy-header-height);
+  bottom: 0;
+  left: 0;
+  width: var(--lcoy-sidebar-width);
+  box-sizing: border-box;
+  background: var(--lcoy-surface);
+  border-right: 1px solid var(--lcoy-primary-low);
+  z-index: calc(~"var(--zindex-header) - 1");
+  transform: translateX(-100%);
+  visibility: hidden;
+  // Discourse 在侧边栏吸附状态下打开和关闭时没有动画（Meta 的 desktop_theme
+  // 将 .sidebar-animate 的过渡归零）。
+  transition: none;
+
+  .Lcoy--sidebarOpen & {
+    transform: none;
+    visibility: visible;
+  }
+}
+
+// 手机端面板"背后"的背景（.header-cloak）。
+.LcoySidebar-backdrop {
+  display: none;
+}
+
+.LcoySidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.LcoySidebar-sections {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--lcoy-space-2) var(--lcoy-space-4);
+  // 滚动条仅在鼠标悬停时出现：移出 0.5s 后
+  // 消失，与 Discourse 的 .sidebar-sections 一致。
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.25s ease-in-out 0.5s;
+
+  &:hover {
+    scrollbar-color: var(--lcoy-primary-100) transparent;
+    transition-delay: 0s;
+  }
+}
+
+// 全宽的"新话题"位于顶部（仅登录用户可见，与
+// Discourse 一致）。
+.LcoySidebar-newTopic {
+  margin: var(--lcoy-space-2) 0 var(--lcoy-space-4);
+
+  .Button {
+    width: 100%;
+    height: 38px;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 400;
+  }
+}
+
+// 有草稿时（fof/drafts）：Discourse 的拆分按钮——"✎ 新
+// 话题"和"⌄"紧贴，颜色相同，二者之间有一条细线。
+.LcoySidebar-newTopic--split {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+
+  > .LcoySidebar-newTopicButton {
+    flex: 1;
+    min-width: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .LcoyDraftsMenu {
+    position: static;
+    display: flex;
+    flex: none;
+  }
+
+  .LcoyDraftsMenu-toggle.Button {
+    width: 38px;
+    padding: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: inset 1px 0 0 ~"rgb(255 255 255 / 0.35)";
+
+    .Button-icon {
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .Button-label {
+      display: none;
+    }
+  }
+}
+
+// 分区（.sidebar-section-wrapper）：上下各 4px，分区之间有
+// 一条线；第一个贴顶，最后一个没有线。
+.LcoySidebar-section {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--lcoy-primary-low);
+
+  &:first-child,
+  .LcoySidebar-newTopic + & {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+// 分区标题：高度与链接一致，箭头位于 24px 的列中，
+// 标题为小型大写字母。
+.LcoySidebar-sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--lcoy-row-height);
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--lcoy-radius);
+  background: none;
+  color: var(--lcoy-primary-high);
+  font-size: 0.7579rem;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:focus-visible {
+    background: var(--lcoy-hover-accent);
+    outline: 0;
+  }
+}
+
+.LcoySidebar-sectionTitle {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.LcoySidebar-sectionCaret {
+  display: flex;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  font-size: 0.7579rem;
+  transition: none;
+
+  .collapsed & {
+    transform: rotate(-90deg);
+  }
+}
+
+.LcoySidebar-sectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// 收起时，分区隐藏内容但保持挂载：扩展的
+// 小组件只在 `oncreate` 时加载数据，收起时卸载会导致
+// 重新打开时内容为空。
+.LcoySidebar-section.collapsed > .LcoySidebar-sectionContent {
+  display: none;
+}
+
+// 链接：核心的 LinkButton（社区分区和扩展条目）与
+// 分类/标签链接外观相同。
+.LcoySidebar-sectionContent > li {
+  > .LinkButton,
+  > .Button,
+  > a,
+  > .Dropdown > .Dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--lcoy-space-2);
+    width: 100%;
+    height: var(--lcoy-row-height);
+    padding: 0 4px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: var(--lcoy-radius-pill);
+    background: transparent;
+    color: var(--lcoy-primary-high);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    text-decoration: none;
+    box-shadow: none;
+    white-space: nowrap;
+    transition: none;
+
+    // 图标位于 24px 的列中并居中（.sidebar-section-link-prefix）。
+    > .Button-icon,
+    > .icon,
+    > .LcoySidebar-linkIcon:not(.LcoyCategorySymbol) {
+      flex: 0 0 24px;
+      width: 24px;
+      margin: 0;
+      font-size: 16px;
+      text-align: center;
+      color: var(--lcoy-primary-high);
+    }
+
+    .Button-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .Button-caret {
+      display: none;
+    }
+
+    // 扩展放在链接上的计数（例如未读数）。
+    .Button-badge,
+    .Badge {
+      margin-left: auto;
+      color: var(--lcoy-sidebar-suffix);
+      font-size: 13px;
+      font-weight: 500;
+      background: none;
+    }
+
+    // 悬停（--d-sidebar-highlight-*）：淡染背景，文字为高亮色。
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-hover-accent);
+      color: var(--lcoy-hover-accent-text);
+      outline: 0;
+
+      > .Button-icon,
+      > .icon:not(.LcoyCategorySymbol) {
+        color: var(--lcoy-hover-accent-text);
+      }
+    }
+
+    // 激活（--d-sidebar-active-*）：浅灰色，半粗体。
+    &[active='true'],
+    &.active {
+      background: var(--lcoy-primary-100);
+      color: var(--lcoy-primary-very-high);
+      font-weight: 600;
+
+      > .Button-icon,
+      > .icon:not(.LcoyCategorySymbol) {
+        color: var(--lcoy-primary-very-high);
+      }
+    }
+  }
+
+  &.Dropdown-separator,
+  &.Separator {
+    display: none;
+  }
+}
+
+// "所有分类"和"所有标签"使用较小字号（font-down-1）。
+.LcoySidebar-sectionContent > li > .LcoySidebar-link--all {
+  font-size: 0.8706rem;
+  line-height: 1.4;
+
+  > .Button-icon {
+    font-size: 0.8706rem;
+  }
+}
+
+// 标签图标（Flarum 的，或通用标签），居中于
+// 24px 列中；标签有颜色时使用其颜色。
+.LcoySidebar-sectionContent > li > .LcoySidebar-tagLink > .LcoyTagSymbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--colored {
+    color: var(--tag-color);
+  }
+
+  .icon {
+    color: inherit;
+  }
+}
+
+// 分类符号：其颜色的图标，或 0.8em 的小方块。
+.LcoySidebar-tagLink .LcoyCategorySymbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  color: var(--category-color, var(--lcoy-primary-medium));
+  font-size: 16px;
+
+  .icon {
+    color: inherit !important;
+  }
+
+  &--square {
+    background: none;
+
+    &::before {
+      content: '';
+      width: 0.8em;
+      height: 0.8em;
+      border-radius: 2px;
+      background: var(--category-color, var(--lcoy-primary-medium));
+    }
+  }
+}
+
+// "更多"：从该项开始向右展开的下拉菜单。
+.LcoySidebar-more {
+  display: block;
+
+  .Dropdown-menu {
+    left: var(--lcoy-space-2);
+    right: auto;
+    min-width: 220px;
+  }
+}
+
+// 页脚（.sidebar-footer-wrapper）：吸附底部，无分隔线，上方有渐变
+// 表示列表可滚动；按钮在右侧。
+.LcoySidebar-footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  min-height: 45.9px;
+  padding: var(--lcoy-space-2);
+  box-sizing: border-box;
+  background: var(--lcoy-surface);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1.5em;
+    height: 1.5em;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--lcoy-surface));
+  }
+
+  // .sidebar-footer-actions-button：小胶囊，图标为 font-down-1。
+  .Button--icon,
+  .ThemeSwitcher > .Dropdown-toggle,
+  .LcoyColorMode > .Dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    padding: 0.25em 0.4em;
+    border: 0;
+    border-radius: var(--lcoy-radius-pill);
+    background: transparent;
+    color: var(--lcoy-primary-very-high);
+    box-shadow: none;
+    font-size: 16px;
+    line-height: 1;
+    gap: 0;
+    transition: none;
+
+    .Button-label {
+      display: none;
+    }
+
+    .Button-icon {
+      width: 1em;
+      margin: 0;
+      font-size: 0.8706rem;
+      line-height: 1;
+      text-align: center;
+      color: var(--lcoy-primary-high);
+      // 图标（SVG）是点击目标：接收事件的是它，而不是
+      // 按钮。没有 `pointer-events: none` 时点击图形不会打开菜单。
+      pointer-events: none;
+    }
+
+    // `.sidebar-footer-actions-button:hover`：浅灰色，而非主题色。
+    &:hover,
+    &:focus-visible,
+    .open > & {
+      background: var(--lcoy-hover);
+
+      .Button-icon {
+        color: var(--lcoy-primary);
+      }
+    }
+  }
+
+  // 页脚菜单向上展开，与 Discourse 一致。
+  .LcoyColorMode .Dropdown-menu,
+  .LcoyPaletteSelector .Dropdown-menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: var(--lcoy-space-1);
+    min-width: 12em;
+    padding: 4px;
+  }
+
+  // 菜单以页脚（而非按钮）定位：若锚定在
+  // 按钮上，颜色模式菜单会超出侧边栏左边缘并被裁切。
+  .LcoyColorMode,
+  .LcoyPaletteSelector {
+    position: static;
+  }
+
+  .LcoyColorMode .Dropdown-menu,
+  .LcoyPaletteSelector .Dropdown-menu {
+    right: auto;
+    left: var(--lcoy-space-2);
+    max-width: ~"calc(100% - (2 * var(--lcoy-space-2)))";
+  }
+
+  // 文字形式的调色板占据左侧剩余空间（"Meta Branded ⌄"）。
+  .LcoyPaletteSelector {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: auto;
+  }
+
+  .LcoyPaletteSelector-toggle.Button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    height: auto;
+    padding: 0.25em 0.5em;
+    border: 0;
+    border-radius: var(--lcoy-radius);
+    background: transparent;
+    color: var(--lcoy-primary-high);
+    box-shadow: none;
+    font-size: var(--lcoy-font-down-1);
+
+    .Button-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .Button-caret {
+      flex: 0 0 auto;
+      margin: 0;
+      font-size: 0.75em;
+      color: var(--lcoy-primary-medium);
+    }
+
+    &:hover,
+    &:focus-visible,
+    .open > & {
+      background: var(--lcoy-hover) !important;
+      color: var(--lcoy-primary);
+    }
+  }
+
+  .open > .LcoyColorMode-toggle.Button {
+    background: var(--lcoy-hover);
+  }
+
+  .Dropdown-menu > li > .LcoyColorMode-option,
+  .Dropdown-menu > li > .LcoyPaletteSelector-option {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0.5em 0.75em;
+    border-radius: var(--lcoy-radius);
+    font-size: var(--lcoy-font-0);
+
+    .Button-icon,
+    .LcoyPaletteSelector-dot {
+      margin: 0 10px 0 0 !important;
+    }
+
+    .Button-icon {
+      width: 1em;
+      font-size: 1rem;
+      color: var(--lcoy-primary-high);
+    }
+
+    .Button-label {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 10px;
+    }
+
+    // Discourse 的 `--d-selected`：浅灰色，而非高亮色。
+    &.active,
+    &.active:hover {
+      background: var(--lcoy-primary-very-low, var(--lcoy-hover));
+      color: var(--lcoy-primary);
+      font-weight: 400;
+    }
+
+    &:hover {
+      background: var(--lcoy-hover);
+      color: var(--lcoy-primary);
+    }
+  }
+
+  .LcoyPaletteSelector-dot {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    background: var(--lcoy-accent);
+
+    &--hc {
+      background: linear-gradient(90deg, #000 50%, #fff 50%);
+      box-shadow: inset 0 0 0 1px var(--lcoy-primary-medium);
+    }
+  }
+
+  // 使用 Wardrobe 时："🖌 Lcoy ⌄"，与 Meta 的 "🖌 Meta Branded ⌄" 一致。
+  .LcoyPaletteSelector-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .LcoyPaletteSelector-brush {
+    flex: 0 0 auto;
+    font-size: 0.9em;
+    color: var(--lcoy-primary-medium);
+  }
+
+  // 菜单各分区的标题（主题 / 调色板）。
+  .Dropdown-menu > li > .LcoyPaletteSelector-heading {
+    display: block;
+    padding: 0.5em 0.75em 0.25em;
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-2);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  // 核心的 ThemeSwitcher 只保留图标，向上展开。
+  .ThemeSwitcher {
+    .Button-label,
+    .Button-caret {
+      display: none;
+    }
+
+    .Dropdown-menu {
+      top: auto;
+      bottom: 100%;
+      right: 0;
+      left: auto;
+      margin-bottom: var(--lcoy-space-1);
+    }
+  }
+}
+
+// 分区标题带自定义铅笔，仅在悬停时显示。
+.LcoySidebar-sectionHead {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-right: 4px;
+  border-radius: var(--lcoy-radius);
+
+  &:hover .LcoySidebar-sectionEdit,
+  .LcoySidebar-sectionEdit:focus-visible {
+    opacity: 1;
+  }
+}
+
+.LcoySidebar-sectionEdit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 4px;
+  border: 0;
+  border-radius: var(--lcoy-radius);
+  background: none;
+  color: var(--lcoy-primary-high);
+  font-size: 0.8706rem;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.25s, background 0.25s;
+
+  &:hover {
+    color: var(--lcoy-hover-accent-text);
+  }
+
+  &:focus-visible {
+    background: var(--lcoy-primary-300);
+    outline: 0;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机端：汉堡菜单的面板（.menu-panel），位于一切之上，背后为
+// 暗色背景。
+// ---------------------------------------------------------------------
+@media @phone {
+  #lcoy-sidebar {
+    top: 0;
+    width: ~"min(360px, 80vw)";
+    padding: var(--lcoy-space-2);
+    border: 1px solid var(--lcoy-primary-low);
+    box-shadow: var(--lcoy-panel-shadow);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: calc(~"var(--zindex-header) + 2");
+
+    // 以 200ms（ease-out）从左侧滑入，与 Discourse 的 .menu-panel
+    // 一致；关闭时立即完成。
+    .Lcoy--sidebarOverlay & {
+      animation: lcoy-panel-in 0.2s ease-out both;
+    }
+
+    .LcoySidebar-inner {
+      height: auto;
+    }
+
+    .LcoySidebar-sections {
+      overflow: visible;
+      padding: 0;
+    }
+
+    .LcoySidebar-newTopic {
+      margin: 0 0 var(--lcoy-space-2);
+    }
+
+    // 面板中各分区之间没有分隔线，只有间距。公告分区
+    // 是一张卡片（FofWidgets.less），保留自己的内边距——
+    // 没有它，图标会贴到边框，脉冲光环也会被裁切。
+    .LcoySidebar-section:not(.LcoySidebar-section--fof-news) {
+      padding: 0;
+      margin-bottom: 1.2rem;
+      border-bottom: 0;
+    }
+
+    .LcoySidebar-section--fof-news {
+      margin-bottom: 1.2rem;
+    }
+
+    .LcoySidebar-footer {
+      padding: var(--lcoy-space-2);
+
+      &::before {
+        display: none;
+      }
+    }
+
+    // 手机端键盘没有快捷键。
+    .LcoySidebar-footerShortcuts {
+      display: none;
+    }
+  }
+
+  .Lcoy--sidebarOverlay ~ .LcoySidebar-backdrop,
+  .Lcoy--sidebarOverlay .LcoySidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: var(--lcoy-cloak);
+    z-index: calc(~"var(--zindex-header) + 1");
+    animation: lcoy-fade-in 0.2s ease-out both;
+  }
+}
+
+@keyframes lcoy-panel-in {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+
+@keyframes lcoy-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// 偏好减少动效的用户会直接得到已打开的面板（此时 Discourse 让
+// 动画时长为 0ms）。
+@media (prefers-reduced-motion: reduce) {
+  #lcoy-sidebar,
+  .LcoySidebar-backdrop {
+    animation-duration: 0s !important;
+  }
+}
+
+// 自定义分区的窗口。
+.LcoySidebarCustomize-list {
+  max-height: 50vh;
+  margin: 0 0 var(--lcoy-space-4);
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+
+  li {
+    border-bottom: 1px solid var(--lcoy-border);
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: var(--lcoy-space-2);
+    margin: 0;
+    padding: var(--lcoy-space-2) var(--lcoy-space-1);
+    cursor: pointer;
+
+    // 核心的复选框有 `margin-left: -20px; float: left`，是为
+    // 带 `padding-left: 20px` 的 label 设计的。这里 label 是 flex 且更窄，
+    // 因此 input 会从左侧溢出并被 `overflow-y: auto` 裁切。
+    input[type='checkbox'] {
+      flex: none;
+      margin: 0;
+      float: none;
+    }
+  }
+
+  .LcoySidebarCustomize-item--child label {
+    padding-left: var(--lcoy-space-6);
+  }
+}
+
+.LcoySidebarCustomize-actions {
+  display: flex;
+  gap: var(--lcoy-space-2);
+}
+
+// "更多"菜单移出侧边栏（position: fixed，由 JS 设置）：位于一切之上。
+.LcoySidebar-more .Dropdown-menu {
+  z-index: 1100;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+}
+
+// 位于按钮旁边，小箭头指向它（如同子菜单）。菜单
+// 不能裁切箭头：箭头在盒子之外，因此 overflow 恢复为
+// normal，最大高度确保其能容纳在屏幕内。
+.LcoySidebar-more .Dropdown-menu.LcoySidebar-moreMenu--side {
+  overflow: visible;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: var(--lcoy-more-arrow, 22px);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    transform: translateY(-50%);
+  }
+
+  // 箭头的边框（菜单边框色），以及其上的填充。
+  &::before {
+    left: -9px;
+    border-width: 8px 9px 8px 0;
+    border-color: transparent var(--lcoy-border) transparent transparent;
+  }
+
+  &::after {
+    left: -8px;
+    border-width: 7px 8px 7px 0;
+    border-color: transparent var(--lcoy-surface) transparent transparent;
+  }
+}

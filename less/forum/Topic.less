@@ -1,0 +1,212 @@
+// =====================================================================
+// 话题页：卡片内的标题，以及 Discourse 的双栏
+// 布局——流（阅读宽度），右侧是
+// 随时间线，会跟随滚动。
+//
+// meta.discourse.org 在 1440px 下的尺寸：卡片 1110px，内边距 16px，
+// 流约 760px（头像 45 + 12 + 690 + 12），时间线
+// 从约 65px 之后开始。
+// =====================================================================
+
+.LcoyTopic {
+  // 帖子列随内容宽度增长（后台）：351px 是
+  // 时间线和间隙（Discourse 默认下为 1110 − 759）。
+  --lcoy-topic-stream-max: ~"calc(var(--lcoy-main-max, 1110px) - 351px)";
+  --lcoy-topic-timeline-gap: 66px;
+  --lcoy-topic-sticky-top: calc(var(--lcoy-header-height) + var(--lcoy-space-6));
+}
+
+// ---------------------------------------------------------------------
+// 标题（DiscussionHero，主题将其放入卡片内）
+// ---------------------------------------------------------------------
+.DiscussionHero.LcoyTopicHero {
+  // tags 扩展用标签色绘制 hero，核心则居中；Discourse
+  // 两者都不做。
+  --hero-bg: transparent;
+  background: none;
+  color: var(--lcoy-primary);
+  text-align: left;
+  position: relative;
+  margin: 0;
+  padding: 0 0 14px;
+  border-bottom: 0;
+
+  // 标题占据卡片宽度（Discourse 的 #topic-title），但其下方的线
+  // 是第一个帖子的边框：只有流的宽度。
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: ~"min(100%, var(--lcoy-topic-stream-max, 759px))";
+    height: 1px;
+    background: var(--lcoy-border);
+  }
+
+  .container {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .DiscussionHero-items > li {
+    display: inline;
+  }
+
+  // flarum/tags 把标题放在单独一行并带外边距；这里它
+  // 与状态图标在同一行。
+  .item-title {
+    display: inline;
+    margin: 0;
+  }
+
+  .DiscussionHero-title {
+    display: inline;
+    margin: 0;
+    font-size: 1.7511rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: var(--lcoy-primary);
+    overflow-wrap: anywhere;
+    vertical-align: baseline;
+  }
+
+  // Discourse 的状态图标（置顶、锁定、隐藏……）只是
+  // 灰色图标，没有徽章的彩色圆形。
+  .DiscussionHero-badges {
+    display: inline-flex;
+    gap: var(--lcoy-space-1);
+    margin: 0 var(--lcoy-space-2) 0 0;
+    padding: 0;
+    // Discourse 的 `.topic-statuses` 尺寸：按标题比例（28px），
+    // 图标为 0.75em，primary-low-mid，与基线对齐。
+    font-size: 1.751rem;
+    vertical-align: baseline;
+
+    > li {
+      margin: 0;
+    }
+
+    .Badge {
+      --badge-bg: transparent;
+      width: auto;
+      height: auto;
+      background: none;
+      box-shadow: none;
+      border: 0;
+      color: var(--lcoy-primary-low-mid);
+      font-size: 0.75em;
+      line-height: 1;
+
+      .icon {
+        font-size: 1em;
+      }
+    }
+  }
+
+  .item-lcoyBadges {
+    display: block;
+    margin-top: 0;
+  }
+
+  .LcoyTopicHero-badges {
+    font-size: var(--lcoy-font-down-1);
+    color: var(--lcoy-primary-high);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 双栏——仅在 925px 及以上：低于此值 Discourse 隐藏
+// 时间线，并在屏幕底部显示"1 / 11"标签页（见 Timeline.less）。
+// ---------------------------------------------------------------------
+@media (min-width: 925px) {
+  .Lcoy .LcoyTopic .Page-container.container,
+  .LcoyTopic .Page-container.container {
+    display: grid;
+    grid-template-columns: minmax(0, var(--lcoy-topic-stream-max)) minmax(120px, 1fr);
+    grid-template-areas:
+      "hero hero"
+      "content sidebar";
+    column-gap: var(--lcoy-space-6);
+    row-gap: 0;
+    flex-direction: initial;
+  }
+
+  .LcoyTopic .Page-container > .Page-hero--inline {
+    grid-area: hero;
+    min-width: 0;
+  }
+
+  .LcoyTopic .Page-container > .Page-content {
+    grid-area: content;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    // 核心在 desktop-hd 下增大流的字体；主题有自己的设置。
+    font-size: inherit;
+  }
+
+  // 该列占据整行高度，使导航在帖子滚动时
+  // 紧贴页头下方。
+  .LcoyTopic .Page-container > .Page-sidebar {
+    grid-area: sidebar;
+    align-self: stretch;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .LcoyTopic .DiscussionPage-nav {
+    position: sticky;
+    top: var(--lcoy-topic-sticky-top);
+    padding-top: var(--lcoy-space-2);
+  }
+}
+
+@media @desktop-up {
+  .Lcoy .LcoyTopic .Page-container.container,
+  .LcoyTopic .Page-container.container {
+    column-gap: var(--lcoy-topic-timeline-gap);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机
+// ---------------------------------------------------------------------
+// 窄平板：单列；导航变为浮动标签页。
+@media (min-width: 768px) and (max-width: 924px) {
+  .LcoyTopic .Page-container.container {
+    display: block;
+  }
+
+  .LcoyTopic .Page-container > .Page-content {
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  // 只有标签页和面板（两个固定元素）位于这里：该列不占据高度。
+  .LcoyTopic .Page-container > .Page-sidebar {
+    float: none;
+    width: auto;
+    height: 0;
+    margin: 0;
+  }
+}
+
+@media @phone {
+  .DiscussionHero.LcoyTopicHero {
+    padding-bottom: 18px;
+  }
+
+  .DiscussionHero.LcoyTopicHero .DiscussionHero-title {
+    font-size: var(--lcoy-font-up-3);
+  }
+
+  .LcoyTopic .Page-content {
+    margin-top: 0;
+  }
+}
