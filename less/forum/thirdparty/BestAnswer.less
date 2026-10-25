@@ -1,0 +1,223 @@
+// ---------------------------------------------------------------------
+// fof/best-answer，采用 discourse-solved 风格
+// （css-discourse-solved.css + Meta 的 d-post-accordion）
+// ---------------------------------------------------------------------
+
+// 已采纳帖子操作栏中的"✓ 解决方案"：`.accepted-text`，绿色，font-up-1。
+.LcoySolved--accepted {
+  &.Button.LcoyPostAction,
+  &.LcoySolved--static {
+    color: var(--lcoy-success);
+    white-space: nowrap;
+
+    .Button-icon,
+    .icon {
+      color: var(--lcoy-success);
+    }
+  }
+
+  &.LcoySolved--static {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    height: 38px;
+    padding: 0 0.5rem;
+    font-size: var(--lcoy-font-up-1);
+    line-height: 1;
+  }
+
+  &.Button.LcoyPostAction {
+    font-size: var(--lcoy-font-up-1);
+    gap: 0.25em;
+
+    .Button-label {
+      display: inline;
+    }
+
+    // 有权取消标记者会看到悬停背景，但绿色保留。
+    &:hover,
+    &:focus-visible {
+      color: var(--lcoy-success);
+    }
+  }
+}
+
+// 空的标记方块：鼠标悬停时变绿。
+.LcoySolved.Button.LcoyPostAction:not(.LcoySolved--accepted) {
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-success);
+  }
+}
+
+// 第一个帖子下方的已采纳回复：`.accepted-answers.d-post-accordion`。
+// 第一个帖子中的最佳答案和流中的本人回复：相同的
+// 被标记帖子图形（2px 边框和顶部横带），绿色。
+.LcoySolution {
+  --lcoy-solution-radius: var(--lcoy-radius);
+  margin: var(--lcoy-space-4) 0 0;
+  overflow: hidden;
+  border: 2px solid var(--lcoy-success);
+  border-radius: var(--lcoy-solution-radius);
+  background: var(--lcoy-surface);
+}
+
+.LcoySolution-header {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+  padding: 8px var(--lcoy-space-3);
+  background: var(--lcoy-success);
+  color: #fff;
+}
+
+.LcoySolution-title {
+  margin: 0;
+  font-size: var(--lcoy-font-0);
+  font-weight: 600;
+}
+
+.LcoySolution-item {
+  overflow: hidden;
+  background: var(--lcoy-surface);
+}
+
+.LcoySolution-itemHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-1);
+  padding: var(--lcoy-space-2) var(--lcoy-space-3);
+  border-top: 1px solid ~"color-mix(in srgb, var(--lcoy-success) 20%, var(--lcoy-border))";
+  background: transparent;
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoySolution-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-1);
+  min-width: 0;
+}
+
+.LcoySolution-user {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-1);
+  color: var(--lcoy-primary-high);
+  font-weight: bold;
+
+  &:hover,
+  &:visited {
+    color: var(--lcoy-primary-high);
+    text-decoration: none;
+  }
+
+  .Avatar {
+    .Avatar--size(20px);
+  }
+}
+
+.LcoySolution-controls {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  .Button.Button--icon {
+    width: auto;
+    height: auto;
+    padding: 0 0 0 var(--lcoy-space-2);
+    background: none;
+    color: var(--lcoy-primary-low-mid);
+    font-size: var(--lcoy-font-down-1);
+
+    &:hover,
+    &:focus-visible {
+      background: none;
+      color: var(--lcoy-primary);
+    }
+  }
+}
+
+// 六行加上末尾上方渐变，与 Discourse 的 `data-overflowing` 一致。
+.LcoySolution-content.Post-body {
+  position: relative;
+  max-height: calc(var(--lcoy-solution-lines, 6) * 1.6em);
+  margin: 0;
+  padding: var(--lcoy-space-2) var(--lcoy-space-3) 0;
+  overflow: hidden;
+  border-top: 1px solid var(--lcoy-primary-low);
+  font-size: var(--lcoy-font-0);
+  line-height: 1.6;
+
+  .LcoySolution-item--overflowing &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent, 75%, var(--lcoy-surface));
+    pointer-events: none;
+  }
+
+  .LcoySolution-item--expanded & {
+    max-height: none;
+    padding-bottom: var(--lcoy-space-3);
+
+    &::after {
+      display: none;
+    }
+  }
+
+  > :last-child {
+    margin-bottom: var(--lcoy-space-3);
+  }
+}
+
+// 列表中：绿色的已解决徽章（`.topic-status.--solved`）。
+.Badge.Badge--bestAnswer {
+  background: var(--lcoy-success);
+  color: #fff;
+}
+
+.LcoyTopic-status .Badge.Badge--bestAnswer {
+  background: none;
+  color: var(--lcoy-success);
+}
+
+// 扩展放在话题列中的"跳到最佳答案"按钮。
+.Button-jumpBestAnswer.Button {
+  color: var(--lcoy-success);
+}
+
+// 话题标题中（hero 将徽章绘为灰色）：绿色对勾。
+.DiscussionHero.LcoyTopicHero .DiscussionHero-badges .Badge.Badge--bestAnswer {
+  color: var(--lcoy-success);
+}
+
+// 话题流中选中的回复："已采纳解决方案"横带
+// 贯穿卡片两端，位于头像上方（与被标记帖子一致）。
+.LcoyTopic .CommentPost.LcoyPost--solution {
+  position: relative;
+  margin-left: -12px;
+  padding: 48px 12px 4px;
+  border: 2px solid var(--lcoy-success);
+  border-radius: var(--lcoy-radius);
+
+  .Post-main {
+    position: static;
+  }
+}
+
+.LcoyPost-solutionBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: calc(var(--lcoy-radius) - 2px) calc(var(--lcoy-radius) - 2px) 0 0;
+  background: var(--lcoy-success);
+  color: #fff;
+  font-weight: 600;
+}

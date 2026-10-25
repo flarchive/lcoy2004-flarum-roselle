@@ -1,0 +1,35 @@
+// ---------------------------------------------------------------------
+// fof/formatting：帖子文字中的任务列表和嵌入视频。
+// （Spoiler 和 details 来自 BBCode，位于 Gaps.less/Posts.less；PipeTables
+// 的表格使用主题的表格样式。）
+// ---------------------------------------------------------------------
+
+// 任务列表：Discourse 的小框（`.chcklst-box`），无标记。
+.Post-body ul li[data-task-id] {
+  margin-left: 0;
+  list-style: none;
+
+  input[type="checkbox"] {
+    margin: 0 0.4em 0 -1.4em;
+    vertical-align: -0.1em;
+    accent-color: var(--lcoy-accent);
+  }
+}
+
+// 视频和播放器：最大为文字宽度，使用主题圆角。
+.Post-body {
+  video {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--lcoy-radius);
+  }
+
+  iframe[data-s9e-mediaembed] {
+    max-width: 100%;
+    border-radius: var(--lcoy-radius);
+  }
+
+  span[data-s9e-mediaembed] {
+    max-width: 100% !important;
+  }
+}

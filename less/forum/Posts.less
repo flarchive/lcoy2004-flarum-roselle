@@ -1,0 +1,1829 @@
+// =====================================================================
+// Discourse（Horizon）风格的帖子，在 meta.discourse.org 上以
+// 1440px 测量：45px 头像列（48px 头像溢出 3px，与
+// 那里一致），随滚动移动；16px 头部，用户名为
+// 灰色加粗；正文 16px/1.5，两侧 12px 间距；操作栏
+// 为圆形 38px，仅图标（"回复"带文字）；帖子之间
+// 细分隔线；事件帖类似 "small actions"。
+// =====================================================================
+
+// 作用于根，而非仅话题页：格式化内容也出现在
+// 个人资料和搜索中。
+[data-theme^=light],
+[data-theme^=dark] {
+  // Discourse 的 --love：点赞的心形不使用主题色。
+  --lcoy-topic-love: #fa6c8d;
+  --lcoy-topic-love-low: ~"color-mix(in srgb, var(--lcoy-topic-love) 15%, var(--lcoy-surface))";
+  // 引用背景和竖条（--d-post-aside-*）：深色模式下 Discourse
+  // 比调色板的"极低"要亮得多。
+  --lcoy-post-aside-bg: var(--lcoy-primary-very-low);
+  --lcoy-post-aside-border: var(--lcoy-primary-300);
+  // 帖子文字跟随读者的"文字大小"（extras）。
+  --lcoy-post-font: calc(16px * var(--lcoy-text-scale, 1));
+}
+
+.LcoyTopic {
+  // Discourse 的 --topic-avatar-width 和 --topic-body-width-padding。
+  --lcoy-post-avatar: 45px;
+  --lcoy-post-gap: 12px;
+}
+
+[data-theme^=dark] {
+  --lcoy-post-aside-bg: ~"color-mix(in srgb, var(--lcoy-primary) 17%, var(--lcoy-surface))";
+  --lcoy-post-aside-border: ~"color-mix(in srgb, var(--lcoy-primary) 35%, var(--lcoy-surface))";
+}
+
+// ---------------------------------------------------------------------
+// 格式化内容（帖子、预览、嵌入帖子）—— .cooked
+// ---------------------------------------------------------------------
+.lcoy-cooked() {
+  font-size: var(--lcoy-post-font);
+  line-height: 1.5;
+  color: var(--lcoy-primary);
+  overflow-wrap: break-word;
+
+  > *:first-child {
+    margin-top: 0;
+  }
+
+  p,
+  ol,
+  ul,
+  dl,
+  table,
+  details {
+    margin: 0 0 1em;
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+
+  ul,
+  ol {
+    margin: 1em 0 1em 1.25em;
+    padding-left: 1.25em;
+  }
+
+  li > ul,
+  li > ol {
+    margin: 0;
+  }
+
+  li > p {
+    margin: 0 0 1em;
+  }
+
+  // Discourse 的链接：只有颜色，没有核心的下划线和加粗。
+  a {
+    color: var(--lcoy-link);
+    font-weight: inherit;
+    border-bottom: 0;
+    text-decoration: none;
+    overflow-wrap: break-word;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: none;
+    }
+  }
+
+  // 标题使用 rem，与 Discourse 一致：在引用中不会变大。
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 2rem 0 0.67rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: var(--lcoy-primary);
+  }
+
+  h1 {
+    font-size: calc(1.5157rem * var(--lcoy-text-scale, 1));
+  }
+
+  h2 {
+    font-size: calc(1.3195rem * var(--lcoy-text-scale, 1));
+  }
+
+  h3 {
+    font-size: calc(1.1487rem * var(--lcoy-text-scale, 1));
+  }
+
+  h4 {
+    font-size: calc(1rem * var(--lcoy-text-scale, 1));
+  }
+
+  h5 {
+    font-size: calc(0.8706rem * var(--lcoy-text-scale, 1));
+  }
+
+  h6 {
+    font-size: calc(0.7579rem * var(--lcoy-text-scale, 1));
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+  }
+
+  hr {
+    margin: 1em 0;
+    border: 0;
+    border-top: 1px solid var(--lcoy-primary-low);
+  }
+
+  // 引用：左侧 5px 竖条，背景略带阴影。
+  blockquote {
+    margin: 1em 0;
+    padding: 0.75em;
+    border: 0;
+    border-left: 5px solid var(--lcoy-post-aside-border);
+    border-radius: 0;
+    background: var(--lcoy-post-aside-bg);
+    color: var(--lcoy-primary);
+    font-size: inherit;
+    overflow-wrap: break-word;
+
+    > *:first-child {
+      margin-top: 0 !important;
+    }
+
+    > *:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  code {
+    padding: 2px 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 0.875em;
+    line-height: 1.3077;
+    color: var(--lcoy-primary);
+    background: var(--lcoy-primary-100);
+    border-radius: var(--lcoy-radius);
+  }
+
+  pre {
+    position: relative;
+    margin: 1em 0;
+    padding: 0;
+    max-height: 2000px;
+    border: 0;
+    border-radius: var(--lcoy-radius);
+    background: none;
+    overflow: hidden;
+
+    code {
+      display: block;
+      padding: 12px;
+      max-height: 500px;
+      overflow: auto;
+      color: var(--lcoy-primary-very-high);
+      background: var(--lcoy-primary-100);
+      border-radius: var(--lcoy-radius);
+      font-size: 0.875em;
+      line-height: 1.3077;
+      white-space: pre;
+    }
+  }
+
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0 0.5em;
+    min-width: 24px;
+    margin: 0 0.15em;
+    padding: 0.15em 0.6em;
+    box-sizing: border-box;
+    border: 1px solid var(--lcoy-primary-low-mid);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    background: var(--lcoy-primary-very-low);
+    font-family: inherit;
+    font-size: var(--lcoy-font-down-1);
+    line-height: 1.6;
+    color: var(--lcoy-primary);
+    box-shadow: none;
+  }
+
+  // Discourse 的表格：表头加粗无背景，主体顶部为粗线，
+  // 行之间为细线；超出帖子时滚动。
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+
+    thead th {
+      padding: 0 3px 2px 0.5em;
+      text-align: left;
+      font-weight: 700;
+      color: var(--lcoy-primary);
+    }
+
+    tbody {
+      border-top: 3px solid var(--lcoy-primary-low);
+    }
+
+    tr {
+      border-bottom: 1px solid var(--lcoy-primary-low);
+    }
+
+    td {
+      padding: 3px 3px 3px 0.5em;
+    }
+  }
+
+  img:not(.emoji) {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  img.emoji {
+    width: 1em;
+    height: 1em;
+    margin: 0;
+    vertical-align: -0.1em;
+  }
+
+  iframe,
+  video {
+    max-width: 100%;
+  }
+
+  video {
+    max-height: 500px;
+  }
+
+  // Discourse 的 [details]：灰色盒子，文字三角形，不加粗。
+  details {
+    position: relative;
+    margin: 0 0 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0;
+    background: var(--lcoy-primary-very-low);
+
+    &:not([open]):hover,
+    &:not([open]):focus-within {
+      background: var(--lcoy-hover);
+    }
+
+    summary {
+      display: block;
+      cursor: pointer;
+      font-weight: 400;
+      outline: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &::before {
+        content: "►";
+        margin-right: 0.25em;
+      }
+    }
+
+    &[open] > summary::before {
+      content: "▼";
+    }
+  }
+
+  mark {
+    background: var(--lcoy-highlight);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  // 提及：Discourse 的灰色胶囊（.mention）。
+  .UserMention,
+  .PostMention {
+    display: inline-block;
+    padding: 0.2em 0.34em;
+    border: 0;
+    border-radius: 0.6em;
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary);
+    font-size: 0.93em;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-primary-200);
+      color: var(--lcoy-primary);
+      text-decoration: none;
+    }
+
+    // mentions 放在帖子提及前的"↪"。
+    &::before {
+      display: none;
+    }
+  }
+
+  // 分组提及：同样的胶囊，用分组颜色着色（--color，
+  // flarum/mentions 将其放入样式），图标位于前方的实心圆中。
+  .GroupMention {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.18em 0.5em 0.18em 0.22em;
+    border: 1px solid ~"color-mix(in oklch, var(--color, var(--lcoy-primary-medium)) 28%, transparent)";
+    border-radius: 999px;
+    background: ~"color-mix(in oklch, var(--color, var(--lcoy-primary-medium)) 12%, var(--lcoy-surface))";
+    color: ~"color-mix(in oklch, var(--color, var(--lcoy-primary)) 78%, var(--lcoy-primary))";
+    font-size: 0.93em;
+    font-weight: 600;
+    line-height: 1.2;
+    vertical-align: baseline;
+    transition: background-color 0.15s;
+
+    &:hover {
+      background: ~"color-mix(in oklch, var(--color, var(--lcoy-primary-medium)) 20%, var(--lcoy-surface))";
+    }
+
+    .GroupMention-name {
+      color: inherit;
+    }
+
+    // 分组图标在 HTML 中位于名称之后：这里移到前面。
+    .icon {
+      order: -1;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35em;
+      height: 1.35em;
+      margin: 0;
+      padding: 0.25em;
+      border-radius: 50%;
+      background: var(--color, var(--lcoy-primary-medium));
+      color: #fff;
+      font-size: 0.85em;
+      line-height: 1;
+    }
+
+    // 无图标时，胶囊不需要左侧缩进。
+    &:not(:has(.icon)) {
+      padding-left: 0.5em;
+    }
+  }
+
+  .UserMention--deleted,
+  .PostMention--deleted {
+    opacity: 0.6;
+  }
+
+  .LcoyMention-unavailable {
+    color: var(--lcoy-primary-medium);
+    font-style: italic;
+  }
+
+  // 仅标记"回复给"的提及（Discourse 在
+  // 帖子头部显示，而非正文中）。
+  .LcoyReplyMarker {
+    display: none;
+  }
+
+  // 通用链接预览（onebox）：带边框的盒子。
+  aside.onebox,
+  .onebox {
+    display: block;
+    margin: 0 0 1em;
+    padding: 12px 16px;
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+  }
+
+  // 引用其他帖子（Discourse 的 aside.quote）：主题将
+  // "头像 某某："头部放入 mentions 生成的 blockquote 中。
+  blockquote.LcoyQuote {
+    padding: 0.8em 0.75em 0.75em;
+  }
+
+  .LcoyQuote-title {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--lcoy-space-2);
+    margin: 0 0 0.75em;
+    color: var(--lcoy-primary-high);
+    user-select: none;
+
+    .Avatar {
+      .Avatar--size(24px);
+      flex-shrink: 0;
+    }
+  }
+
+  .LcoyQuote-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 24px;
+
+    a.PostMention,
+    a.PostMention:hover {
+      display: inline;
+      margin: 0;
+      padding: 0;
+      background: none;
+      color: var(--lcoy-primary-high);
+      font-size: inherit;
+      line-height: inherit;
+    }
+  }
+
+  .LcoyQuote-controls {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    margin-left: auto;
+    color: var(--lcoy-primary-low-mid);
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: 0.3em;
+      color: var(--lcoy-primary-low-mid);
+
+      &:hover,
+      &:focus-visible {
+        color: var(--lcoy-primary-high);
+      }
+    }
+
+    .icon {
+      font-size: 0.8em;
+    }
+  }
+}
+
+.Post-body,
+.LcoyEmbeddedPost-body {
+  .lcoy-cooked();
+}
+
+// ---------------------------------------------------------------------
+// 帖子
+// ---------------------------------------------------------------------
+.LcoyTopic {
+  .Post {
+    padding: 13px 0 20px;
+    border-radius: 0;
+  }
+
+  // 核心的分隔线（每个条目的 ::after）是 Discourse 帖子的
+  // 上边框：贯穿流的首尾，使用内容边框色。
+  .PostStream-item:has(+ .PostStream-item)::after {
+    width: 100%;
+    background-color: var(--lcoy-border);
+  }
+
+  .Post-header {
+    margin: 0;
+    padding: 0 0 4px;
+    font-size: var(--lcoy-post-font);
+    line-height: 1.4;
+
+    &,
+    a,
+    .Button--text.Button--link {
+      color: var(--lcoy-primary-medium);
+    }
+
+    > ul {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      column-gap: 0.33em;
+      row-gap: 2px;
+
+      > li {
+        display: inline-flex;
+        align-items: center;
+        margin: 0;
+        min-width: 0;
+      }
+    }
+
+    // 左侧：名称和次要名称；右侧："回复给"、铅笔、日期。
+    .item-user {
+      order: 1;
+    }
+
+    .item-lcoyNames {
+      order: 2;
+    }
+
+    .item-lcoyReplyTo {
+      order: 3;
+      margin-right: 2em;
+    }
+
+    .item-edited {
+      order: 4;
+      margin-right: 0.5em;
+    }
+
+    .item-meta {
+      order: 5;
+    }
+
+    .item-toggle {
+      order: 6;
+    }
+
+    > ul > li.item-lcoyNames,
+    > ul > li.item-user:not(:has(~ li.item-lcoyNames)) {
+      margin-right: auto;
+    }
+
+    // 用户头衔（.user-title）位于名称之后，与
+    // Discourse 一致——没有 order 时它会跑到名称之前。存在时，它
+  }
+
+  // 作者名称用黑色（文字色），而非头部的灰色。
+  .PostUser-name {
+    font-size: inherit;
+    line-height: inherit;
+
+    &,
+    a {
+      font-weight: 700;
+      font-size: inherit;
+      color: var(--lcoy-primary);
+    }
+  }
+
+  .LcoyPostNames {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.33em;
+    min-width: 0;
+    font-size: inherit;
+    white-space: nowrap;
+  }
+
+  .LcoyPostNames-username {
+    color: var(--lcoy-primary-high);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .PostMeta .Button--text {
+    font-size: inherit;
+    color: var(--lcoy-primary-medium);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--lcoy-primary-high);
+    }
+  }
+
+  .LcoyPostEdited {
+    color: var(--lcoy-primary-medium);
+    font-size: 0.9em;
+    cursor: default;
+  }
+
+  // "↪ [头像] 某某"（reply-to-tab）：打开在其上方被回复的帖子。
+  .LcoyReplyTo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--lcoy-space-1);
+    max-width: 400px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--lcoy-primary-medium);
+    font: inherit;
+    cursor: pointer;
+    overflow: hidden;
+
+    .Avatar {
+      .Avatar--size(20px);
+    }
+
+    .LcoyReplyTo-icon {
+      color: var(--lcoy-primary-medium);
+      font-size: 0.85em;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &--open {
+      color: var(--lcoy-primary-high);
+    }
+  }
+
+  // Avocado 的"回复给"（lcoy.topic_reply_to_style）：名称下方
+  // 单独一行，"↳ 回复给 [头像] 某某"，灰色，
+  // 名称加粗。
+  // 紧贴名称下方，两者之间不留整行间距。
+  .Post-header > ul > li.item-lcoyReplyTo:has(> .LcoyReplyTo--line) {
+    order: 10;
+    flex-basis: 100%;
+    margin: -6px 0 0;
+  }
+
+  .LcoyReplyTo--line {
+    max-width: 100%;
+    gap: 5px;
+    font-size: var(--lcoy-font-down-1);
+    font-weight: 600;
+    line-height: 1.3;
+
+    // "回复"翻转：即"↳"箭头。
+    .LcoyReplyTo-icon {
+      flex: none;
+      font-size: 1em;
+      transform: rotate(180deg);
+    }
+
+    .Avatar {
+      flex: none;
+    }
+
+    .LcoyReplyTo-name {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--lcoy-primary-high);
+      font-weight: 700;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &:hover .LcoyReplyTo-label,
+    &:focus-visible .LcoyReplyTo-label,
+    &.LcoyReplyTo--open .LcoyReplyTo-label {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  .Post--hidden {
+    .Post-header,
+    .PostUser-name a {
+      color: var(--lcoy-primary-medium);
+    }
+
+    &:not(.revealContent) {
+      padding: var(--lcoy-space-2) 0;
+    }
+
+    // 核心用负外边距把操作栏拉到头部行（它的
+    // 栏浮在右侧）；主题的栏在下方单独一行，
+    // 该外边距会把它甩到日期之上。这里它位于文档流中，只保留
+    // 管理控件。
+    .Post-actions {
+      margin-top: 0;
+      margin-bottom: 0;
+      opacity: 1;
+    }
+
+    &:not(.revealContent) .Post-actions {
+      margin-top: var(--lcoy-space-1);
+    }
+
+    // 显示隐藏内容的"…"：低调图标，与操作栏中的一致。
+    .Post-header .item-toggle .Button--more {
+      height: 24px;
+      padding: 0 6px;
+      border: 0;
+      border-radius: 4px;
+      --button-bg: transparent;
+      --button-color: var(--lcoy-primary-medium);
+      background: transparent;
+      color: var(--lcoy-primary-medium);
+
+      &:hover,
+      &:focus-visible {
+        --button-bg-hover: var(--lcoy-primary-low);
+        --button-color-hover: var(--lcoy-primary-high);
+        background: var(--lcoy-primary-low);
+        color: var(--lcoy-primary-high);
+      }
+    }
+
+    &.revealContent .Post-header .item-toggle .Button--more {
+      background: var(--lcoy-primary-low);
+      color: var(--lcoy-primary-high);
+    }
+  }
+
+  // Discourse 的 "time-gap"（"3 个月后"）：无图标的 small action。
+  .PostStream-timeGap {
+    padding: var(--lcoy-space-3) 0 var(--lcoy-space-3) calc(var(--lcoy-post-avatar) + var(--lcoy-post-gap));
+    text-transform: none;
+    font-size: var(--lcoy-post-font);
+    font-weight: 400;
+    color: var(--lcoy-primary-high);
+  }
+
+  .LoadingPost .fakeText {
+    background: var(--lcoy-primary-low);
+  }
+
+  .TypingUsersContainer {
+    margin: var(--lcoy-space-3) 0 0;
+    padding: var(--lcoy-space-2) var(--lcoy-space-3);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-primary-very-low);
+    font-size: var(--lcoy-font-down-1);
+
+    .TypingUsers {
+      color: var(--lcoy-primary-high);
+    }
+  }
+}
+
+@media @tablet-up {
+  .LcoyTopic {
+    .Post-container {
+      grid-template-columns: var(--lcoy-post-avatar) minmax(0, 1fr);
+      column-gap: 0;
+    }
+
+    // Discourse 的正文两侧各有 12px 间距（690px 文字）。
+    .Post-main {
+      padding: 0 var(--lcoy-post-gap);
+    }
+
+    .Post-side {
+      padding-top: 4px;
+    }
+
+    // z-index 创建独立的层叠上下文：flair 的 tooltip
+    // 不会位于相邻帖子的内容之下。仅在后台
+    // "帖子头像固定"选项（.Lcoy--stickyAvatar）下为 sticky。
+    .LcoyPostAvatar {
+      z-index: 3;
+      position: relative;
+      top: auto;
+      width: 48px;
+      height: 48px;
+    }
+
+    .Post-side .Post-avatar {
+      .Avatar--size(48px);
+    }
+
+    .Post-body {
+      padding: 16px 0 4px;
+    }
+
+    .CommentPost:not(.Post--hidden) {
+      min-height: 0;
+    }
+
+    // 分组徽章变成头像角上的 "flair"；桌面端它们
+    // 位于头像旁（以跟随滚动），而非头部。
+    .Post-header .PostUser-badges {
+      display: none;
+    }
+  }
+}
+
+// flair：第一个带图标的分组，20px，位于头像下角。
+.LcoyPostAvatar {
+  position: relative;
+  display: block;
+}
+
+.LcoyPostAvatar-flair {
+  position: absolute;
+  // 位于头像上方（分组 tooltip 也在这里面）。
+  z-index: 2;
+  right: -4px;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: 0;
+
+  > li {
+    display: none;
+  }
+
+  // 只有第一个带图标的分组（无图标的分组，如"成员"，不会
+  // 绘制空圆）。
+  > li:has(.icon) {
+    display: block;
+  }
+
+  > li:has(.icon) ~ li {
+    display: none;
+  }
+
+  .Badge {
+    .Badge--size(20px);
+    box-shadow: 0 0 0 2px var(--lcoy-surface);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 名称后的图标（utils/userIcons：验证徽章、状态
+// emoji）——Discourse 的 "poster icons"：在文字行中，与其
+// 同尺寸，紧接名称之后，不推动名称。
+// ---------------------------------------------------------------------
+.LcoyUserIcons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  flex-shrink: 0;
+  line-height: 1;
+  vertical-align: middle;
+  font-weight: normal;
+}
+
+.LcoyTopic .Post-header .PostUser-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  min-width: 0;
+
+}
+
+.LcoyReplyTo .LcoyUserIcons {
+  margin-left: -0.1em;
+}
+
+// 嵌入帖子中名称曾把日期推到右侧：现在推动的
+// 是名称之后的图标。
+.LcoyEmbeddedPost-header {
+  .LcoyEmbeddedPost-name:has(+ .LcoyUserIcons) {
+    margin-right: 0;
+  }
+
+  .LcoyUserIcons {
+    align-self: center;
+    margin-left: ~"calc(0.25em - var(--lcoy-space-2))";
+    margin-right: auto;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 操作栏（仅当主题构建它时：内部有 .LcoyPostAction）
+// ---------------------------------------------------------------------
+.Post-actions:has(.LcoyPostAction) {
+  float: none;
+  position: relative;
+  margin: 20px 0 0;
+  opacity: 1;
+
+  > ul {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    > li {
+      margin: 0;
+    }
+  }
+
+  // 左侧：点赞计数和"N 条回复"；"回复"始终
+  // 在最右侧。
+  .item-lcoyLikeCount {
+    order: -20;
+  }
+
+  .item-lcoyReplies {
+    order: -10;
+  }
+
+  .item-lcoyReplies,
+  .item-lcoyLikeCount:not(:has(~ .item-lcoyReplies)) {
+    margin-right: auto;
+  }
+
+  .item-reply {
+    order: 10;
+  }
+}
+
+// 桌面端核心在悬停前隐藏操作；在 Discourse 中它们始终显示。
+@media @tablet-up {
+  .no-touch .Post-actions:has(.LcoyPostAction) {
+    opacity: 1;
+  }
+}
+
+.LcoyPostAction.Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  height: 38px;
+  padding: 8px 0.65em;
+  border: 1px solid transparent;
+  border-radius: var(--lcoy-radius-pill);
+  background: none;
+  color: var(--lcoy-primary-low-mid);
+  font-size: 16px;
+  line-height: 1;
+  box-shadow: none;
+
+  .Button-icon {
+    margin: 0;
+    color: inherit;
+    font-size: 16px;
+  }
+
+  // Discourse 的悬停（--d-post-control-background--hover）：灰色
+  // primary-low，绝不是高亮色——点击后也是（"已复制"链接
+  // 在鼠标仍悬停时）。
+  &:hover,
+  &:focus-visible,
+  &:active,
+  &.active {
+    outline: none;
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary);
+    box-shadow: none;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &[disabled],
+  &.disabled {
+    opacity: 1;
+    cursor: not-allowed;
+    background: none;
+    color: var(--lcoy-primary-low-mid);
+  }
+}
+
+.LcoyPostAction.Button--icon {
+  width: 38.78px;
+  padding: 8px 0;
+}
+
+.item-lcoyControl-hide .LcoyPostAction:hover,
+.item-lcoyControl-delete .LcoyPostAction:hover {
+  background: var(--lcoy-danger);
+  color: #fff;
+}
+
+// "回复"（Discourse 的 "create" 按钮）：唯一带文字的，颜色更深。
+.LcoyPostAction--reply.Button {
+  color: var(--lcoy-primary-high);
+
+  .Button-label {
+    display: inline;
+  }
+}
+
+// "N 条回复 ▾"：中灰色；展开时获得灰色背景。
+.LcoyPostAction--replies.Button {
+  margin-right: var(--lcoy-space-2);
+  color: var(--lcoy-primary-medium);
+  white-space: nowrap;
+
+  .LcoyPostAction-chevron {
+    margin-left: 0;
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: none;
+    color: var(--lcoy-primary);
+
+    .LcoyPostAction-chevron {
+      color: var(--lcoy-primary-high);
+    }
+  }
+
+  &.active,
+  &[aria-expanded="true"] {
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary-high);
+  }
+}
+
+// 心形：悬停和点赞后为粉色。
+.LcoyLike-toggle.Button {
+  &:not([disabled]):hover,
+  &:not([disabled]):focus-visible {
+    background: var(--lcoy-topic-love-low);
+    color: var(--lcoy-topic-love);
+  }
+
+  &.LcoyLike--liked {
+    color: var(--lcoy-topic-love);
+  }
+}
+
+// 点赞时的心跳（heartBump，.4s，来自 Discourse）。
+@keyframes lcoyHeartBump {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .LcoyLike--bump .Button-icon {
+    animation: lcoyHeartBump 0.4s;
+  }
+}
+
+// 左侧的计数（Meta 的回应摘要）：实心心形和
+// 浅灰色数字。
+.LcoyLikeCount.Button {
+  height: 34px;
+  padding: 1px 6px;
+  gap: 0;
+
+  // Discourse 的 ❤️ emoji（twemoji），而非点赞按钮的粉色。
+  .Button-icon {
+    color: #dd2e44;
+  }
+
+  .LcoyLikeCount-number {
+    padding: 8px 0 8px 10px;
+  }
+
+  &:hover,
+  &:focus-visible,
+  &.active {
+    background: none;
+    box-shadow: none;
+    color: var(--lcoy-primary);
+  }
+}
+
+// 链接：复制后图标短暂变为"对勾"。
+.LcoyPostAction--copied.Button .Button-icon {
+  color: var(--lcoy-success);
+}
+
+// ---------------------------------------------------------------------
+// 帖子页脚：点赞者和嵌入回复
+// ---------------------------------------------------------------------
+// 仅在主题的操作栏下：核心的页脚（操作栏旁高度为零
+// 且浮在右侧）无法容纳头像行和回复。
+.Post-actions:has(.LcoyPostAction) ~ .Post-footer {
+  display: block;
+  height: auto;
+  margin: 0;
+
+  &:empty {
+    display: none;
+  }
+
+  > ul > li {
+    margin: var(--lcoy-space-2) 0 0;
+  }
+
+  &,
+  a {
+    color: var(--lcoy-primary-medium);
+  }
+
+  // 仍然存在的扩展列表（主题选项关闭时）。
+  .Post-likedBy,
+  .Post-mentionedBy {
+    font-size: var(--lcoy-font-down-1);
+  }
+}
+
+// Discourse 的嵌入帖子：无盒子，通过一条从头像后方
+// 穿过的细竖线与帖子相连。
+.LcoyEmbedded {
+  position: relative;
+
+  .LoadingIndicator {
+    margin: var(--lcoy-space-3) auto;
+  }
+
+  .LcoyEmbeddedPost {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    column-gap: 9px;
+
+    .Avatar {
+      .Avatar--size(48px);
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  // "回复给"：位于帖子上方，线条向下延伸到它。
+  &--top {
+    margin: 0 0 var(--lcoy-space-3);
+
+    .LcoyEmbeddedPost {
+      padding: 0 0 var(--lcoy-space-6);
+
+      // 线条超出盒子并向下延伸到下方帖子的名称附近。
+      &::before {
+        content: "";
+        position: absolute;
+        top: 24px;
+        bottom: calc(-1 * (var(--lcoy-space-3) + 14px));
+        left: 24px;
+        width: 1px;
+        background: var(--lcoy-border);
+      }
+    }
+  }
+
+  // 回复：在下方，缩进，线条向上延伸到帖子。
+  &--bottom {
+    max-width: calc(100% - 66px);
+    margin: var(--lcoy-space-2) 0 var(--lcoy-space-6);
+
+    .LcoyEmbeddedPost {
+      padding: 15px 0 calc(var(--lcoy-space-8) + var(--lcoy-space-2)) 9px;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: calc(-1 * var(--lcoy-space-6));
+        bottom: 0;
+        left: 32px;
+        width: 1px;
+        background: var(--lcoy-border);
+      }
+
+      &:last-of-type::before {
+        bottom: auto;
+        height: calc(100% - 24px);
+      }
+    }
+  }
+}
+
+.LcoyEmbedded-more.Button {
+  display: block;
+  margin: 0 auto;
+  height: auto;
+  padding: var(--lcoy-space-1) var(--lcoy-space-2);
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-link);
+  background: none;
+}
+
+.LcoyEmbeddedPost-main {
+  position: relative;
+  min-width: 0;
+}
+
+.LcoyEmbeddedPost-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--lcoy-space-2);
+  font-size: var(--lcoy-post-font);
+  line-height: 1.4;
+}
+
+.LcoyEmbeddedPost-name {
+  margin-right: auto;
+  font-weight: 700;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyEmbeddedPost-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lcoy-space-1);
+  color: var(--lcoy-primary-medium);
+
+  // 核心隐藏帖子页脚中链接的图标；箭头本身就是链接。
+  .Post-footer & .icon {
+    display: inline-block;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary-high);
+    text-decoration: none;
+  }
+}
+
+.LcoyEmbeddedPost-body {
+  margin-top: var(--lcoy-space-1);
+  padding-top: var(--lcoy-space-2);
+}
+
+// ---------------------------------------------------------------------
+// 事件帖：Discourse 的 "small action"，排成紧凑的一行：
+// 小图标位于头像列的圆中，发帖者头像以及
+// 灰色文字和加粗名称。
+// ---------------------------------------------------------------------
+.LcoyTopic .EventPost {
+  min-height: 32px;
+  padding: 0.5em 0;
+
+  .Post-container {
+    align-items: center;
+  }
+
+  .Post-side {
+    display: flex;
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  // 独立的图标，浅灰色，无圆无边框（表面
+  // 背景只截断其周围直聊样式的时间线）。
+  // 图标是 <svg>（Lucide）：没有显式宽高时它会拉伸
+  // 到头像列（45px）。1em，为事件文字大小 × 1.1。
+  .EventPost-icon {
+    position: relative;
+    z-index: 1;
+    float: none;
+    display: block;
+    flex: none;
+    box-sizing: content-box;
+    width: 1em;
+    height: 1em;
+    margin: 0;
+    // 上下留白的表面背景会中断带线样式的
+    // 时间线：线条到达图标后继续延伸。
+    padding: 5px 2px;
+    border: 0;
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary-low-mid);
+    font-size: calc(var(--lcoy-font-down-1) * 1.1);
+    line-height: 1;
+  }
+
+  .Post-body,
+  .Post-main {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    min-width: 0;
+  }
+
+  .EventPost-avatar {
+    --size: 20px;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    line-height: 20px;
+  }
+
+  .EventPost-info {
+    padding-top: 0;
+    font-size: var(--lcoy-font-down-1);
+    line-height: 1.4;
+    color: var(--lcoy-primary-medium);
+
+    a {
+      color: var(--lcoy-primary-high);
+      font-weight: 600;
+    }
+
+    time {
+      color: var(--lcoy-primary-medium);
+    }
+  }
+}
+
+@media @phone {
+  .LcoyTopic .EventPost {
+    padding-left: 0;
+
+    .EventPost-icon {
+      margin: 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 目标帖子高亮（/d/x/N）：Discourse 的 background-fade-highlight
+// ——帖子正文（非头像）使用浅高亮色，并逐渐淡出。
+// ---------------------------------------------------------------------
+@keyframes lcoyHighlight {
+  0% {
+    background-color: var(--lcoy-accent-low);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .LcoyTopic .PostStream-item.LcoyHighlight .Post-main {
+    animation: lcoyHighlight 2.5s ease-out;
+  }
+}
+
+// ---------------------------------------------------------------------
+// mentions 在选中文字上显示的"引用"按钮
+// ---------------------------------------------------------------------
+.PostQuoteButton.Button {
+  --button-bg: var(--lcoy-surface);
+  --button-color: var(--lcoy-primary);
+  --button-bg-hover: var(--lcoy-hover);
+  --button-color-hover: var(--lcoy-primary);
+  z-index: var(--zindex-dropdown);
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  box-shadow: var(--lcoy-shadow-dropdown);
+  font-size: 14px;
+
+  .Button-icon {
+    color: var(--lcoy-accent);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+    color: var(--lcoy-primary);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 流末尾的"回复…"框和 realtime 的"N 人正在输入"：
+// Discourse 两者都没有——通过话题或帖子页脚的按钮
+// 回复。输入提示仅在确实有人输入时
+// 出现。
+// ---------------------------------------------------------------------
+.LcoyTopic .PostStream-item:has(> .ReplyPlaceholder),
+.LcoyTopic .TypingUsersContainer:not(.TypingUsersContainer-active) {
+  display: none;
+}
+
+.LcoyTopic .PostStream-item:has(+ .PostStream-item > .ReplyPlaceholder)::after {
+  display: none;
+}
+
+// 事件帖（锁定、置顶、重命名、修改标签……）：Discourse 不像
+// Flarum 那样显示它们；后台的 "topic_event_posts" 开关可恢复。
+.Lcoy--noEventPosts .PostStream-item:has(> .EventPost) {
+  display: none;
+}
+
+// ---------------------------------------------------------------------
+// 手机端（Discourse 在 640px 以下的 .topic-post）：头部 48px
+// 头像，名称以 14px 堆叠，正文占满整宽。
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyTopic {
+    .Post {
+      padding: 15px 0 8px;
+    }
+
+    // 头像在左侧，脱离文档流；右侧第一行为名称和日期，
+    // 次要名称和分组堆叠在下方。
+    .Post-header {
+      position: relative;
+      min-height: 48px;
+      margin-bottom: 12px;
+      padding: 0 0 0 56px;
+      font-size: calc(0.8706rem * var(--lcoy-text-scale, 1));
+      line-height: 1.2;
+
+      > ul {
+        align-items: flex-start;
+        column-gap: 0.26em;
+        row-gap: 0;
+      }
+
+      .PostUser,
+      .PostUser-name {
+        position: static;
+      }
+
+      .Post-avatar {
+        .Avatar--size(48px);
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0;
+      }
+
+      .item-user {
+        order: 1;
+      }
+
+      .item-lcoyReplyTo,
+      .item-edited,
+      .item-meta {
+        order: 2;
+      }
+
+      .item-lcoyReplyTo {
+        margin: 0 0 0 auto;
+      }
+
+      > ul > li.item-lcoyNames,
+      > ul > li.item-lcoyNames:has(~ li.item-lcoyUserTitle) {
+        margin-right: 0;
+      }
+
+      // 名称始终把日期推到第一行右侧——即使
+      // 没有次要名称（此前日期紧贴名称："beatriz 7 h"）。
+      > ul > li.item-user,
+      > ul > li.item-user:not(:has(~ li.item-lcoyNames)),
+      > ul > li.item-user:not(:has(~ li.item-lcoyNames)):has(~ li.item-lcoyUserTitle) {
+        margin-right: auto;
+      }
+
+      .item-lcoyReplyTo ~ .item-edited,
+      .item-lcoyReplyTo ~ .item-meta {
+        margin-left: 0;
+      }
+
+      .item-lcoyNames {
+        order: 3;
+        flex-basis: 100%;
+      }
+
+      // 手机端标题堆叠在名称下方，与 Discourse 一致。
+      .item-lcoyUserTitle,
+      .item-lcoyNames + .item-lcoyUserTitle,
+      .item-user + .item-lcoyUserTitle {
+        order: 4;
+        flex-basis: 100%;
+        margin: 0;
+        line-height: 1.2;
+      }
+    }
+
+    // 侧边头像的 flair 无处可放：手机端头像位于
+    // 头部，flair 是徽章的（否则会多出一个
+    // 独立图标在右上角、日期上方）。在线环保留：
+    // 它就是头像，不是单独的图标。
+    .Post-side .LcoyPostAvatar-flair {
+      display: none;
+    }
+
+    .LcoyPostNames {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      white-space: normal;
+    }
+
+    .LcoyPostNames-username {
+      font-weight: 700;
+    }
+
+    .LcoyPostNames-username {
+      line-height: 1.2;
+    }
+
+    .PostStream-timeGap {
+      padding-left: 0;
+    }
+  }
+
+  .Post-actions:has(.LcoyPostAction) {
+    margin-top: var(--lcoy-space-3);
+
+    > ul {
+      gap: 0;
+    }
+  }
+}
+
+// Discourse 中只有属于带图标分组的用户才有 flair：无图标
+// 的分组（如"成员"）不会在头像上绘制空圆。
+.PostUser-badges li:not(:has(.icon)) {
+  display: none;
+}
+
+@media @phone {
+  // 头部 48px 头像下角的 flair。
+  .LcoyTopic .Post-header .PostUser-badges {
+    position: absolute;
+    top: 28px;
+    left: 32px;
+    width: auto;
+    margin: 0;
+
+    > li:has(.icon) ~ li {
+      display: none;
+    }
+
+    .Badge {
+      .Badge--size(20px);
+      box-shadow: 0 0 0 2px var(--lcoy-surface);
+    }
+  }
+}
+
+// 事件帖的"…"（删除提示）：低调、灰色、无背景，
+// 仅在鼠标悬停该行时出现（或菜单打开/聚焦时）。
+.LcoyTopic .EventPost {
+  .Post-controls {
+    opacity: 0;
+    transition: opacity 0.15s;
+
+    .Dropdown-toggle {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: none !important;
+      color: var(--lcoy-primary-medium);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--lcoy-hover) !important;
+        color: var(--lcoy-primary);
+      }
+    }
+  }
+
+  &:hover .Post-controls,
+  .Post-controls:focus-within,
+  .Post-controls.open {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .LcoyTopic .EventPost .Post-controls {
+    opacity: 1;
+  }
+}
+
+// 连续事件相邻显示，与消息的事件列表一致：
+// 彼此之间无线条（仅第一个之前和最后一个之后）。
+.LcoyTopic .PostStream-item:has(> .EventPost):has(+ .PostStream-item > .EventPost)::after {
+  display: none;
+}
+
+// 连接事件图标和发帖者头像的线条，位于中部高度：
+// 从图标右侧（在列中居中）到头像前 3px（头像
+// 列与内容相距 12px）。
+.LcoyTopic .EventPost .Post-side {
+  position: relative;
+  align-self: stretch;
+  align-items: center;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 0.5 * var(--lcoy-font-down-1) * 1.1 + 4px);
+    right: -9px;
+    height: 1px;
+    background: var(--lcoy-primary-low-mid);
+    transform: translateY(-0.5px);
+  }
+}
+
+// 事件"…"位于文字行中，高度居中，更小且无
+// 偏移（核心将其定位为普通帖子的方式）。
+// 相对定位：菜单（绝对定位）紧贴"…"展开，而非帖子右端。
+.LcoyTopic .EventPost .Post-controls {
+  position: relative;
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  margin: 0 0 0 2px;
+
+  .Dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  // "…"紧跟文字之后：菜单在其下方向右展开。
+  .Dropdown-menu {
+    top: 100%;
+    right: auto;
+    left: 0;
+    margin-top: 4px;
+  }
+}
+
+// 固定头像（后台：topic_sticky_avatar）：在长帖子中头像
+// 随滚动移动，紧贴头部下方，直到帖子结束。
+.Lcoy--stickyAvatar .LcoyTopic .LcoyPostAvatar {
+  position: sticky;
+  top: calc(var(--lcoy-header-height, 52px) + 13px);
+}
+
+// "…"位于 aside.Post-actions > ul > li（核心的块和 inline-block）：
+// 基线曾把按钮向上推。全部改为 flex 并居中。
+.LcoyTopic .EventPost .Post-actions {
+  position: static;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+
+  > ul,
+  > ul > li {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+  }
+}
+
+// 帖子中不再有在线小圆点：在线者显示在头像
+// 周围的环中（见下）——核心放在名称旁的点消失。
+.LcoyTopic .Post-header .UserOnline {
+  display: none !important;
+}
+
+// 在线状态，与 meta.discourse.org 一致（discourse-whos-online，"ring"）：帖子
+// 头像周围一圈绿色环，与头像之间隔 1px 卡片色。
+// 手机端可见的头像是头部的（侧栏的被隐藏）：
+// 环加在它上面，通过核心留在名称旁的在线点。
+.LcoyPostAvatar--online .Post-avatar,
+.LcoyPostAvatar--online > a .Avatar,
+.LcoyTopic .Post-header:has(.UserOnline) .Post-avatar {
+  box-shadow:
+    0 0 0 1px var(--lcoy-surface),
+    0 0 0 3px var(--online-user-circle-color, var(--lcoy-success));
+}
+
+// 讨论地图头像上同样的环，更细。
+.LcoyTopicMap-poster--online .Avatar {
+  box-shadow:
+    0 0 0 1px var(--lcoy-surface),
+    0 0 0 2px var(--online-user-circle-color, var(--lcoy-success));
+}
+
+// 仍在加载的帖子（核心的 LoadingPost：头部含头像和一条
+// 占位条，正文含三条）采用真实帖子的尺寸，使加载完成时
+// 不发生跳动（在 1440px 和 390px 下对照真实帖子测量）：
+// - 平板/桌面：上方 13px 间距，头像在 45px 列中下移 4px
+// （.Post-side 的内边距），名称位于 58px 头部的中部，
+// 文字距头部 16px、行高 24px（16px/1.5），以及
+// 下方操作栏的空间（20 + 38）和帖子的 20px；
+// - 手机端：头像位于 48px 头部，名称在其旁（56px），
+// 文字占满整宽、位于下方 12px，以及操作空间（12 + 38 + 8）。
+// 每条占位条位于它所代表的文字行中间。
+.LcoyTopic .LoadingPost {
+  --lcoy-skel-line: calc(var(--lcoy-post-font, 16px) * 1.5);
+  padding: 13px 0 78px;
+  animation: none;
+
+  .Post-header {
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  .Post-header .Avatar,
+  .PostUser-avatar {
+    position: static;
+    width: 48px;
+    height: 48px;
+    margin: 0;
+    float: none;
+  }
+
+  .Post-header .fakeText {
+    display: block;
+    width: 180px;
+    max-width: 60%;
+    height: 14px;
+    margin: 0;
+    border-radius: 6px;
+  }
+
+  .Post-body {
+    margin: 0;
+    padding: 16px 0 4px;
+
+    // 每条占位条占一行高度，中间绘制 12px
+    // （背景仅在内容盒内）：没有会叠加或合并的外边距。
+    .fakeText {
+      display: block;
+      box-sizing: border-box;
+      height: var(--lcoy-skel-line);
+      margin: 0;
+      padding: ~"calc((var(--lcoy-skel-line) - 12px) / 2)" 0;
+      background-clip: content-box;
+      border-radius: 6px;
+
+      &:nth-child(1) { width: 92%; }
+      &:nth-child(2) { width: 84%; }
+      &:nth-child(3) { width: 55%; }
+    }
+  }
+}
+
+@media @tablet-up {
+  .LcoyTopic .LoadingPost {
+    display: grid;
+    grid-template-columns: var(--lcoy-post-avatar, 45px) minmax(0, 1fr);
+    grid-template-rows: 58px auto;
+    column-gap: var(--lcoy-post-gap, 12px);
+
+    .Post-header {
+      display: contents;
+    }
+
+    .Post-header .Avatar,
+    .PostUser-avatar {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+      margin-top: 4px;
+    }
+
+    // 真实名称（高度 22px）从头部顶部下方 16px 开始。
+    .Post-header .fakeText {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+      margin-top: 20px;
+    }
+
+    // 真实正文右侧的 12px 间距（.Post-main）。
+    .Post-body {
+      grid-column: 2;
+      grid-row: 2;
+      margin-right: var(--lcoy-post-gap, 12px);
+    }
+  }
+
+  // 使用时间线时，头像成为其节点：见 PostDirect.less。
+}
+
+@media @phone {
+  .LcoyTopic .LoadingPost {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-rows: 48px auto;
+    column-gap: 8px;
+    padding: 15px 0 58px;
+
+    .Post-header {
+      display: contents;
+    }
+
+    .Post-header .Avatar,
+    .PostUser-avatar {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    // 名称位于头像旁（距边缘 56px），在其高度中部。
+    .Post-header .fakeText {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    // 文字占满整宽，位于头部下方 12px。
+    .Post-body {
+      grid-column: ~"1 / -1";
+      grid-row: 2;
+      padding: 12px 0 0;
+    }
+  }
+}
+
+// 隐藏的帖子（折叠）：核心隐藏侧列的一切，依赖
+// 头部的小头像，而主题在桌面端将其隐藏。这里侧边头像
+// 仍可见，像隐藏帖子的其余部分一样变暗。
+.LcoyTopic .Post--hidden:not(.revealContent) .Post-side > .LcoyPostAvatar {
+  display: block;
+  opacity: 0.5;
+}
