@@ -1,0 +1,1096 @@
+// =====================================================================
+// 话题页的附加内容：话题地图、带通知控制的
+// 话题页脚按钮、推荐话题、新回复
+// 栏以及用户卡片。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 话题地图（Discourse 的 topic-map）：行之间的横带，无盒子。
+// 在第一个帖子下方，它从文字列开始（57px）；在话题
+// 末尾，则从流的边缘开始。
+// ---------------------------------------------------------------------
+.LcoyTopicMap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 0.75em;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.5em 0;
+  border-top: 1px solid var(--lcoy-border);
+  border-bottom: 1px solid var(--lcoy-border);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.LcoyTopicMap--op {
+  border-bottom: 0;
+}
+
+@media @tablet-up {
+  .LcoyTopicMap--op {
+    padding-left: calc(var(--lcoy-post-avatar, 45px) + var(--lcoy-post-gap, 12px));
+  }
+}
+
+// 核心在第一个帖子下方的分隔线会与地图边界叠在一起。
+.LcoyTopic .PostStream-item:has(+ .PostStream-afterFirstPost)::after {
+  display: none;
+}
+
+.LcoyTopicMap--bottom {
+  margin-top: 0;
+}
+
+// 访客没有"回复…"框：最后一个帖子没有下边线，
+// 由地图（或页脚）的边框承担这一角色。
+.LcoyTopic--guest .PostStream-item:has(+ .PostStream-item > .ReplyPlaceholder)::after {
+  display: none;
+}
+
+.LcoyTopicMap-stats {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75em;
+  min-width: 0;
+}
+
+.LcoyTopicMap-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--lcoy-primary-high);
+  font: inherit;
+  line-height: normal;
+  cursor: default;
+}
+
+button.LcoyTopicMap-stat {
+  cursor: pointer;
+}
+
+.LcoyTopicMap-number {
+  font-size: 1.1487em;
+  line-height: 1.2;
+  color: var(--lcoy-link);
+  white-space: nowrap;
+}
+
+.LcoyTopicMap-label {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+// 只有一个数字："123 次浏览"排成一行。
+.LcoyTopicMap-stats--single .LcoyTopicMap-stat {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.25em;
+
+  .LcoyTopicMap-number,
+  .LcoyTopicMap-label {
+    font-size: 1em;
+    color: var(--lcoy-primary-high);
+  }
+}
+
+// 参与最多者的头像（--users-summary）：2em，无 flair。
+.LcoyTopicMap-users {
+  display: flex;
+  flex: 1 2 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em;
+  min-width: 2em;
+  // 四周 3px 间距（由负外边距抵消）：overflow 会隐藏
+  // 换行的行，但会裁掉头像的在线环。
+  box-sizing: content-box;
+  height: 2em;
+  margin: -3px;
+  padding: 3px;
+  overflow: hidden;
+
+  .Avatar {
+    .Avatar--size(32px);
+  }
+}
+
+// 数字的菜单（fk-d-menu），带 Discourse 的 float-down。
+.LcoyTopicMap-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  z-index: var(--zindex-dropdown);
+  min-width: 300px;
+  max-width: ~"min(400px, calc(100vw - 32px))";
+  padding: 0.75em 0;
+  box-sizing: border-box;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  box-shadow: var(--lcoy-shadow-dropdown);
+  animation: lcoyFloatDown 250ms ease forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LcoyTopicMap-menu {
+    animation-duration: 0s;
+  }
+}
+
+.LcoyTopicMap-menuTitle {
+  margin: 0;
+  padding: 0 1rem 0.5em;
+  border-bottom: 1px solid var(--lcoy-border);
+  font-size: 1.1487em;
+  font-weight: 700;
+  color: var(--lcoy-primary);
+}
+
+.LcoyTopicMap-liked {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li:not(:last-of-type) a {
+    border-bottom: 1px solid var(--lcoy-border);
+  }
+
+  a {
+    display: grid;
+    grid-template-areas: "user likes" "post post";
+    grid-template-columns: auto 1fr;
+    gap: 0.25em;
+    padding: 0.75em 1rem;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-hover);
+      text-decoration: none;
+    }
+  }
+}
+
+.LcoyTopicMap-likedUser {
+  grid-area: user;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 700;
+  color: var(--lcoy-primary-high);
+
+  .Avatar {
+    .Avatar--size(20px);
+  }
+}
+
+.LcoyTopicMap-likedCount {
+  grid-area: likes;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 0.25em;
+  color: var(--lcoy-primary-medium);
+
+  .icon {
+    font-size: var(--lcoy-font-down-1);
+    color: var(--lcoy-topic-love);
+  }
+}
+
+.LcoyTopicMap-likedExcerpt {
+  grid-area: post;
+  margin: 0;
+  padding-left: 2em;
+  overflow-wrap: anywhere;
+  color: var(--lcoy-primary-high);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.LcoyTopicMap-usersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  padding: 0.75em 1rem 0;
+
+  .LcoyTopicMap-poster {
+    position: relative;
+    display: block;
+  }
+
+  .Avatar {
+    .Avatar--size(36px);
+  }
+}
+
+.LcoyTopicMap-postCount {
+  position: absolute;
+  top: -0.15em;
+  right: -0.25em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15em 0.4em 0.2em;
+  border-radius: 1em;
+  background: var(--lcoy-primary);
+  color: var(--lcoy-surface);
+  opacity: 0.8;
+  font-size: var(--lcoy-font-down-2);
+  line-height: 1.2;
+}
+
+@media @phone {
+  .LcoyTopicMap {
+    font-size: var(--lcoy-font-down-1);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 话题末尾：按钮和通知
+// ---------------------------------------------------------------------
+.LcoyTopicEnd {
+  margin-top: 0;
+}
+
+.LcoyTopicFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lcoy-space-3);
+  padding: var(--lcoy-space-3) 0 0;
+}
+
+.LcoyTopicFooter-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--lcoy-space-2);
+}
+
+// 访客的 #topic-footer-buttons：只有"回复"，右对齐。
+.LcoyTopicFooter--guest .LcoyTopicFooter-main {
+  justify-content: flex-end;
+}
+
+// Discourse 的胶囊（Horizon 的 btn-default）：primary-300 边框，
+// 卡片背景，16px 的图标 + 文字；"回复"为主按钮。
+.LcoyTopicFooter-button.Button,
+.LcoyTopicFooter-reply.Button,
+.LcoyTopicFooter-notifications .LcoyNotifications > .Dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  height: 38px;
+  padding: 8px 0.65em;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font-size: 16px;
+  line-height: 1;
+  box-shadow: none;
+  transition: none;
+
+  .Button-icon {
+    margin: 0;
+    color: var(--lcoy-primary);
+    font-size: 1em;
+  }
+
+  .Button-caret {
+    margin: 0;
+    color: var(--lcoy-primary-high);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+    color: var(--lcoy-primary);
+  }
+}
+
+.LcoyTopicFooter-reply.Button--primary {
+  border-color: transparent;
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+
+  .Button-icon {
+    color: var(--lcoy-accent-text);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
+  }
+}
+
+// "已收藏"：高亮色的实心书签。
+.LcoyTopicFooter-button--active.Button .Button-icon {
+  color: var(--lcoy-accent);
+}
+
+.LcoyTopicFooter-more .Dropdown-toggle.Button--icon {
+  width: 38.78px;
+  padding: 0;
+  justify-content: center;
+}
+
+.LcoyTopicFooter-notifications {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--lcoy-space-2) var(--lcoy-space-3);
+}
+
+.LcoyTopicFooter-reason {
+  flex: 1 1 300px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--lcoy-primary-high);
+}
+
+// 通知菜单：每个级别都有标题和描述。
+.LcoyNotifications-menu {
+  min-width: 300px;
+  max-width: 360px;
+
+  .DetailedDropdownItem-description {
+    white-space: normal;
+  }
+}
+
+.LcoyNotifications--watching > .Dropdown-toggle .Button-icon {
+  color: var(--lcoy-accent);
+}
+
+.LcoyNotifications--muted > .Dropdown-toggle .Button-icon {
+  color: var(--lcoy-primary-medium);
+}
+
+@media @phone {
+  // 与手机端 Discourse 一致：胶囊只显示图标；"回复"
+  // 仍保留文字。
+  .LcoyTopicFooter-button .Button-label {
+    .lcoy-topic-sr-only();
+  }
+
+  .LcoyTopicFooter-button.Button {
+    width: 38.78px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .LcoyTopicFooter-reply.Button {
+    margin-left: auto;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 推荐话题（Discourse 的 more-topics）：列表的表格，标题
+// 为 16px * 1.17，行间距 20px。
+// ---------------------------------------------------------------------
+.LcoySuggested {
+  margin-top: 22px;
+  font-size: 16px;
+}
+
+.LcoySuggested-title {
+  margin: 0 0 var(--lcoy-space-2);
+  font-size: 1.17em;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+}
+
+.LcoySuggested-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+
+  th {
+    padding: 12px 4px 12px 12px;
+    border: 0;
+    font-size: var(--lcoy-font-down-1);
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: left;
+    color: var(--lcoy-primary-high);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--lcoy-border);
+
+    &:last-of-type {
+      border-bottom-color: var(--lcoy-primary-300);
+    }
+  }
+
+  td {
+    padding: 20px 4px 20px 12px;
+    border: 0;
+    vertical-align: middle;
+  }
+}
+
+// "建议 | ✨ 相关"标签页取代"话题"标题。
+.LcoySuggested-table th.LcoySuggested-topicHead:has(.LcoySuggested-tabs) {
+  padding: 0;
+}
+
+.LcoySuggested-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoySuggested-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 12px 0.8em;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--lcoy-primary);
+  font: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+
+  .icon {
+    color: var(--lcoy-primary-high);
+  }
+
+  li:first-child > & {
+    padding-left: 12px;
+  }
+
+  // Horizon 的 nav-pills 下划线仅在悬停时出现。
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-accent);
+
+    .icon {
+      color: currentcolor;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: currentcolor;
+    }
+  }
+
+  &.active {
+    color: var(--lcoy-accent);
+
+    .icon {
+      color: currentcolor;
+    }
+  }
+}
+
+.LcoySuggested-table .LcoySuggested-num {
+  width: 76px;
+  padding: 12px 4px;
+  text-align: center;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoySuggested-table td.LcoySuggested-num {
+  padding: 20px 4px;
+}
+
+.LcoySuggested-table .LcoySuggested-replies {
+  font-weight: 700;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoySuggested-table .LcoySuggested-views {
+  color: var(--lcoy-primary-high);
+}
+
+.LcoySuggested-link {
+  font-size: 1.1487em;
+  line-height: 1.2;
+  color: var(--lcoy-primary);
+  overflow-wrap: anywhere;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+
+  &:visited {
+    color: var(--lcoy-primary-medium);
+  }
+
+  .LcoySuggested-row--unread & {
+    font-weight: 600;
+  }
+}
+
+.LcoySuggested-unread {
+  display: inline-block;
+  min-width: 1.3em;
+  margin-left: var(--lcoy-space-2);
+  padding: 0.15em 0.35em;
+  box-sizing: border-box;
+  border-radius: 1em;
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+  font-size: var(--lcoy-font-down-1);
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  vertical-align: 0.1em;
+}
+
+.LcoySuggested-badges {
+  margin-top: 4px;
+  font-size: var(--lcoy-font-down-1);
+
+  &:empty {
+    display: none;
+  }
+}
+
+@media @phone {
+  .LcoySuggested-table .LcoySuggested-num {
+    width: 56px;
+  }
+
+  .LcoySuggested-table td {
+    padding: 12px 4px 12px 0;
+  }
+
+  .LcoySuggested-link {
+    font-size: 1em;
+  }
+}
+
+// ---------------------------------------------------------------------
+// "有 N 条新回复"
+// ---------------------------------------------------------------------
+.LcoyNewReplies {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--lcoy-space-4) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--zindex-header);
+  transform: translateX(-50%);
+  animation: lcoyNewRepliesIn 0.2s ease-out;
+}
+
+@keyframes lcoyNewRepliesIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.LcoyNewReplies-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+  padding: var(--lcoy-space-2) var(--lcoy-space-4);
+  border: 0;
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+  box-shadow: var(--lcoy-shadow-dropdown);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-accent-active);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 用户卡片（Discourse 的 .user-card）：宽 39em，大圆角，
+// 8em 头像高出卡片 3.3em，内容位于
+// 覆盖个人资料背景图的 85% 卡片色遮罩上。
+// ---------------------------------------------------------------------
+.LcoyUserCard {
+  position: absolute;
+  z-index: var(--zindex-dropdown);
+  width: 39em;
+  max-width: calc(100vw - 32px);
+  margin-top: 3.3em;
+  box-sizing: border-box;
+  border-radius: 16px;
+  // .fk-d-menu__inner-content 的边框（content-border-color）：没有它，
+  // 深色模式下卡片会与同色帖子融为一体。
+  border: 1px solid var(--lcoy-border);
+  background: var(--lcoy-surface) center center;
+  background-size: cover;
+  box-shadow: var(--lcoy-shadow-dropdown);
+  color: var(--lcoy-primary);
+  font-size: 16px;
+  line-height: 1.4;
+  animation: lcoyFloatDown 250ms ease forwards;
+}
+
+// 不再使用个人资料功能的双层遮罩：遮罩就是内容层。
+.LcoyUserCardRoot .LcoyUserCard.LcoyProfile--hasCardBg {
+  background-image: var(--lcoy-user-card-bg);
+}
+
+// Discourse 菜单的 float-down（fk-d-menu.-animated），用户
+// 卡片也使用它。
+@keyframes lcoyFloatDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LcoyUserCard {
+    animation-duration: 0s;
+  }
+}
+
+.LcoyUserCard-content {
+  padding: 10px;
+  border: 5px solid var(--lcoy-surface);
+  border-radius: 16px;
+  background: ~"color-mix(in srgb, var(--lcoy-surface) 85%, transparent)";
+}
+
+.LcoyUserCard-first {
+  display: flex;
+  align-items: flex-start;
+}
+
+.LcoyUserCard-avatarWrapper {
+  position: relative;
+  flex: 0 0 auto;
+  margin-top: -3.3em;
+}
+
+.LcoyUserCard-avatar {
+  display: block;
+  border-radius: 50%;
+
+  .Avatar {
+    .Avatar--size(128px);
+  }
+}
+
+// 分组 flair：40px，位于头像下角。
+.LcoyUserCard-flair {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 24px;
+  background: var(--lcoy-surface);
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
+  color: var(--group-color, var(--lcoy-accent));
+  font-size: 22px;
+}
+
+.LcoyUserCard-names {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: 1.25em;
+}
+
+// 大号名称与图标（验证徽章，utils/
+// userIcons）在同一行，与名称高度居中对齐。
+.LcoyUserCard-nameLine {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  min-width: 0;
+  font-size: 2.0736em;
+  font-weight: 700;
+  line-height: 1.2;
+
+  .LcoyUserIcons {
+    flex-shrink: 0;
+  }
+}
+
+.LcoyUserCard-name {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  color: var(--lcoy-primary);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+
+// 有空间时名称不截断：最多换两行后才
+// 使用省略号（显示名称通常包含名和姓）。
+.LcoyUserCard-username {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.LcoyUserCard-secondary {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.1305em;
+  color: var(--lcoy-primary);
+}
+
+// 右侧："发消息"（主按钮）和"话题中的 N 篇帖子"，胶囊
+// 宽度在 150 到 225px 之间占满。
+.LcoyUserCard-controls {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 150px;
+  max-width: 225px;
+
+  // 只有"…"（没有"发消息"/"聊天"）：不预留按钮宽度，
+  // 那会留下空白并挤压名称。
+  &:not(:has(> .Button)) {
+    min-width: 0;
+  }
+
+  > .Button,
+  > .Dropdown {
+    width: 100%;
+    margin: 0 0 5px;
+  }
+
+  > .Button {
+    justify-content: center;
+    height: 38px;
+    padding: 8px 0.65em;
+    border-radius: var(--lcoy-radius-pill);
+    font-size: 16px;
+  }
+
+  .LcoyUserCard-filter.Button {
+    border: 1px solid var(--lcoy-primary-300);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+
+    .Button-icon {
+      color: var(--lcoy-primary);
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-hover);
+    }
+  }
+
+  .LcoyUserCard-more {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.LcoyUserCard-row {
+  margin-top: 0.5em;
+}
+
+// 简介：两行，链接为高亮色。
+.LcoyUserCard-bio {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: var(--lcoy-link);
+  }
+}
+
+.LcoyUserCard-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15em 0.5em;
+  color: var(--lcoy-primary);
+}
+
+.LcoyUserCard-metaLabel {
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyUserCard-metaValue {
+  color: var(--lcoy-primary);
+}
+
+.LcoyUserCard-metaValue--accent {
+  color: var(--lcoy-link);
+}
+
+.LcoyUserCard-online .LcoyUserCard-onlineNow {
+  color: var(--online-user-circle-color, #2ecc71);
+}
+
+@media @phone {
+  // 手机端卡片是居中的盒子，与 Discourse 一致。
+  .LcoyUserCard {
+    position: fixed;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+    width: 95vw;
+    max-height: 85vh;
+    margin-top: 0;
+    overflow: auto;
+    animation: none;
+  }
+
+  .LcoyUserCard-avatarWrapper {
+    margin-top: 0;
+  }
+
+  .LcoyUserCard-avatar .Avatar {
+    .Avatar--size(80px);
+  }
+
+  .LcoyUserCard-first {
+    flex-wrap: wrap;
+  }
+
+  .LcoyUserCard-nameLine {
+    font-size: 1.5199em;
+  }
+
+  .LcoyUserCard-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    width: 100%;
+    max-width: none;
+    margin-top: 1em;
+
+    > .Button {
+      flex: 1 0 45%;
+      width: auto;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 谁点赞了 / 谁回应了（discourse-reactions 的 popover）：白色
+// 卡片，圆角 8，阴影，箭头指向计数；32px 头像，名称和
+// 心形（或 emoji）在右侧；约 8 人后滚动。
+// ---------------------------------------------------------------------
+.LcoyReactors {
+  position: absolute;
+  z-index: var(--zindex-dropdown);
+  min-width: 260px;
+  max-width: calc(100vw - 16px);
+  padding: 4px 0;
+  box-sizing: border-box;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  box-shadow: var(--lcoy-shadow-dropdown);
+  animation: lcoyFloatDown 250ms ease forwards;
+
+  .LoadingIndicator {
+    margin: var(--lcoy-space-3) auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LcoyReactors {
+    animation-duration: 0s;
+  }
+}
+
+.LcoyReactors-arrow {
+  position: absolute;
+  top: -6px;
+  left: var(--lcoy-arrow-left, 50%);
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-top: 1px solid var(--lcoy-border);
+  border-left: 1px solid var(--lcoy-border);
+  background: var(--lcoy-surface);
+  transform: rotate(45deg);
+}
+
+.LcoyReactors-list {
+  position: relative;
+  max-height: calc(8 * 44px);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.LcoyReactors-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px;
+  color: var(--lcoy-primary);
+  font-size: 16px;
+  text-decoration: none;
+
+  .Avatar {
+    .Avatar--size(32px);
+    flex-shrink: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+
+.LcoyReactors-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoyReactors-icon {
+  display: inline-flex;
+  margin-left: var(--lcoy-space-4);
+
+  img,
+  .emoji {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.LcoyReactors-heart {
+  color: #dd2e44;
+  font-size: 20px;
+}
+
+// ---------------------------------------------------------------------
+// "显示 @某某 的 N 篇帖子 · 查看全部"（卡片筛选）
+// ---------------------------------------------------------------------
+.LcoyAuthorFilter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--lcoy-space-2);
+  margin: 0 0 var(--lcoy-space-3);
+  padding: var(--lcoy-space-2) var(--lcoy-space-3);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-very-low);
+  font-size: 16px;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyAuthorFilter-clear.Button {
+  padding: 0;
+  color: var(--lcoy-link);
+  font-size: inherit;
+}
+
+.LcoyTopic--authorFilter {
+  .PostStream-item:has(> .LcoyPost--filteredOut),
+  .PostStream-item:has(> .EventPost),
+  .PostStream-timeGap,
+  .PostStream-afterFirstPost {
+    display: none;
+  }
+}
+
+// 卡片的资料行和元数据行各项之间的"•"（独立
+// 元素，位于链接之外；两侧间距来自行的 gap）。
+.LcoyUserCard-sep {
+  color: var(--lcoy-primary-low-mid);
+  user-select: none;
+}
+
+// 卡片左侧的小箭头，指向它来源的头像
+// （高度由 JS 通过 --usercard-arrow 设置）。两个三角形：边框，
+// 以及其上的卡片色填充。
+.LcoyUserCard.LcoyUserCard--arrow {
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: var(--usercard-arrow, 40px);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  &::before {
+    left: -10px;
+    border-width: 9px 10px 9px 0;
+    border-color: transparent var(--lcoy-border) transparent transparent;
+  }
+
+  &::after {
+    left: -9px;
+    border-width: 8px 9px 8px 0;
+    border-color: transparent var(--lcoy-surface) transparent transparent;
+  }
+}

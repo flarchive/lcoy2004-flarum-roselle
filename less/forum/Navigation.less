@@ -1,0 +1,486 @@
+// =====================================================================
+// 列表导航栏（Horizon 的 `.list-controls`）：分类/标签
+// 下拉菜单、带下划线的标签页、圆形按钮和"新话题"。
+// 数值取自 meta.discourse.org 的计算样式：上方 16px 内边距，
+// 控件 38px，到列表头部 12px。在 Meta 上该栏随页面
+// 滚动；固定在顶部（如纯 Horizon 中）是可选项。
+// =====================================================================
+
+@lcoy-nav-height: 38px;
+
+.LcoyNav {
+  // 位于卡片顶部（.Page-container 有 16px 内边距）：负外边距
+  // 将背景拉伸到边缘，使栏吸附时列表不会从
+  // 两侧露出。
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin: -16px -16px 0;
+  padding: 16px 16px 12px;
+  background: var(--lcoy-surface);
+  border-radius: var(--lcoy-radius-large) var(--lcoy-radius-large) 0 0;
+  // 没有 Horizon 的 `.list-controls` 在栏下的阴影：用户
+  // 更喜欢干净的栏，仅由列标题分隔。
+  // 使用 rem，与列表一致：主题的 body 是 15px，而 Discourse 以 16px 计量。
+  font-size: 1rem;
+
+  &--sticky {
+    position: sticky;
+    top: var(--lcoy-header-height, 52px);
+  }
+}
+
+.LcoyNav-start,
+.LcoyNav-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.LcoyNav-start {
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  column-gap: 20px;
+}
+.LcoyNav-end {
+  flex: 0 0 auto;
+}
+
+// ---------------------------------------------------------------------
+// "分类 ›" / "子分类 ›" / "标签 ›" 下拉菜单：Discourse 的
+// `category-drop`/`tag-drop`，基于编辑器的 SelectKit。
+// 打开状态的 select-kit 尺寸取自 meta.discourse.org。
+// ---------------------------------------------------------------------
+.LcoyNav-dropdowns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.LcoyNav .LcoyNav-drop {
+  flex: none;
+
+  // `.list-controls .combo-box .combo-box-header`：38px，内边距 8px，边框
+  // primary-300，圆角 8，字重 500；箭头 `angle-right` 变为 `angle-down`。
+  .LcoySelectKit-header {
+    gap: 0;
+    width: auto;
+    height: @lcoy-nav-height;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.25;
+    white-space: nowrap;
+    transition: none;
+
+    // 与 Meta 一致：悬停只切换背景（primary-100）；键盘焦点
+    // 点亮边框，周围无环。
+    &:hover {
+      background: var(--lcoy-primary-100);
+    }
+
+    &:focus-visible {
+      outline: 0;
+      border-color: var(--lcoy-accent);
+      box-shadow: none;
+    }
+  }
+
+  // 展开时：背景 primary-100（uc-modernize 的 `:hover`），边框相同。
+  &.is-expanded > .LcoySelectKit-header {
+    background: var(--lcoy-primary-100);
+    outline: 0;
+  }
+
+  .LcoySelectKit-headerContent {
+    flex: 0 1 auto;
+    max-width: 220px;
+  }
+
+  .LcoySelectKit-caret {
+    box-sizing: content-box;
+    width: 16px;
+    margin-left: 0;
+    padding-left: 5px;
+    font-size: 0.9em;
+    color: var(--lcoy-primary-high);
+    text-align: center;
+  }
+
+  // 激活的筛选：边框点亮；所选标签同样使用该颜色。
+  &.has-selection > .LcoySelectKit-header {
+    border-color: var(--lcoy-accent);
+  }
+  &.LcoyNav-drop--tags.has-selection > .LcoySelectKit-header {
+    color: var(--lcoy-hover-accent-text);
+  }
+
+  // 主体：按钮下方 3px，`width: max-content` 最大 600px，边框
+  // primary-low，圆角 8 和 `--shadow-dropdown`。
+  .LcoySelectKit-body {
+    top: ~"calc(100% + 3px)";
+    width: max-content;
+    min-width: 100%;
+    max-width: 600px;
+    border: 1px solid var(--lcoy-primary-low);
+    border-radius: var(--lcoy-radius);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    font-weight: normal;
+  }
+
+  .LcoySelectKit-filter {
+    padding: 4px 8px;
+  }
+
+  .LcoySelectKit-filterInput {
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .LcoySelectKit-filterIcon {
+    margin-left: 4px;
+    font-size: 15px;
+    color: var(--lcoy-primary-medium);
+  }
+
+  // 列表：最高 40vh，搜索下方无分隔线，以及 select-kit 的
+  // 10px 灰色滚动条，圆角 5。
+  .LcoySelectKit-collection {
+    max-height: 40vh;
+    border-top: 0;
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+
+    &::-webkit-scrollbar {
+      appearance: none;
+      width: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background: var(--lcoy-primary-medium);
+      cursor: pointer;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+
+  &.is-above .LcoySelectKit-collection {
+    border-bottom: 0;
+  }
+
+  // `.select-kit-row`：8px，文字 primary-high；悬停项和选中项使用
+  // --d-hover/--d-selected 的淡紫色（高亮色 15%）。
+  .LcoySelectKit-row {
+    padding: 8px;
+    color: var(--lcoy-primary-high);
+    line-height: 1.4;
+
+    &.is-highlighted,
+    &.is-selected {
+      background: ~"oklch(from var(--lcoy-accent) l c h / 0.15)";
+    }
+  }
+
+  .LcoySelectKit-empty {
+    padding: 8px;
+  }
+}
+
+[data-theme^=dark] .LcoyNav::before {
+  background: linear-gradient(~"oklch(from var(--lcoy-accent) l c h / 0.05)", transparent);
+}
+
+[data-theme^=dark] .LcoyNav .LcoyNav-drop .LcoySelectKit-body {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.25);
+}
+
+// 头部和行中的徽章：图标 0.74em，到名称 0.33em。
+.LcoyNav-dropBadge,
+.LcoyNav-dropStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.33em;
+  min-width: 0;
+
+  .LcoyCategorySymbol {
+    width: auto;
+    height: auto;
+
+    .icon {
+      font-size: 0.74em;
+    }
+  }
+}
+.LcoyNav-dropBadge // "标签"行/头部中 Flarum 标签的图标。
+.LcoyNav-dropTagIcon {
+  display: inline-flex;
+  align-self: center;
+  font-size: 0.74em;
+  color: var(--tag-color, var(--lcoy-primary-medium));
+}
+.LcoyNav-dropName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.LcoyNav-drop:not(.LcoyNav-drop--tags).has-selection .LcoyNav-dropBadge {
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyNav-dropRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.LcoyNav-dropStatus {
+  align-items: baseline;
+  max-width: 100%;
+
+  .LcoyCategorySymbol {
+    align-self: center;
+  }
+}
+.LcoyNav-dropName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+// "× 264"：--font-down-1，primary-medium，距名称 0.5em。
+.LcoyNav-dropCount {
+  margin-left: 0.17em;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+  white-space: nowrap;
+}
+.LcoyNav-dropDesc {
+  margin-top: 2px;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+  white-space: normal;
+}
+// "移除筛选"、"无子分类"、"无标签"。
+.LcoyNav-dropSpecial {
+  color: var(--lcoy-hover-accent-text);
+  font-weight: 700;
+}
+// `.filter-for-more`
+.LcoyNav-dropMore {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5em 1em;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-low-mid);
+}
+
+// ---------------------------------------------------------------------
+// 标签页
+// ---------------------------------------------------------------------
+.LcoyNav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// `.nav-pills > li > a`：0 0.65em，行高 16px，下划线 0.125em。
+.LcoyNav-tab > a,
+.LcoyNav-moreButton.Button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: @lcoy-nav-height;
+  padding: 0 0.65em;
+  border-radius: var(--lcoy-radius);
+  background: transparent;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-0);
+  font-weight: normal;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  // `.nav-pills > li > a { transition: var(--d-button-transition) }`，它在 Meta 上是
+  // `none`；只有图标有 `color .2s`。
+  transition: none;
+
+  .icon,
+  .Button-icon,
+  .Button-caret {
+    transition: color 0.2s;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.125em;
+    background: transparent;
+  }
+
+  // 文字中的高亮色：深色模式下使用其浅色调（Meta 深色方案的
+  // tertiary，#7b5fe2 对应 #a99af0），否则原始的红/
+  // 蓝在深灰上达不到最低对比度。
+  &:hover,
+  &:focus-visible {
+    background: transparent;
+    color: var(--lcoy-hover-accent-text);
+    text-decoration: none;
+
+    &::after {
+      background: var(--lcoy-hover-accent-text);
+    }
+  }
+}
+
+.LcoyNav-tab.active > a,
+.LcoyNav-more.active .LcoyNav-moreButton {
+  color: var(--lcoy-hover-accent-text);
+
+  &::after {
+    background: var(--lcoy-hover-accent-text);
+  }
+}
+
+.LcoyNav-more .Dropdown-menu {
+  min-width: 180px;
+}
+
+.LcoyNav-view,
+.LcoyNav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// 手机端标签页变为选择器；平板及以上则隐藏。
+.LcoyNav-select {
+  display: none;
+}
+
+// ---------------------------------------------------------------------
+// 操作（圆形按钮）与"新话题"
+// ---------------------------------------------------------------------
+.LcoyNav-actions .Button--icon,
+.LcoyNav-actions .Search-input {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: @lcoy-nav-height;
+  height: @lcoy-nav-height;
+  padding: 0;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: 50%;
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  transition: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--lcoy-accent);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-accent);
+  }
+
+  .Button-icon {
+    margin: 0;
+  }
+}
+
+.LcoyNav .LcoyNav-newTopic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: @lcoy-nav-height;
+  padding: 0 14px;
+  border-radius: var(--lcoy-radius-pill);
+  font-size: var(--lcoy-font-0);
+  font-weight: normal;
+  white-space: nowrap;
+  transition: none;
+
+  .Button-icon {
+    margin: 0;
+  }
+
+  &:focus-visible {
+    box-shadow: none;
+    background: var(--lcoy-primary-200);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机端（印刷稿 mob-a）："最新 ⇅" + 仅图标的按钮
+// ---------------------------------------------------------------------
+@media @phone {
+  // 核心在手机端上方留 15px；该栏是卡片的
+  // 顶部（在 Meta 上为其 0px 处）。
+  .Lcoy .Page-content:has(.LcoyNav) {
+    margin-top: 0;
+  }
+
+  .LcoyNav {
+    flex-wrap: nowrap;
+    padding-bottom: 12px;
+  }
+
+  .LcoyNav-dropdowns,
+  .LcoyNav-tabs {
+    display: none;
+  }
+
+  .LcoyNav-select {
+    display: block;
+    min-width: 0;
+  }
+
+  .LcoyNav-selectButton.Button {
+    padding: 0;
+    background: transparent;
+    font-size: var(--lcoy-font-up-1);
+    font-weight: 700;
+    color: var(--lcoy-primary-high);
+
+    &:hover,
+    &:focus-visible {
+      background: transparent;
+      color: var(--lcoy-primary);
+    }
+
+    // `.list-control-toggle-link-trigger .d-icon`：--font-down-2，间距 0.5em。
+    .Button-caret {
+      margin-left: 0.5em;
+      font-size: var(--lcoy-font-down-2);
+    }
+  }
+
+  .LcoyNav .LcoyNav-newTopic {
+    width: @lcoy-nav-height;
+    padding: 0;
+    justify-content: center;
+    border-radius: 12px;
+
+    .Button-label {
+      display: none;
+    }
+  }
+}
