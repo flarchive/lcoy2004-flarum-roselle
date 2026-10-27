@@ -1,0 +1,241 @@
+// =====================================================================
+// 手机端（< 768px），与手机上的 meta.discourse.org 一致：同样的
+// 52px 页头（Logo | 登录 · PT · 搜索 · 汉堡菜单 · 头像），以及
+// 从左侧滑出、覆盖一切内容的侧边栏面板。
+//
+// 核心的导航栏（.App-navigation，带抽屉按钮和
+// 中间标题）在 Discourse 中并不存在：页头在核心中位于
+// 抽屉内部，这里变成顶部固定栏。
+// =====================================================================
+
+@media @phone {
+  :root {
+    --header-height-phone: var(--lcoy-header-height);
+  }
+
+  .Lcoy.App {
+    padding-top: var(--lcoy-header-height);
+  }
+
+  .Lcoy .App-navigation {
+    display: none;
+  }
+
+  // 核心的抽屉变成固定栏。!important：核心用相同特异性的规则
+  // 隐藏抽屉并将其推出屏幕。
+  .Lcoy.App .App-drawer,
+  .Lcoy.App:not(.drawerOpen) .App-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: var(--lcoy-header-height);
+    transform: none !important;
+    visibility: visible;
+    overflow: visible;
+    background: var(--lcoy-surface);
+    box-shadow: 0 0 0 1px var(--lcoy-primary-low);
+    z-index: var(--zindex-header);
+  }
+
+  .Lcoy .App-header {
+    height: 100%;
+    padding: 0 var(--lcoy-header-pad);
+    box-sizing: border-box;
+    background: transparent;
+    border: 0;
+
+    > .container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+    }
+  }
+
+  // 右侧各项与搜索、汉堡菜单排在同一行，
+  // 顺序与 Discourse 一致。
+  .Lcoy #header-secondary,
+  .Lcoy #header-secondary > .Header-controls {
+    display: contents;
+  }
+
+  .Lcoy .Header-title {
+    order: 0;
+    min-width: 0;
+    margin: 0 auto 0 0;
+    padding: 0;
+    font-size: 1.1305rem;
+    font-weight: 700;
+    text-align: left;
+
+    a {
+      display: flex;
+      align-items: center;
+      height: 2.4rem;
+      color: var(--lcoy-primary);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .Lcoy .Header-logo {
+    max-height: 2.4rem;
+    max-width: 25vw;
+    object-fit: contain;
+  }
+
+  .Lcoy #header-primary {
+    display: none;
+  }
+
+  .Lcoy .Header-secondary .Header-controls > li {
+    order: 4;
+    padding: 0;
+  }
+
+  .Lcoy .Header-secondary .Header-controls > li.item-signUp {
+    display: none;
+  }
+
+  .Lcoy .Header-secondary .Header-controls > li.item-logIn {
+    order: 1;
+  }
+
+  .Lcoy .Header-secondary .Header-controls > li.item-locale {
+    order: 2;
+  }
+
+  .Lcoy .LcoyHeader-search,
+  .Lcoy .Header-secondary .Header-controls > li.item-search {
+    order: 3;
+  }
+
+  .Lcoy .LcoyHeader-toggleSlot {
+    order: 5;
+    display: flex;
+  }
+
+  .Lcoy .Header-secondary .Header-controls > li.item-session {
+    order: 6;
+  }
+
+  // 核心会让抽屉中的按钮占满整宽；在栏中则不这样。
+  .Lcoy .Header-controls {
+    margin: 0;
+
+    .Button,
+    .FormControl,
+    .ButtonGroup {
+      width: auto;
+      justify-content: center;
+    }
+  }
+
+  // 搜索：只保留放大镜，尺寸与其他图标一致。
+  .Lcoy .LcoyHeader-search {
+    flex: 0 0 auto;
+    width: auto;
+
+    .Search-input.Button {
+      width: 2.55rem;
+      height: 2.55rem;
+      padding: 0;
+      justify-content: center;
+      border-color: transparent;
+      color: var(--lcoy-shell-icon);
+
+      .LcoyIcon {
+        width: 24px;
+        height: 24px;
+        color: inherit;
+      }
+
+      .Button-label {
+        display: none;
+      }
+
+      &:hover,
+      &:focus-visible {
+        color: var(--lcoy-primary);
+      }
+    }
+
+    .Search-clear {
+      display: none !important;
+    }
+  }
+
+  // 核心原先安放在导航栏中的控件（标题和首页的
+  // "新讨论"）会盖在页头上：列表已有自己的控件，
+  // 其他页面的控件则回到文档流中。
+  .Lcoy .Page-sidebar:has(.IndexPage-nav),
+  .Lcoy .IndexPage .Page-sidebar,
+  .Lcoy .TagsPage .Page-sidebar {
+    display: none;
+  }
+
+  .Lcoy .App-content .App-primaryControl {
+    position: static !important;
+  }
+
+  // 手机端的卡片（Discourse 的 #main-outlet）：距页头 20px，
+  // 距边缘 0.67em，16px 圆角。
+  .Lcoy .Page-hero:not(.Page-hero--inline) {
+    padding: 0 var(--lcoy-space-3);
+  }
+
+  .Lcoy .Page-container.container {
+    width: auto;
+    margin: 20px var(--lcoy-header-pad) 0;
+    padding: var(--lcoy-space-4);
+    box-sizing: border-box;
+  }
+
+  .Lcoy--card .Page-container.container {
+    // 与桌面端一致（Shell.less），卡片让页面背景透出。
+    background: var(--lcoy-surface-glass);
+    border-radius: var(--lcoy-card-radius);
+    box-shadow: var(--lcoy-card-shadow);
+  }
+}
+
+// 手机和平板：页头控件只显示图标，与
+// Discourse 一致——核心会显示标签（"通知"、"已举报帖子"），
+// 因为在手机端它们原先位于抽屉中。登录仍保留文字。
+@media (max-width: 1023.98px) {
+  .Lcoy .Header-secondary .Header-controls > li:not(.item-logIn):not(.item-signUp) {
+    > .Button .Button-label,
+    > .Dropdown > .Dropdown-toggle .Button-label,
+    > .Dropdown > .Dropdown-toggle .Button-caret {
+      display: none;
+    }
+
+    > .Button,
+    > .Dropdown > .Dropdown-toggle {
+      width: 2.55rem;
+      min-width: 0;
+      padding: 0;
+      justify-content: center;
+    }
+  }
+}
+
+// 话题标题显示在页头时，它会占用语言切换的位置。
+@media @phone {
+  .Lcoy .App-header:has(.LcoyHeaderTopic) .item-locale {
+    display: none;
+  }
+
+  .LcoyHeaderTopic-title {
+    font-size: var(--lcoy-font-0);
+  }
+
+  .LcoyHeaderTopic-badges {
+    font-size: var(--lcoy-font-down-2);
+  }
+}

@@ -1,0 +1,1637 @@
+// =====================================================================
+// Composer 与 Discourse 一致（meta.discourse.org 使用的重设计，
+// `uc-enable-composer-redesign`），在 Meta 上以 1440×900 测量：
+//
+// 把手 (12px) · "✎ 创建话题" ............ «  ⤢  —  ✕   (55px)
+// 分类 ▾                  | 🏷 可选标签 ▾                  (45px)
+// 标题 (600)                                              (49px)
+// 正文 (8px 16px)         | 预览（左边框）
+// B I H 🔗 " </> … ............ 忽略 [创建话题]   (55px)
+//
+// JS（js/src/forum/composer）在根上添加 `.LcoyComposer` 和
+// `show-preview`/`hide-preview` 类，替换头部和
+// 页脚的条目；布局全部来自这里。
+//
+// 核心计算 textarea（`.Composer-flexible`）的高度时只扣除
+// 其 padding-bottom；jQuery 在应用高度时会加上内边距和边框。
+// 因此 textarea 上方没有内边距也没有边框：上方的间距
+// 位于容器上。
+// =====================================================================
+
+.LcoyComposer {
+  --lcoy-composer-radius: calc(var(--lcoy-radius) * 2);
+  --lcoy-composer-border: var(--lcoy-primary-low);
+  --lcoy-composer-shadow: 0 -1px 40px rgba(0, 0, 0, 0.22);
+  color: var(--lcoy-primary);
+  font-size: 16px;
+}
+
+[data-theme^=dark] .LcoyComposer {
+  --lcoy-composer-shadow: 0 -1px 40px rgba(0, 0, 0, 0.6);
+}
+
+// ---------------------------------------------------------------------
+// 平板和电脑：停靠在底部的窗口
+// ---------------------------------------------------------------------
+@media @tablet-up {
+  // composer 根据窗口宽度自行定位（如同
+  // #reply-control，它在整个屏幕上为 `position: fixed`）。
+  .App-composer {
+    left: 0;
+    right: 0;
+
+    > .container {
+      width: auto;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .Composer.LcoyComposer {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1475px;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--lcoy-surface);
+    border: 1px solid var(--lcoy-composer-border);
+    border-bottom: 0;
+    border-radius: var(--lcoy-composer-radius) var(--lcoy-composer-radius) 0 0;
+    box-shadow: var(--lcoy-composer-shadow);
+    // 高度本身由核心（jQuery，200ms）做动画。这里不再给 max-width/
+    // margin 加过渡：它们会触发布局，打开编辑器时与高度动画叠加会卡。
+    transition: background-color 0.2s;
+
+    // composer 获得焦点时，核心会绘制主色圆环；
+    // Discourse 不会。
+    &.active,
+    &.active:not(.fullScreen) {
+      background: var(--lcoy-surface);
+      box-shadow: var(--lcoy-composer-shadow);
+    }
+  }
+
+  // 无预览时，composer 与内容列对齐，与
+  // Discourse 一致，但比它的 759px 更宽（用户要求：960px）。
+  .Composer.LcoyComposer.hide-preview:not(.fullScreen) {
+    max-width: 960px;
+    margin-left: 0.67em;
+    margin-right: 0;
+
+    @media (min-width: 1110px) {
+      margin-left: ~"calc((100% - var(--lcoy-main-max)) / 2 + 0.67em)";
+    }
+
+    @media (max-width: 990px) {
+      max-width: ~"calc(100% - 1.34em)";
+      margin-left: 0.67em;
+    }
+  }
+
+  // 有预览时，占满全宽（最高 1475px），在无法并排显示的
+  // 屏幕上覆盖侧边栏——与 Meta 一致。
+  .Composer.LcoyComposer.show-preview:not(.fullScreen) {
+    max-width: 1475px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media @desktop-up {
+  .Lcoy--sidebarOpen .Composer.LcoyComposer.hide-preview:not(.fullScreen) {
+    margin-left: ~"calc(var(--lcoy-sidebar-width) + 2em)";
+
+    @media (min-width: 1390px) {
+      margin-left: ~"calc((100% - var(--lcoy-main-max) + var(--lcoy-sidebar-width)) / 2 + 2em)";
+    }
+
+    // 960px 无法与侧边栏并排的临界点。
+    @media (max-width: 1250px) {
+      width: ~"calc(100% - var(--lcoy-sidebar-width) - 2em - 0.67em)";
+    }
+
+    @media (max-width: 1000px) {
+      margin-left: ~"calc(var(--lcoy-sidebar-width) + 1em)";
+    }
+  }
+
+  // 在 1611 到 2019px 之间，带预览的窗口从侧边栏之后开始。
+  @media (min-width: 1611px) and (max-width: 2019px) {
+    .Lcoy--sidebarOpen .Composer.LcoyComposer.show-preview:not(.fullScreen) {
+      margin-left: ~"calc(var(--lcoy-sidebar-width) + 2em)";
+      width: auto;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 把手（grippie）：12px，中间为 48 × 4px 的线条
+// ---------------------------------------------------------------------
+@media @tablet-up {
+  .LcoyComposer .Composer-handle {
+    position: relative;
+    height: 12px;
+    margin: 0;
+    padding: 4px 0;
+    box-sizing: border-box;
+    cursor: ns-resize !important;
+    border-radius: var(--lcoy-composer-radius) var(--lcoy-composer-radius) 0 0;
+
+    &::before {
+      content: "";
+      display: block;
+      width: 3em;
+      height: 4px;
+      margin: 0 auto;
+      border-radius: 3px;
+      background-color: var(--lcoy-primary-low-mid);
+      transition: background-color 0.15s ease;
+    }
+
+    &:hover::before {
+      background-color: var(--lcoy-primary-high);
+    }
+  }
+
+  .LcoyComposer.minimized .Composer-handle,
+  .LcoyComposer.fullScreen .Composer-handle {
+    display: none;
+  }
+
+  // 核心留 20px 间距（全屏时最多 900px）；Discourse
+  // 则让每一行贴住边缘。
+  .Composer.LcoyComposer .Composer-content,
+  .Composer.LcoyComposer.minimized .Composer-content,
+  .Composer.LcoyComposer.fullScreen .Composer-content {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 主体：无头像，编辑器占满宽度
+// ---------------------------------------------------------------------
+.LcoyComposer {
+  .ComposerBody-avatar {
+    display: none;
+  }
+
+  .ComposerBody-content {
+    margin: 0;
+  }
+
+  .ComposerBody-header {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+
+    > li {
+      display: block;
+      margin: 0;
+      min-width: 0;
+      // 其他扩展放在头部的元素在字段之后。
+      order: 5;
+    }
+
+    // 操作行（`.reply-to`）：8px 16px，由一条线分隔。右侧
+    // 的空间留给角落按钮（4 × 32px + 16px）。
+    > .item-title {
+      order: 0;
+      flex: 1 1 100%;
+      display: flex;
+      align-items: center;
+      min-height: 54px;
+      padding: 8px 160px 8px 16px;
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--lcoy-composer-border);
+      color: var(--lcoy-primary-high);
+    }
+
+    > .item-tags {
+      order: 1;
+      flex: 1 1 100%;
+    }
+
+    > .item-discussionTitle {
+      order: 2;
+      flex: 1 1 100%;
+    }
+  }
+
+  // 核心在平板上隐藏"开始讨论"标题；这里它就是操作项。
+  .ComposerBody--discussion .ComposerBody-header .item-title {
+    display: flex;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 操作项："✎ 创建话题"、"⇪ 话题 ▾"、"✎ 编辑帖子" + 🔗 目标
+// ---------------------------------------------------------------------
+.LcoyComposerAction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+  // 不加 `overflow: hidden`：操作菜单从这里展开。
+
+  > .LcoyComposerAction-menu {
+    flex: none;
+  }
+}
+
+.LcoyComposerAction-trigger,
+.LcoyComposerAction-menu .LcoyComposerAction-trigger.Button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: auto;
+  min-height: 38px;
+  padding: 8px 10.4px 8px 0;
+  border: 1px solid transparent;
+  border-radius: var(--lcoy-button-radius);
+  background: transparent;
+  color: var(--lcoy-primary-very-high);
+  font-size: 16px;
+  line-height: normal;
+  white-space: nowrap;
+
+  .icon {
+    margin-right: 0.45em;
+    color: var(--lcoy-primary-low-mid);
+    font-size: 16px;
+  }
+
+  .Button-label {
+    display: inline-flex;
+  }
+
+  .Button-caret {
+    margin: 0 0 0 0.45em;
+    color: var(--lcoy-primary-medium);
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: transparent;
+    box-shadow: none;
+    color: var(--lcoy-primary);
+  }
+
+  &:focus-visible {
+    background: transparent;
+    box-shadow: none;
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: -2px;
+  }
+}
+
+.LcoyComposerAction-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+// 操作菜单（`composer-actions-dropdown`）：图标、加粗标签和
+// 灰色描述。
+.LcoyComposerAction-dropdown.Dropdown-menu {
+  min-width: 280px;
+  max-width: 400px;
+  z-index: 1100;
+
+  > li > .LcoyComposerAction-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75em;
+    width: 100%;
+    padding: 8px 12px;
+    white-space: normal;
+    text-align: left;
+
+    &[disabled] {
+      opacity: 1;
+      cursor: default;
+    }
+
+    // Flarum 的 Button 会把所有内容包在 `.Button-label` 中。
+    justify-content: flex-start;
+
+    > .Button-label,
+    > .Button-label > .Button-labelText {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: 100%;
+      text-align: left;
+      gap: 0.75em;
+      min-width: 0;
+      white-space: normal;
+    }
+  }
+}
+
+// 手机端核心会把下拉菜单变成固定在页脚、占满宽度的
+// 面板；400px 的限制会让它缩在左侧，压在
+// "忽略"按钮之上。
+@media @phone {
+  .LcoyComposerAction-dropdown.Dropdown-menu {
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+.LcoyComposerAction-btnIcon {
+  display: flex;
+  align-self: flex-start;
+  padding-top: 2px;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyComposerAction-btnTexts {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.LcoyComposerAction-btnLabel {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: 1em;
+  color: var(--lcoy-primary);
+}
+
+.LcoyComposerAction-btnDescription {
+  margin-top: 2px;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+  white-space: normal;
+}
+
+// "🔗 标题"（`composer-actions-reply-target-link`）：透明按钮
+.LcoyComposerAction-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  min-width: 0;
+  padding: 8px 10.4px;
+  border-radius: var(--lcoy-button-radius);
+  color: var(--lcoy-primary-high);
+  font-size: 16px;
+  overflow: hidden;
+
+  .icon {
+    flex: none;
+    font-size: 14px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+
+.LcoyComposerAction-targetLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------
+// 角落按钮：«  ⤢  —  ✕（`composer-controls`）。32 × 32 区域，
+// 18px 图标：在 Discourse 的尺寸（btn-small）下它们相对
+// 标题显得太小。`top` 补偿高度，使中心与
+// "开始讨论 ⌄"保持对齐。
+// ---------------------------------------------------------------------
+.LcoyComposer .Composer-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  top: 23px;
+  right: 14px;
+
+  > li {
+    display: block;
+    margin: 0;
+  }
+
+  .Button.Button--icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: var(--lcoy-radius);
+    color: var(--lcoy-primary-high);
+    background: transparent !important;
+
+    .Button-icon {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    // 与格式栏相同的悬停：柔和背景，图标为高亮色。
+    &:hover,
+    &:focus-visible {
+      color: var(--lcoy-accent);
+      background: var(--lcoy-hover) !important;
+    }
+  }
+
+  // 核心的线条下移 5px（`.fa-minus.minimize`）；这里居中。
+  .fa-minus {
+    vertical-align: middle;
+  }
+}
+
+// 预览隐藏时 « 箭头旋转（`.toggle-preview.active`）。
+.LcoyComposerPreview-toggle .Button-icon {
+  color: var(--lcoy-primary-medium);
+  transition: transform 0.33s ease-out;
+}
+
+.LcoyComposerPreview-toggle.active .Button-icon {
+  transform: rotate(180deg);
+}
+
+// ---------------------------------------------------------------------
+// 分类 | 标签（`.title-and-category`）：两半，各有一个
+// select-kit。头部展开时变暗（⌃ 箭头）；主体紧贴
+// 半区下方展开（空间不足时在上方），带"搜索…"输入框、
+// 细滚动条的列表以及带淡染背景的聚焦项。
+// ---------------------------------------------------------------------
+.LcoyComposerFields {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  border-bottom: 1px solid var(--lcoy-composer-border, var(--lcoy-primary-low));
+}
+
+.LcoySelectKit {
+  position: relative;
+  min-width: 0;
+}
+
+.LcoyComposerFields-cell {
+  flex: 1 1 50%;
+  width: 50%;
+  box-sizing: border-box;
+
+  &:not(:last-child) {
+    border-right: 1px solid var(--lcoy-composer-border, var(--lcoy-primary-low));
+  }
+
+  &:only-child {
+    width: 100%;
+  }
+}
+
+.LcoySelectKit-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary-high);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: -2px;
+  }
+
+  .is-expanded > & {
+    background: var(--lcoy-primary-100);
+    outline: 0;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.LcoySelectKit-headerContent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.LcoySelectKit-caret {
+  flex: none;
+  margin-left: auto;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyComposerFields-value {
+  display: flex;
+  align-items: center;
+  gap: 0 0.5em;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.LcoyComposerFields-placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoyComposerFields-tags {
+  .LcoyComposerFields-value {
+    display: block;
+    color: var(--lcoy-primary-medium);
+  }
+
+  &.has-selection .LcoyComposerFields-value {
+    color: var(--lcoy-primary-high);
+  }
+}
+
+.LcoyComposerFields-tagIcon {
+  flex: none;
+  color: var(--lcoy-primary-low-mid);
+  font-size: var(--lcoy-font-down-1);
+
+  .has-selection & {
+    color: var(--lcoy-accent);
+  }
+}
+
+// 徽章"(符号) 名称"，子分类中为"父 ▪▪ 子"。
+.LcoyChooserBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.33em;
+  min-width: 0;
+  white-space: nowrap;
+
+  + .LcoyChooserBadge {
+    margin-left: 0.5em;
+  }
+}
+
+.LcoyChooserBadge-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.LcoyCategorySymbol--split::before {
+  background: linear-gradient(90deg, var(--category-parent-color) 50%, var(--category-color) 50%);
+}
+
+// 主体（`.select-kit-body`）
+.LcoySelectKit-body {
+  position: absolute;
+  top: ~"calc(100% + 3px)";
+  left: 0;
+  z-index: 1001;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 100%;
+  background: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-primary-low);
+  border-radius: var(--lcoy-radius);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  .is-above > & {
+    top: auto;
+    bottom: ~"calc(100% + 3px)";
+  }
+
+  .LcoyComposerFields-category > & {
+    width: auto;
+    max-width: 450px;
+  }
+}
+
+[data-theme^=dark] .LcoySelectKit-body {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.45);
+}
+
+.LcoySelectKit-filter {
+  display: flex;
+  align-items: center;
+  flex: none;
+  padding: 4px 8px;
+}
+
+.LcoySelectKit-filterInput,
+.LcoySelectKit-filterInput:focus {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--lcoy-primary);
+  font: inherit;
+  font-size: 16px;
+
+  &::placeholder {
+    color: var(--lcoy-primary-medium);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.LcoySelectKit-filterIcon {
+  flex: none;
+  margin-left: 4px;
+  color: var(--lcoy-primary-medium);
+  font-size: 16px;
+}
+
+.LcoySelectKit-collection {
+  flex: 1 1 auto;
+  max-height: 250px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  border-top: 1px solid var(--lcoy-primary-low);
+  scrollbar-width: thin;
+
+  .is-above & {
+    border-top: 0;
+    border-bottom: 1px solid var(--lcoy-primary-low);
+  }
+}
+
+.LcoySelectKit-row {
+  padding: 8px;
+  cursor: pointer;
+  color: var(--lcoy-primary);
+
+  &.is-highlighted {
+    background: ~"color-mix(in srgb, var(--lcoy-accent) 15%, transparent)";
+  }
+}
+
+.LcoySelectKit-empty {
+  padding: 8px;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+// 已选的可移除标签，位于搜索框和列表之间。
+.LcoySelectKit-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 8px 8px;
+}
+
+.LcoySelectKit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--lcoy-primary-low);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-primary-very-low);
+  color: var(--lcoy-primary-high);
+  font: inherit;
+  font-size: var(--lcoy-font-down-1);
+  cursor: pointer;
+
+  .icon {
+    font-size: 11px;
+    color: var(--lcoy-primary-medium);
+  }
+
+  &:hover {
+    border-color: var(--lcoy-danger);
+
+    .icon {
+      color: var(--lcoy-danger);
+    }
+  }
+}
+
+// 分类行（`.category-row`）：徽章、"× 20586" 以及两行
+// 灰色描述。
+.LcoyCategoryRow-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.LcoyCategoryRow-count {
+  margin-left: -2px;
+  color: var(--lcoy-primary-medium);
+  font-size: 12.13px;
+}
+
+.LcoyCategoryRow-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.4;
+}
+
+.LcoyCategoryRow--none {
+  color: var(--lcoy-primary-medium);
+}
+
+// 标签行（`.tag-row`）："ia x1026"。
+.LcoyTagRow-name {
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyTagRow-count {
+  margin-left: 5px;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+// 二级选择器中的子标签："父 ▪ 子"，仅显示所选主标签的
+// 子标签（flarum/tags 的 `requireParentTag` 规则）。
+.LcoyTagRow--child {
+  display: inline-flex;
+  align-items: center;
+
+  .LcoyTagRow-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0 8px;
+  }
+}
+
+// 选择器内的限制提示（已达到主标签上限）。
+.LcoySelectKit-note {
+  padding: 8px;
+  border-top: 1px solid var(--lcoy-primary-low);
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+// ---------------------------------------------------------------------
+// 标题（`#reply-title`）：无边框，600，由一条线分隔
+// ---------------------------------------------------------------------
+.LcoyComposer .ComposerBody-header > .item-discussionTitle {
+  border-bottom: 1px solid var(--lcoy-composer-border);
+
+  h3 {
+    margin: 0;
+    line-height: normal;
+  }
+}
+
+.LcoyComposer .ComposerBody-header h3 input.DiscussionComposer-title {
+  &,
+  &[disabled],
+  &:focus {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin: 0;
+    padding: 16px 12px 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    color: var(--lcoy-primary);
+    background: var(--lcoy-surface);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    outline: 0;
+  }
+
+  &::placeholder {
+    color: var(--lcoy-primary-medium);
+    font-weight: 600;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 编辑器与预览
+// ---------------------------------------------------------------------
+.LcoyComposer .TextEditor-editorContainer {
+  position: relative;
+  // 上方间距（.d-editor-input 的 `padding: 8px 16px`）放在这里；
+  // 见顶部注释。
+  padding: 8px 0 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--lcoy-surface);
+}
+
+.LcoyComposer .TextEditor .TextEditor-editor {
+  &,
+  &:focus,
+  &[disabled] {
+    display: block;
+    width: 100%;
+    padding: 0 16px 8px;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--lcoy-primary);
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    outline: 0;
+  }
+
+  &::placeholder {
+    color: var(--lcoy-primary-medium);
+  }
+}
+
+// 并排预览：Discourse 的网格（"editor preview" / 页脚在两栏
+// 下方）。TextEditor 从网格中消失（`display: contents`），使它的
+// 页脚占据整宽，也位于预览下方。
+.LcoyComposer .ComposerBody-editor.LcoyComposer-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 0;
+
+  > .TextEditor {
+    display: contents;
+  }
+
+  .TextEditor-editorContainer {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .TextEditor-controls {
+    grid-column: ~"1 / -1";
+    grid-row: 2;
+  }
+
+  .LcoyComposerPreview {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 页脚（`.composer-footer`）：左侧格式栏，忽略 + 主按钮
+// ---------------------------------------------------------------------
+.LcoyComposer .TextEditor-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 16px;
+  border-top: 1px solid var(--lcoy-composer-border);
+  overflow: visible;
+  white-space: nowrap;
+
+  > li {
+    display: flex;
+    align-items: center;
+    flex: none;
+    margin: 0;
+  }
+
+  // 格式栏在前，占据剩余空间（不足时滚动）。
+  > .TextEditor-toolbar {
+    order: -1;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  > .item-preview {
+    order: 1;
+  }
+
+  > .item-lcoyDraft {
+    order: 2;
+  }
+
+  > .item-lcoyCancel {
+    order: 3;
+  }
+
+  > .item-submit {
+    order: 4;
+  }
+}
+
+@media @tablet-up {
+  .LcoyComposer .TextEditor-controls,
+  .fullScreen .LcoyComposer .TextEditor-controls,
+  .LcoyComposer.fullScreen .TextEditor-controls {
+    margin: 0;
+    padding: 8px 16px;
+    border-top: 1px solid var(--lcoy-composer-border);
+  }
+}
+
+// 格式栏（`.d-editor-button-bar`）：按钮 30 × 28，16px
+// 灰色图标，间距 8px。比 Discourse 稍大，以与
+// 角落按钮（⤢ — ✕）的 18px 相协调。
+.LcoyComposer .TextEditor-toolbar {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+
+  .MarkdownToolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .Button,
+  .Button--icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 30px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--lcoy-radius);
+    background: transparent !important;
+    color: var(--lcoy-primary-high);
+    font-size: var(--lcoy-font-down-1);
+    // 无过渡，与 Discourse 的所有 `.btn` 一致。
+    transition: none;
+
+    .icon,
+    .Button-icon {
+      margin: 0;
+      color: inherit;
+      font-size: 16px;
+    }
+
+    .Button-label {
+      display: none;
+    }
+
+    &:hover {
+      background: var(--lcoy-hover) !important;
+      color: var(--lcoy-accent);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--lcoy-accent);
+      outline-offset: -2px;
+      box-shadow: none;
+    }
+  }
+}
+
+// Markdown/"A"切换器（`.composer-toggle-switch`，52 × 26）：灰色
+// 胶囊，活动侧后方有淡染圆点。
+.LcoyComposer .TextEditor-toolbar .LcoyRichToggle {
+  --toggle-switch-width: 56px;
+  --toggle-switch-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: auto;
+  height: auto;
+  margin: 0 4px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent !important;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+
+    .LcoyRichToggle-slider {
+      outline: 2px solid var(--lcoy-accent);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.LcoyRichToggle-slider {
+  position: relative;
+  display: inline-block;
+  width: var(--toggle-switch-width);
+  height: var(--toggle-switch-height);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-low);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    display: block;
+    width: ~"calc(var(--toggle-switch-height) - 2px)";
+    height: ~"calc(var(--toggle-switch-height) - 4px)";
+    border-radius: var(--lcoy-radius);
+    background: ~"color-mix(in srgb, var(--lcoy-accent) 15%, var(--lcoy-surface))";
+    box-shadow: 0 1px 2px 1px ~"color-mix(in srgb, var(--lcoy-accent) 20%, transparent)";
+    transform: translateX(2px);
+    transition: transform 0.15s;
+  }
+
+  .--rte &::before {
+    transform: translateX(~"calc(var(--toggle-switch-width) - var(--toggle-switch-height))");
+  }
+
+  &:hover {
+    background: var(--lcoy-hover);
+  }
+}
+
+.LcoyRichToggle-left,
+.LcoyRichToggle-right {
+  position: absolute;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: ~"calc(var(--toggle-switch-height) - 2px)";
+  height: 100%;
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-1);
+  font-weight: 500;
+}
+
+.LcoyRichToggle-left {
+  left: 2px;
+
+  .--markdown & {
+    color: var(--lcoy-primary);
+  }
+}
+
+.LcoyRichToggle-right {
+  right: 2px;
+  font-size: 16px;
+
+  .--rte & {
+    color: var(--lcoy-primary);
+  }
+}
+
+// "N" 和 "Tт" 以文字呈现，与 Discourse 的加粗和字号按钮一致。
+.LcoyTextIcon {
+  display: inline-block;
+  font-style: normal;
+  line-height: 1;
+
+  &--bold::before {
+    content: var(--lcoy-bold-label, "N");
+    font-family: var(--lcoy-font);
+    font-size: 17px;
+    font-weight: 400;
+  }
+
+  &--heading::before {
+    content: "Tт";
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    letter-spacing: -0.5px;
+  }
+}
+
+// "›"：格式栏放不下时出现在其末端。
+.LcoyComposer .TextEditor-toolbar {
+  position: relative;
+}
+
+.LcoyToolbarScroll {
+  display: none;
+  position: sticky;
+  right: 0;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: linear-gradient(to right, transparent, var(--lcoy-surface) 40%);
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  cursor: pointer;
+
+  .has-overflow > &--right {
+    display: inline-flex;
+  }
+
+  // "‹"：同样，但固定于左侧，当格式栏已滚动时出现。
+  &--left {
+    left: 0;
+    right: auto;
+    order: -1;
+    margin-left: 0;
+    margin-right: 0;
+    background: linear-gradient(to left, transparent, var(--lcoy-surface) 40%);
+  }
+
+  .has-overflow-left > &--left {
+    display: inline-flex;
+  }
+}
+
+// ⊕ 菜单，固定于屏幕，向上展开。
+.LcoyMoreOptions-portal {
+  position: fixed;
+  z-index: 1101;
+}
+
+.LcoyMoreOptions-menu.Dropdown-menu {
+  display: block;
+  position: static;
+  min-width: 220px;
+  margin: 0;
+  animation: lcoy-float-up 250ms ease forwards;
+}
+
+.LcoyMoreOptions-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--lcoy-radius);
+  background: none;
+  color: var(--lcoy-primary);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+
+  .icon {
+    width: 1.2em;
+    color: var(--lcoy-primary-high);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+  }
+
+  &.active .icon {
+    color: var(--lcoy-accent);
+  }
+}
+
+// "忽略"（`.discard-button.btn-transparent`）：文字，悬停时变红。
+.LcoyComposer-cancel.Button {
+  height: auto;
+  min-height: 36px;
+  padding: 8px 10.4px;
+  border-radius: var(--lcoy-button-radius);
+  background: transparent !important;
+  color: var(--lcoy-primary);
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  transition: color 250ms;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-danger);
+    text-decoration: none;
+  }
+}
+
+// 主按钮（`.btn-primary.create`）：38px，无图标。
+.LcoyComposer-submit.Button--primary {
+  height: auto;
+  min-height: 38px;
+  padding: 8px 10.4px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  border: 1px solid transparent;
+  border-radius: var(--lcoy-button-radius);
+}
+
+.ComposerBody-loading {
+  border-radius: var(--lcoy-composer-radius, 16px) var(--lcoy-composer-radius, 16px) 0 0;
+  background: ~"color-mix(in srgb, var(--lcoy-surface) 70%, transparent)";
+}
+
+// ---------------------------------------------------------------------
+// 最小化（`#reply-control.draft`）：45px，高亮色，白色文字
+// ---------------------------------------------------------------------
+@media @tablet-up {
+  .Composer.LcoyComposer.minimized {
+    height: 45px !important;
+    background: var(--lcoy-accent);
+    border-color: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
+    box-shadow: var(--lcoy-composer-shadow);
+    cursor: pointer;
+
+    .ComposerBody-header > li {
+      display: none;
+    }
+
+    .ComposerBody-header > .item-title {
+      display: flex;
+      min-height: 44px;
+      padding: 0 56px 0 16px;
+      border: 0;
+      color: var(--lcoy-accent-text);
+    }
+
+    .ComposerBody-editor {
+      display: none;
+    }
+
+    .Composer-controls {
+      top: 7px;
+      right: 8px;
+
+      .Button.Button--icon,
+      .Button.Button--icon:hover {
+        color: var(--lcoy-accent-text);
+      }
+    }
+  }
+}
+
+.LcoyComposerAction--draft {
+  gap: 0.45em;
+  color: inherit;
+  font-size: 16px;
+
+  .icon {
+    flex: none;
+  }
+}
+
+.LcoyComposerAction-draftText {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// ---------------------------------------------------------------------
+// 全屏：屏幕白底中间的 740px 列（无预览），或有预览时
+// 占满全宽；头部只有角落按钮。
+// ---------------------------------------------------------------------
+@media @tablet-up {
+  .Composer.LcoyComposer.fullScreen {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    margin: 0;
+
+    .ComposerBody-header > li:not(.item-title) {
+      display: none;
+    }
+
+    .ComposerBody-header > .item-title {
+      min-height: 46px;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-bottom-color: var(--lcoy-composer-border);
+
+      .LcoyComposerAction {
+        visibility: hidden;
+      }
+    }
+
+    .Composer-controls {
+      top: 8px;
+    }
+
+    .LcoyComposerPreview {
+      margin-top: 1%;
+    }
+
+    .TextEditor .TextEditor-editor {
+      font-size: 16px;
+    }
+  }
+
+  // 无预览时，740px 的列（`--composer-max-width--hide-preview`）
+  // 位于中间，覆盖整个屏幕的白色底板（Discourse 的 `::before`）。
+  .Composer.LcoyComposer.fullScreen.hide-preview {
+    max-width: 740px;
+    margin: 0 auto;
+
+    &::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: var(--lcoy-surface);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机端：全屏，与 Discourse 的移动端 composer 一致——操作行
+// 在顶部（带 — 和 ✕），字段、文字、格式栏，以及
+// 底部的"忽略"和仅文字的主动作。
+// ---------------------------------------------------------------------
+@media @phone {
+  // 手机端 composer 位于 1100（高于页面一切）；它打开时，
+  // 弹窗、提示和 emoji 选择器的堆叠（它们以
+  // --zindex-modal 计量）也会上升——否则"无法保存草稿"
+  // 提示和 emoji 选择器会打开在编辑器后面被遮住。
+  body:has(.Composer.LcoyComposer.visible:not(.minimized)) {
+    --zindex-modal-background: 1101;
+    --zindex-modal: 1102;
+    --zindex-alerts: 1112;
+  }
+
+  .Composer.LcoyComposer {
+    background: var(--lcoy-surface);
+    z-index: 1100;
+
+    &:not(.minimized) {
+      top: 0;
+      bottom: auto;
+      height: 100vh !important;
+      height: var(--lcoy-visual-height, 100dvh) !important;
+      max-height: var(--lcoy-visual-height, 100dvh);
+      padding-top: 0;
+      overscroll-behavior: contain;
+
+      &::before {
+        display: none;
+      }
+
+      .Composer-content {
+        height: 100%;
+      }
+
+      // — 和 ✕；全屏和预览在手机端不存在。
+      .Composer-controls {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+
+        > li {
+          display: block;
+        }
+
+        > .item-fullScreen,
+        > .item-lcoyPreview {
+          display: none;
+        }
+      }
+    }
+
+    &.minimized {
+      height: 45px;
+      background: var(--lcoy-accent);
+      color: var(--lcoy-accent-text);
+      border-top: 0;
+
+      .ComposerBody-header > li {
+        display: none;
+      }
+
+      .ComposerBody-header > .item-title {
+        display: flex;
+        min-height: 45px;
+        padding: 0 56px 0 16px;
+        border: 0;
+        color: var(--lcoy-accent-text);
+      }
+
+      .ComposerBody-editor {
+        display: none;
+      }
+
+      .Composer-controls {
+        position: absolute;
+        top: 7px;
+        right: 8px;
+
+        .Button {
+          color: var(--lcoy-accent-text);
+        }
+      }
+    }
+
+    .ComposerBody-content {
+      margin: 0;
+    }
+
+    .ComposerBody-header > li,
+    .ComposerBody-header > li:first-child {
+      height: auto;
+      margin: 0;
+      padding: 0;
+      border-bottom: 0;
+      text-align: left;
+      white-space: normal;
+      justify-content: flex-start;
+      z-index: auto;
+    }
+
+    // 手机端的 `.reply-to`：4px 12px（以及 `li.` 以胜过 `:first-child`）
+    .ComposerBody-header > li.item-title {
+      min-height: 46px;
+      padding: 4px 96px 4px 12px;
+      border-bottom: 1px solid var(--lcoy-composer-border);
+    }
+
+    .ComposerBody-header > .item-discussionTitle {
+      border-bottom: 1px solid var(--lcoy-composer-border);
+    }
+
+    .ComposerBody-editor {
+      padding: 0;
+    }
+
+    .TextEditor-controls {
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      padding: 0 0 max(env(safe-area-inset-bottom), 8px);
+      border-top: 0;
+
+      > .TextEditor-toolbar {
+        flex: 1 1 100%;
+        order: -1;
+        padding: 4px 8px;
+        border-top: 1px solid var(--lcoy-composer-border);
+        border-bottom: 1px solid var(--lcoy-composer-border);
+      }
+
+      > .item-preview {
+        margin-left: 8px;
+      }
+
+      > .item-lcoyCancel {
+        margin-left: auto;
+      }
+
+      > .item-submit {
+        position: static !important;
+        margin-right: 8px;
+      }
+    }
+
+    // 手机端主按钮变为高亮色的加粗文字。
+    .LcoyComposer-submit.Button--primary {
+      background: transparent;
+      color: var(--lcoy-accent);
+      font-weight: bold;
+
+      &:hover,
+      &:focus-visible {
+        background: transparent;
+        color: var(--lcoy-accent-active);
+      }
+    }
+  }
+
+  .composer-backdrop {
+    background-color: var(--overlay-bg);
+  }
+}
+
+// 在弹窗内，选择器在文档流中展开，弹窗随之增高以容纳
+// （与 Discourse 在弹窗中的 select-kit 一致），而不是浮起并被
+// 弹窗边框裁切。
+.Modal .LcoySelectKit-body {
+  position: static;
+  margin-top: 3px;
+  box-shadow: none;
+}
+
+.Modal .LcoySelectKit-collection {
+  max-height: 240px;
+}
+
+// ---------------------------------------------------------------------
+// composer 头部中的"↳ 回复 [头像] 某某 ×"，带 Avocado 的"回复"
+// （topic/replyToComposer.tsx）：被回复帖子的提及从文字中
+// 移出，放在操作行下方的一行中。
+// ---------------------------------------------------------------------
+.ComposerBody-header > li.item-lcoyReplyTo {
+  order: 1;
+  flex: 1 1 100%;
+  padding: 6px 16px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--lcoy-composer-border, var(--lcoy-border));
+}
+
+.LcoyComposerReplyTo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  font-size: var(--lcoy-font-down-1);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--lcoy-primary-medium);
+
+  // "回复"翻转：即"↳"箭头。
+  .LcoyComposerReplyTo-icon {
+    flex: none;
+    transform: rotate(180deg);
+  }
+
+  .Avatar {
+    .Avatar--size(20px);
+    flex: none;
+  }
+}
+
+.LcoyComposerReplyTo-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lcoy-primary-high);
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.LcoyComposerReplyTo-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--lcoy-primary-medium);
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary-high);
+  }
+}
+
+
+// 居中于 JS 中测得的内容卡片（alignComposer.ts）：适用于
+// 任意内容宽度（px 或百分比）以及任何页面。
+@media @tablet-up {
+  html[style*="--lcoy-composer-card-left"] .Composer.LcoyComposer.hide-preview:not(.fullScreen) {
+    // 在卡片中居中：卡片的剩余空间在两侧平分。
+    width: auto;
+    max-width: ~"min(960px, var(--lcoy-composer-card-room))";
+    margin-left: ~"calc(var(--lcoy-composer-card-left) + max(0px, (var(--lcoy-composer-card-room) - 960px) / 2))";
+    margin-right: 0;
+  }
+}
