@@ -1,0 +1,814 @@
+// =====================================================================
+// Discourse 格式的话题列表：列 话题 | 发帖者 |
+// 回复 | 浏览 | 活动，行之间以边框分隔，在
+// 手机端头像在左，计数在角落。
+//
+// 数值取自 meta.discourse.org 的计算样式（1440、900 和 400px）：
+// `.topic-list`, `.topic-list-item`, `.link-top-line`, `.link-bottom-line`,
+// `.badge-category__wrapper`, `td.posters`, `td.num`, `td.activity`.
+// =====================================================================
+
+// 列宽（Discourse 的整个 td，含内边距）——
+// 由头部和行共用，它们使用相同的
+// LcoyCell--* 类。活动列扣除行的 12px 内边距。
+@lcoy-col-posters: 154px;   // 146px + 每侧 4px
+@lcoy-col-replies: 76px;    // 4.3em + 每侧 4px
+@lcoy-col-views: 98px;
+@lcoy-col-activity: 81px;   // 13.9px 的 5.5em + 4px；最后 12px 来自行
+@lcoy-row-x: 12px;
+// ⋮ 列（讨论控件），取代行末的 12px：
+// 28px 的按钮距边缘 4px，距活动文字 9px。
+@lcoy-col-controls: 36px;
+
+// 列表以 1rem（16px）为基准使用 em，与 Discourse 一致：主题的 body
+// 是 15px，否则列表所有字号都会小 1px。1rem
+// 跟随读者的"文字大小"设置，它会缩放 html。
+.LcoyList,
+.LcoyListHeader {
+  font-size: 1rem;
+}
+
+// ---------------------------------------------------------------------
+// 分类和标签徽章（也用于侧边栏、话题
+// 和分类页）——Discourse 的 `.badge-category__wrapper`
+// ---------------------------------------------------------------------
+.LcoyCategorySymbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  color: var(--category-color, var(--lcoy-primary-medium));
+  line-height: 1;
+
+  .icon {
+    font-size: 0.85em;
+  }
+
+  // --category-badge-size: 0.75em; --category-badge-border-radius: 2px
+  &--square::before {
+    content: '';
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 2px;
+    background: currentColor;
+  }
+}
+
+.LcoyBadges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+  min-width: 0;
+}
+.LcoyBadges-labels {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+
+.LcoyCategoryBadge,
+.LcoyTagBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.33em;
+  max-width: 100%;
+  color: var(--lcoy-primary-high);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+// 徽章中的符号为小方块/图标的大小（0.9em），周围没有 1em 的
+// 盒子——否则名称会离它太远。
+.LcoyCategoryBadge .LcoyCategorySymbol {
+  width: auto;
+  height: auto;
+
+  .icon {
+    font-size: 0.9em;
+  }
+}
+.LcoyCategoryBadge-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+// "父 ▪ 子"：子级方块前稍多一些空隙。
+.LcoyCategoryBadge-parent {
+  margin-right: 0.17em;
+}
+// Flarum 标签的图标，有颜色时使用其标签色。
+.LcoyTagBadge .LcoyTagSymbol {
+  display: inline-flex;
+  font-size: 0.9em;
+  color: var(--tag-color, var(--lcoy-primary-medium));
+}
+
+// ---------------------------------------------------------------------
+// 列头（`.topic-list-header`）：13.9px，内边距 12px 4px，
+// 下方无边框。
+// ---------------------------------------------------------------------
+.LcoyListHeader {
+  display: flex;
+  align-items: center;
+  padding: 0 @lcoy-row-x;
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.2;
+  color: var(--lcoy-primary-very-high);
+}
+.LcoyListHeader-cell {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 12px 4px;
+  font-weight: normal;
+  white-space: nowrap;
+
+  &--topic {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-left: 0;
+  }
+}
+.LcoyListHeader-sort {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  user-select: none;
+
+  // `.sortable:hover { background-color: var(--d-hover) }`
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+  }
+}
+.LcoyListHeader-arrow {
+  font-size: 0.75em;
+}
+.LcoyListHeader .LcoyCell--activity {
+  padding-right: 0;
+}
+.LcoyListHeader .LcoyCell--replies,
+.LcoyListHeader .LcoyCell--views,
+.LcoyListHeader .LcoyCell--activity {
+  text-align: center;
+  justify-content: center;
+  font-weight: normal;
+  font-size: inherit;
+  color: inherit;
+}
+
+// ---------------------------------------------------------------------
+// 行（`.topic-list-item`）
+// ---------------------------------------------------------------------
+.LcoyList .DiscussionList-discussions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// 双倍特异性以胜过核心的 .DiscussionListItem，它在
+// 平板及以上会加负外边距、圆角和悬停背景。作用于列表而非
+// 行：搜索弹窗的 MinimalDiscussionListItem 保持核心样式。
+.LcoyList .DiscussionListItem {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--lcoy-border);
+  transition: none;
+
+  &:hover {
+    background: transparent;
+  }
+
+  // 控件（⋮）：位于活动列之后的独立窄列中，高度
+  // 与行一致，按钮居中。此前它们位于上角，
+  // 压在活动日期之上。在悬停、焦点（键盘）
+  // 和菜单打开时出现；在触摸屏上核心本就始终显示。
+  .DiscussionListItem-controls {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: @lcoy-col-controls;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // 向上展开时，菜单会盖在列表导航栏
+    // （.LcoyNav，z-index 4）之上。
+    &.open {
+      z-index: 5;
+    }
+
+    // 菜单在整个行的下方展开（容器具有行高），
+    // 右对齐：不遮挡标题，也不遮挡该行自己的列。
+    // 接近屏幕底部时，核心会标记 Dropdown-menu--top，此时它在
+    // 行的上方展开。
+    .Dropdown-menu {
+      top: 100%;
+      bottom: auto;
+      right: 4px;
+      left: auto;
+      margin: 0;
+
+      &.Dropdown-menu--top {
+        top: auto;
+        bottom: 100%;
+      }
+    }
+
+    .Dropdown-toggle {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: var(--lcoy-radius-pill);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary-medium);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--lcoy-primary-100);
+        color: var(--lcoy-primary);
+      }
+    }
+  }
+}
+
+// 读者返回时所处的话题行（`background-fade-highlight`）。
+@keyframes lcoy-fade-highlight {
+  0% {
+    background-color: var(--lcoy-accent-low);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .LcoyList .DiscussionListItem.LcoyListItem--highlighted {
+    animation: lcoy-fade-highlight 2.5s ease-out;
+  }
+}
+
+// ⋮ 列仅在某个行有控件时存在（访客
+// 没有）：此时行和头部在末尾预留相同宽度，任何内容
+// 都不会压到回复、浏览或活动之上。在手机端核心
+// 隐藏 ⋮（操作来自滑动），行则沿用那里的网格。
+@media @tablet-up {
+  .LcoyList:has(.DiscussionListItem-controls) {
+    .DiscussionListItem-content,
+    .LcoyListHeader {
+      padding-right: @lcoy-col-controls;
+    }
+  }
+
+  .LcoyList .DiscussionListItem:focus-within .DiscussionListItem-controls {
+    opacity: 1;
+  }
+}
+
+// td：内边距 20px 4px；第一列从 12px 开始，最后一列在 12px 结束。
+.LcoyList .DiscussionListItem-content {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 @lcoy-row-x;
+  color: var(--lcoy-primary-very-high);
+}
+
+.LcoyListItem-avatar {
+  display: none;
+}
+
+.LcoyTopic.DiscussionListItem-main {
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0;
+  padding: 20px 4px 20px 0;
+}
+
+// `.link-top-line`：--font-up-1（18.4px），行高 1.2，字重 400。
+.LcoyTopic-titleLine.DiscussionListItem-title {
+  margin: 0;
+  font-size: var(--lcoy-font-up-1);
+  font-weight: normal;
+  line-height: 1.2;
+  color: var(--lcoy-primary);
+  overflow: visible;
+  overflow-wrap: anywhere;
+
+  // 核心将未读设为加粗；Discourse 用小圆点标记。
+  .DiscussionList:not(.DiscussionList--searchResults) .unread & {
+    font-weight: normal;
+  }
+}
+.LcoyTopic-title {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  // 已访问：--title-color--read（primary-medium）。
+  .read & {
+    color: var(--lcoy-primary-medium);
+  }
+
+  mark {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    font-weight: 700;
+    color: var(--lcoy-primary);
+  }
+}
+
+// `.topic-statuses`：标题前的 primary-medium 图标（16px：比
+// Discourse 的 14px 略大，按用户要求）。
+.LcoyTopic-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 6px;
+  vertical-align: 1px;
+  color: var(--lcoy-primary-medium);
+
+  .Badge {
+    --size: auto;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+
+    &,
+    .Badge-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+.LcoyUnread {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  vertical-align: middle;
+  cursor: pointer;
+
+  &--new {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: ~"oklch(from var(--lcoy-accent) calc(l + (1 - l) * 0.35) calc(c * 0.7) h)";
+  }
+
+  &--count {
+    min-width: 1.5em;
+    height: 1.5em;
+    padding: 0 0.45em;
+    border-radius: var(--lcoy-radius-pill);
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
+    font-size: var(--lcoy-font-down-2);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: none;
+  }
+}
+
+// `.link-bottom-line`：--font-down-1，margin-top 4px，gap 0 8px，行高 1.4。
+.LcoyTopic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+  margin-top: 4px;
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.4;
+  color: var(--lcoy-primary-high);
+
+  &:empty {
+    display: none;
+  }
+}
+.LcoyTopic-info.DiscussionListItem-info {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  font-size: inherit;
+  color: var(--lcoy-primary-medium);
+}
+.LcoyTopic-stats {
+  display: inline-flex;
+  gap: 8px;
+  color: var(--lcoy-primary-medium);
+
+  .DiscussionListItem-stats-item {
+    font-size: inherit;
+    color: inherit;
+  }
+}
+
+// `.topic-excerpt`：16px，行高 1.4，primary-high，margin-top 4px。
+.LcoyTopic-excerpt {
+  margin-top: 4px;
+  padding-right: 4px;
+  font-size: var(--lcoy-font-0);
+  line-height: 1.4;
+  color: var(--lcoy-primary-high);
+  overflow-wrap: anywhere;
+  min-width: 0;
+
+  mark {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    font-weight: 700;
+    color: inherit;
+  }
+
+  // fof/synopsis：使用富摘要时，摘要会带帖子的 HTML——图片、
+  // 代码、表格。扩展只限制
+  // `.DiscussionListItem-info` 内的媒体，而主题中摘要位于此处：否则
+  // 一张 1280px 的图片会撑破列表并加宽整个页面（窗口
+  // 会出现横向滚动条）。
+  .Synopsis-excerpt {
+    max-width: 100%;
+    min-width: 0;
+
+    img:not(.emoji),
+    video,
+    iframe {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: var(--synopsis-media-max-height, 200px);
+      object-fit: contain;
+      border-radius: var(--lcoy-radius);
+    }
+
+    video,
+    iframe {
+      max-width: var(--synopsis-video-max-width, 320px);
+    }
+
+    img.emoji {
+      width: 1.5em;
+      height: 1.5em;
+      max-width: none;
+      max-height: none;
+      margin: 0 0.1em;
+      vertical-align: -0.3em;
+    }
+
+    pre,
+    table {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+  }
+}
+// Discourse 的"阅读更多"：桌面端与摘要同色。
+.LcoyTopic-excerptMore {
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-link);
+    text-decoration: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 列（`td.num`，13.9px，primary-very-high）
+// ---------------------------------------------------------------------
+.LcoyCell {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 0 4px;
+  text-align: center;
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.2;
+  color: var(--lcoy-primary-very-high);
+}
+
+.LcoyCell--posters {
+  width: @lcoy-col-posters;
+  text-align: left;
+}
+.LcoyCell--replies {
+  width: @lcoy-col-replies;
+}
+.LcoyCell--views {
+  width: @lcoy-col-views;
+  display: none;
+
+  .LcoyList--views & {
+    display: block;
+  }
+}
+.LcoyCell--activity {
+  width: @lcoy-col-activity;
+  padding-right: 0;
+  text-align: right;
+}
+
+// `td.posters > a { float: left; margin-right: 4px }`，24px 头像。
+// 最多四个参与者叠放（与现代 Discourse 一致），以及一个"+"
+// 当对话中有更多人时。
+.LcoyPosters {
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+}
+.LcoyPosters-avatar {
+  display: block;
+  position: relative;
+  flex: none;
+  margin-left: -7px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:hover {
+    z-index: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px var(--lcoy-surface), 0 2px 6px ~"oklch(from var(--lcoy-primary) l c h / 0.28)";
+  }
+
+  .Avatar {
+    .Avatar--size(24px);
+  }
+
+  &:focus-visible {
+    z-index: 1;
+    box-shadow: 0 0 0 3px var(--lcoy-ring);
+  }
+}
+// 同时也是最后发帖者的作者会获得 Discourse 的光环
+// （`.posters a:first-child .avatar.latest:not(.single)`）。
+.LcoyPosters-avatar--glow .Avatar {
+  border: 1px solid ~"oklch(from var(--lcoy-accent) l c h / 0.55)";
+  box-shadow: 0 0 3px 1px ~"oklch(from var(--lcoy-accent) l c h / 0.35)";
+}
+// "还有更多人"的"+"：与头像同高，位于堆栈末端。
+.LcoyPosters-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--lcoy-accent-low);
+  color: var(--lcoy-accent);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
+}
+
+.LcoyCell--replies {
+  font-weight: 700;
+}
+
+// `td.activity a { padding: 15px 5px }`：文字在边框前 5px 结束。
+.LcoyCell--activity .LcoyActivity {
+  display: inline-block;
+  padding: 15px 5px;
+}
+.LcoyActivity {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+
+// 计数的热度（Discourse 的 .heatmap-*）。
+.LcoyCell--heat-low {
+  color: var(--lcoy-heat-low);
+}
+.LcoyCell--heat-med {
+  color: var(--lcoy-heat-med);
+}
+.LcoyCell--heat-high {
+  color: var(--lcoy-heat-high);
+}
+// 只有高热度加粗（Horizon 的
+// `.topic-list .heatmap-high { font-weight: 500 }`）；轻度和中度只改变颜色。
+.LcoyCell--views.LcoyCell--heat-high {
+  font-weight: 500;
+}
+
+// 活动的"冷"（coldmap）在 Meta 的话题列表中没有颜色——
+// 只在分类列表中。类保留但不加样式，供需要者使用。
+
+// 加载更多 / 空列表。使用无限滚动时，按钮仅在
+// 观察器不存在时出现（或供键盘导航者使用）。
+.LcoyList .DiscussionList-loadMore {
+  margin: 0;
+  padding: 20px 0;
+  text-align: center;
+
+  &:empty {
+    padding: 0;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 平板（Discourse 介于 sm 和 lg 之间，带侧边栏）：标题 16px，
+// 徽章 12.1px，只显示最后发帖者的头像，不显示浏览量。
+// ---------------------------------------------------------------------
+@media (min-width: 768px) and (max-width: 1023px) {
+  .LcoyTopic-titleLine.DiscussionListItem-title {
+    font-size: var(--lcoy-font-0);
+  }
+
+  .LcoyTopic-meta {
+    font-size: var(--lcoy-font-down-1);
+
+    .LcoyBadges {
+      font-size: var(--lcoy-font-down-1);
+    }
+  }
+
+  .LcoyTopic-excerpt {
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  // `@mixin hide-posters`：2em 的列，只有居中的 `a.latest`。
+  .LcoyCell--posters {
+    width: 40px;
+  }
+  .LcoyPosters {
+    justify-content: center;
+  }
+  .LcoyPosters-avatar:not(.LcoyPosters-avatar--latest) {
+    display: none;
+  }
+  .LcoyPosters-avatar--latest {
+    margin-left: 0;
+  }
+  .LcoyPosters-more {
+    display: none;
+  }
+
+  .LcoyCell--views,
+  .LcoyList--views .LcoyCell--views {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机端（印刷稿 mob-a 与 `.mobile-view .topic-list` 的 CSS）：头像 48px，
+// 标题占宽度 78%，角上 21px 的计数；下方是摘要和
+// 一行徽章，活动在右侧。
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyListHeader {
+    display: none;
+  }
+
+  // 核心在手机端把列表向两侧拉伸 15px；在卡片内
+  // 它从内边距的边到边，与 Discourse 的表格一致。
+  .LcoyList.DiscussionList {
+    margin: 0;
+  }
+
+  .LcoyList .DiscussionListItem-content {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
+    column-gap: 7px;
+    align-items: start;
+    padding: 7px 0;
+
+    &:active {
+      background: transparent;
+    }
+  }
+
+  .LcoyListItem-avatar {
+    display: block;
+    grid-column: 1;
+    grid-row: ~"1 / span 2";
+
+    .Avatar {
+      .Avatar--size(48px);
+    }
+  }
+
+  // 话题块占据到边缘；计数和日期位于其上方
+  // 的角落，与 Discourse 的 `.pull-right` 和 `.num.activity` 一致。
+  .LcoyTopic.DiscussionListItem-main {
+    grid-column: ~"2 / -1";
+    grid-row: ~"1 / span 2";
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .LcoyTopic-titleLine.DiscussionListItem-title {
+    width: 78%;
+    font-size: var(--lcoy-font-up-1);
+    line-height: 1.2;
+  }
+
+  // 手机端摘要位于徽章行之前。
+  .LcoyTopic-excerpt {
+    order: 1;
+    margin-top: 4px;
+    padding-right: 0;
+    font-size: var(--lcoy-font-0);
+  }
+
+  .LcoyTopic-excerptMore {
+    color: var(--lcoy-link);
+  }
+
+  .LcoyTopic-meta {
+    order: 2;
+    margin-top: 8px;
+    padding-right: 4.5em;
+    line-height: 1.2;
+  }
+
+  .LcoyCell--posters,
+  .LcoyCell--views,
+  .LcoyList--views .LcoyCell--views {
+    display: none;
+  }
+
+  .LcoyCell--replies {
+    position: relative;
+    z-index: 1;
+    grid-column: 3;
+    grid-row: 1;
+    width: auto;
+    padding: 0;
+    text-align: right;
+    font-size: var(--lcoy-font-up-2);
+    line-height: 1.2;
+  }
+
+  .LcoyCell--activity {
+    position: relative;
+    z-index: 1;
+    grid-column: 3;
+    grid-row: 2;
+    align-self: end;
+    width: auto;
+    padding: 0;
+    color: var(--lcoy-primary-medium);
+
+    .LcoyActivity {
+      padding: 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 列表加载中（list/listSkeleton.tsx）：真实行，文字位置
+// 为占位条；这里只处理数字和时间的尺寸。
+// ---------------------------------------------------------------------
+.LcoyListSkeleton {
+  pointer-events: none;
+}
+
+.LcoyListSkeleton .LcoySkeleton--word.LcoyListSkeleton-number {
+  width: 1.4em;
+}
+
+.LcoyListSkeleton .LcoySkeleton--word.LcoyListSkeleton-age {
+  width: 2.6em;
+}

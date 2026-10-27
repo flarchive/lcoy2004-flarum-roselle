@@ -1,0 +1,387 @@
+// =====================================================================
+// 分类页（/tags）：网格中的卡片（印刷稿 p2）或 Discourse
+// 的表格，以及带计数的标签（印刷稿 p4-e）。数值取自
+// meta.discourse.org/categories 和 /tags 的计算样式。
+// =====================================================================
+
+// 使用 rem，与列表一致：主题的 body 是 15px，而 Discourse 以 16px 计量。
+.LcoyCategoryBoxes,
+.LcoyCategoryTable,
+.LcoyTagCloud {
+  font-size: 1rem;
+}
+
+// ---------------------------------------------------------------------
+// 卡片
+// ---------------------------------------------------------------------
+.LcoyCategoryBoxes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+
+// `.category-box-inner`：primary-low 边框、大圆角、16px 内边距。
+// Horizon 在悬停时把边框点亮为高亮色。
+.LcoyCategoryBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius-large);
+  background: var(--lcoy-surface);
+  // 无过渡：在 Meta 上边框会立即点亮（没有任何
+  // 作用于 `.category-box-inner` 的 transition 规则）。
+
+  &:hover,
+  &:focus-within {
+    border-color: var(--lcoy-accent);
+  }
+}
+
+// `.category-box-heading h3`：名称用 --font-up-1 加粗，距描述 8px。
+.LcoyCategoryBox-title {
+  margin: 0 0 8px;
+  font-size: var(--lcoy-font-up-1);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.LcoyCategoryBox-link {
+  display: inline-flex;
+  align-items: center;
+  // 行顶部：按基线对齐时，空方块和
+  // 图标会产生不同的基线，标题因此偏移 3px。
+  vertical-align: top;
+  max-width: 100%;
+  color: var(--lcoy-primary);
+  text-decoration: none;
+
+  // 整个卡片可点击：链接会拉伸覆盖它。子分类的链接
+  // 位于其上方（z-index），仍然可点击。
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    &::after {
+      box-shadow: 0 0 0 1px var(--lcoy-accent);
+    }
+  }
+
+  // 徽章图标/方块（0.74em/0.75em）与名称之间 0.33em。
+  gap: 0.33em;
+
+  .LcoyCategorySymbol {
+    width: auto;
+    height: auto;
+
+    .icon {
+      font-size: 0.76em;
+    }
+  }
+}
+.LcoyCategoryBox-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoyCategoryBox-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  margin: 0 0 16px;
+  font-size: var(--lcoy-font-0);
+  line-height: 1.4;
+  color: var(--lcoy-primary-high);
+  overflow-wrap: anywhere;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// `.subcategories`：徽章之间 8px，名称用 primary 和 --font-down-1。
+.LcoyCategoryBox-children {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.4;
+
+  .LcoyCategoryBadge {
+    color: var(--lcoy-primary);
+  }
+}
+
+@media (max-width: 1199px) {
+  .LcoyCategoryBoxes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 999px) {
+  .LcoyCategoryBoxes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media @phone {
+  .LcoyCategoryBoxes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 表格（"list" 布局）
+// ---------------------------------------------------------------------
+.LcoyCategoryTable {
+  width: 100%;
+  margin-top: var(--lcoy-space-4);
+  border-collapse: collapse;
+
+  th {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--lcoy-border);
+    font-size: var(--lcoy-font-down-1);
+    font-weight: normal;
+    color: var(--lcoy-primary-high);
+    text-align: left;
+  }
+
+  td {
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--lcoy-border);
+    vertical-align: top;
+  }
+
+  td.LcoyCategoryTable-category {
+    // Discourse 分类左侧的彩色竖条。
+    border-left: 6px solid var(--category-color, var(--lcoy-primary-low));
+  }
+}
+
+th.LcoyCategoryTable-topics,
+td.LcoyCategoryTable-topics {
+  width: 110px;
+  text-align: center;
+}
+td.LcoyCategoryTable-topics {
+  font-weight: 700;
+  color: var(--lcoy-primary-high);
+}
+th.LcoyCategoryTable-latest,
+td.LcoyCategoryTable-latest {
+  width: 34%;
+}
+
+.LcoyCategoryTable-name {
+  margin: 0;
+  font-size: var(--lcoy-font-up-1);
+  font-weight: 700;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--lcoy-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: none;
+      color: var(--lcoy-primary);
+    }
+  }
+}
+.LcoyCategoryTable-description {
+  margin: 4px 0 0;
+  color: var(--lcoy-primary-high);
+  line-height: 1.45;
+}
+.LcoyCategoryTable-children {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 8px;
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyCategoryTable-latestInner {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.LcoyCategoryTable-latestTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--lcoy-primary);
+  overflow-wrap: anywhere;
+
+  &:hover {
+    color: var(--lcoy-link);
+  }
+}
+.LcoyCategoryTable-latestAge,
+.LcoyCategoryTable-none {
+  flex: 0 0 auto;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+@media @phone {
+  th.LcoyCategoryTable-latest,
+  td.LcoyCategoryTable-latest {
+    display: none;
+  }
+
+  th.LcoyCategoryTable-topics,
+  td.LcoyCategoryTable-topics {
+    width: 64px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 标签（印刷稿 p4-e 和 Meta 的 /tags）：分组标题 18.7px，标签
+// 位于 300px 的盒子中（"名称 × 658"），行与行之间 16px。
+// ---------------------------------------------------------------------
+.LcoyTagCloud {
+  margin-top: 16px;
+  padding: 32px 0 16px;
+  border-top: 1px solid var(--lcoy-border);
+}
+
+.LcoyTagCloud-title {
+  margin: 0 0 8px;
+  font-size: 1.17em;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+}
+
+.LcoyTagCloud-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(0, 300px));
+  gap: 16px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoyTagCloud-item {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.LcoyTagCloud-tag {
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 0;
+  color: var(--lcoy-primary-high);
+  text-decoration: none;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .LcoyTagSymbol {
+    margin-right: 4px;
+    font-size: 0.9em;
+    color: var(--tag-color, var(--lcoy-primary-medium));
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+
+.LcoyTagCloud-count {
+  flex: 0 0 auto;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary);
+}
+
+@media (max-width: 999px) {
+  .LcoyTagCloud-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media @phone {
+  .LcoyTagCloud-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 标签页（使用 Discourse 地址的 /tags）：`.tags-index`
+// 来自 meta.discourse.org/tags——标题 24px，"按计数排序 名称"
+// 中被选中者加粗，分隔线（hr）以及带下边框的列表。
+// ---------------------------------------------------------------------
+.LcoyTagsPage {
+  font-size: 1rem;
+}
+.LcoyTagsPage-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+}
+.LcoyTagsPage-sortOptions {
+  margin: 0 0 20px;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+}
+.LcoyTagsPage-sort {
+  color: var(--lcoy-link);
+  text-decoration: underline;
+
+  &.active {
+    font-weight: 700;
+  }
+
+  &:hover {
+    color: var(--lcoy-link);
+  }
+}
+.LcoyTagsPage-rule {
+  margin: 16px 0;
+  border: 0;
+  border-top: 1px solid var(--lcoy-border);
+}
+.LcoyTagsPage .LcoyTagCloud {
+  margin-top: 32px;
+  padding: 0 0 16px;
+  border-top: 0;
+  border-bottom: 1px solid var(--lcoy-border);
+}
+.LcoyTagsPage-empty {
+  margin: 32px 0;
+  color: var(--lcoy-primary-medium);
+}

@@ -1,0 +1,17 @@
+includes:
+    # 旧问题（Eloquent 的魔术关系/静态调用、与可选扩展的集成）冻结在这里：
+    # CI 保持绿色，同时所有新代码仍会被检查。以后逐步收紧
+    # （重新生成：composer analyse -- --generate-baseline）。
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+        - extend
+        - extend.php
+        - migrations
+    # CI 用 `composer update` 解析 flarum/core：某个冻结的错误在那里可能
+    # 不再出现。baseline 中有多余条目时不要报错。
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
