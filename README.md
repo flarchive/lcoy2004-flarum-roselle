@@ -2,24 +2,13 @@
 
 > **Read-only archive of released versions of lcoy/roselle.** Not for installation: use [Packagist](https://packagist.org/packages/lcoy/roselle) or the [upstream repository](https://github.com/Lcoy2004/Flarum-roselle).
 
-**16** versions archived · Latest: [`v2.1.1`](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v2.1.1) · License: `MIT` · Flarum: `^2.0.0`
+**0** versions archived · Latest: [`v2.1.2`](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v2.1.2) · License: `MIT` · Flarum: `^2.0.0`
 
 ## Archived Versions
 
 | Version | Released | Flarum | Source |
 |---|---|---|---|
-| `v1.0.0` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.0) |
-| `v1.0.1` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.1) |
-| `v1.0.2` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.2) |
-| `v1.0.3` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.3) |
-| `v1.0.4` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.4) |
-| `v1.0.5` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.5) |
-| `v1.0.6` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.6) |
-| `v1.0.7` | 2026-10-22 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v1.0.7) |
-| `v2.0.0` | 2026-10-23 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v2.0.0) |
-| `v2.0.1` | 2026-10-23 | `^2.0.0` | [Browse](https://github.com/flarchive/lcoy2004-flarum-roselle/tree/archive/v2.0.1) |
-
-[View all 16 versions](https://github.com/flarchive/lcoy2004-flarum-roselle/tags)
+| — | — | — | — |
 
 Catalog entry: [packages/lcoy2004-flarum-roselle.json](https://github.com/flarchive/archive-index/blob/main/packages/lcoy2004-flarum-roselle.json)
 
