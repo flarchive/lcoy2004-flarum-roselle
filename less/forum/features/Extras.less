@@ -1,0 +1,842 @@
+// =====================================================================
+// "附加"功能：搜索页、批量选择、按时段最佳、
+// 文字大小、公告横幅、打印和历史记录。
+// 搜索页数值取自 meta.discourse.org 的印刷稿
+// （p4-g_search.png，1:1 比例）以及 common/base/search.scss。
+// =====================================================================
+
+// ── 搜索页 ──────────────────────────────────────────────────
+// 数值取自 Meta 的 CSS（common/base/search.scss + Horizon）：基准 16px，
+// 页面两侧 10% 间距（1024px 以下无），标签页为
+// `nav-pills`，38px 字段、8px 圆角，按钮和"高级筛选"
+// 为胶囊，排序横带贯穿边缘，结果之间 2em
+// 间距。无过渡：Horizon 将按钮和标签页的过渡归零，筛选
+// 面板立即展开，无动画。
+
+.LcoySearchPage .Page-sidebar {
+  display: none;
+}
+
+.LcoySearchPage .Page-container {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.LcoySearch {
+  max-width: none;
+  margin: 0;
+  padding: 1rem 10% 0;
+}
+
+@media (max-width: 1023px) {
+  .LcoySearch {
+    padding: 0;
+  }
+}
+
+// 来源（话题、帖子、标签和分类）如 `.nav-pills`。
+.LcoySearch-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5em;
+  margin: 0 0 12px;
+  // 与 `horizontal-overflow-nav` 一致：窄屏时横向滚动，不换行。
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.LcoySearch-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0.65em 0.75em;
+  border: 0;
+  border-radius: var(--lcoy-radius);
+  background: transparent;
+  color: var(--lcoy-primary);
+  font: inherit;
+  font-size: 1em;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  transition: none;
+
+  &:hover,
+  &.active {
+    color: var(--lcoy-link);
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 0.125em;
+      background: var(--lcoy-link);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: -2px;
+  }
+}
+
+.LcoySearch-form {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.5em 1em;
+}
+
+.LcoySearch-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 60%;
+  min-width: 0;
+}
+
+.LcoySearch .LcoySearch-input {
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  padding: 8px 2em 8px 0.65em;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font-size: 1em;
+  box-shadow: none;
+
+  // Discourse 的默认焦点：边框和内部 2px 轮廓。
+  &:focus {
+    border-color: var(--lcoy-accent);
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  // 自带的"x"取代浏览器的。
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.LcoySearch-clear.Button {
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  display: flex;
+  width: auto;
+  height: auto;
+  padding: 0;
+  transform: translateY(-50%);
+  color: var(--lcoy-primary-medium);
+  font-size: 1em;
+}
+
+.LcoySearch-submit.Button {
+  flex: 1 1 0;
+  justify-content: center;
+  height: 38px;
+  padding: 8px 0.65em;
+  border-radius: var(--lcoy-radius-pill);
+  font-size: 1em;
+  transition: none;
+}
+
+// `.search-filters`：上方 16px；面板关闭时下方 16px。
+.LcoySearch-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 0;
+  margin: 0;
+}
+
+.LcoySearch-advancedToggle.Button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 38px;
+  padding: 8px 0.65em;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary-high);
+  font-size: 1em;
+  font-weight: 400;
+  transition: none;
+
+  &:hover,
+  &.active {
+    background: var(--lcoy-primary-100);
+    color: var(--lcoy-primary);
+  }
+}
+
+.LcoySearch-advancedCaret {
+  margin-left: 4px;
+  font-size: 0.8706em;
+  color: inherit;
+}
+
+// 排序横带（`.search-info`）：上边框和 16px 间距。
+.LcoySearch-divider {
+  display: none;
+}
+
+.LcoySearch-sortRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 16px 0 0;
+  padding: 16px 0;
+  border: 0;
+  border-top: 1px solid var(--lcoy-border);
+}
+
+// 面板打开时，上边框消失（`:has(.--is-expanded)`）。
+.LcoySearch:has(.LcoySearchFilters) .LcoySearch-sortRow {
+  border-top: 0;
+}
+
+.LcoySearch-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 0 0 auto;
+}
+
+.LcoySearch-sortLabel {
+  margin: 0 8px 0 0;
+  color: var(--lcoy-primary-high);
+  font-size: 1em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.LcoySearch-selectWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.LcoySearch .LcoySearch-select {
+  height: 38px;
+  padding: 8px 2em 8px 8px;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font-size: 1em;
+  font-weight: 500;
+  appearance: none;
+}
+
+.LcoySearch-selectCaret {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7em;
+  color: var(--lcoy-primary-high);
+  pointer-events: none;
+}
+
+// "sidebar 有 50+ 条结果"（`.result-count`）：font-up-2，半粗体。
+.LcoySearch .LcoySearch-heading {
+  margin: 0;
+  padding: 16px 0 0;
+  font-size: 1.3195em;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--lcoy-primary);
+}
+
+.LcoySearch-term {
+  padding: 0;
+  background: var(--lcoy-accent-low);
+  color: inherit;
+}
+
+.LcoySearch-empty {
+  margin: 2em 0;
+  color: var(--lcoy-primary-high);
+  text-align: center;
+}
+
+// `.fps-result-entries`：列表上方 16px。
+.LcoySearch-list {
+  margin: 0;
+  padding: 16px 0 0;
+  list-style: none;
+}
+
+.LcoySearch-more {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 2em;
+}
+
+// 一条结果（`.fps-result`）：48px 头像，距文字 1em，标题为
+// font-up-1，小号分类/标签和灰色摘要；它们之间 2em。
+.LcoySearchResult {
+  position: relative;
+  display: flex;
+  max-width: 100%;
+  margin: 0 0 2em;
+  padding: 0;
+  word-break: break-word;
+
+  mark {
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
+
+.LcoySearchResult-avatar {
+  flex-shrink: 0;
+  margin-right: 1em;
+  padding: 0.15em 0 0 0.15em;
+
+  .Avatar {
+    --size: 48px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    line-height: 48px;
+  }
+}
+
+.LcoySearchResult-main {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 0.25em;
+}
+
+.LcoySearchResult-titleLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.LcoySearchResult-title {
+  color: var(--lcoy-primary);
+  font-size: 1.1487em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+
+  &:visited {
+    color: var(--lcoy-primary-medium);
+  }
+}
+
+.LcoySearchResult-status {
+  flex-shrink: 0;
+  color: var(--lcoy-primary-medium);
+  font-size: 1.1em;
+  line-height: 1.2;
+
+  .Badge {
+    --badge-size: 18px;
+  }
+}
+
+.LcoySearchResult-number,
+.LcoySearchResult-handle {
+  color: var(--lcoy-primary-medium);
+  font-size: 0.8706em;
+}
+
+// `.search-category`：上方 0.25em，分类与标签之间 0.5em。
+.LcoySearchResult-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.5em;
+  max-width: 100%;
+  margin-top: 0.25em;
+  color: var(--lcoy-primary-high);
+  font-size: 0.8706em;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// `.blurb`：中灰色，日期和命中的词稍深一档。
+.LcoySearchResult-blurb {
+  margin-top: 0.25em;
+  color: var(--lcoy-primary-medium);
+  font-size: 1em;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+
+  mark {
+    color: var(--lcoy-primary-high);
+  }
+}
+
+.LcoySearchResult-date {
+  color: var(--lcoy-primary-high);
+}
+
+.LcoySearchResult-count {
+  align-self: center;
+  color: var(--lcoy-primary-medium);
+  font-size: 0.8706em;
+}
+
+.LcoySearchResult--tag {
+  align-items: flex-start;
+}
+
+// 高级筛选（`.search-advanced-filters`）：边框，8px 圆角，1.5em
+// 间距，从 640px 起选项分两列（column-count）。
+.LcoySearchFilters {
+  min-width: 0;
+  margin-top: 16px;
+  padding: 1.5em;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+}
+
+.LcoySearchFilters-grid {
+  column-count: 2;
+  column-gap: 2em;
+
+  > * {
+    break-inside: avoid;
+    margin-bottom: 1em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .LcoySearchFilters-grid {
+    column-gap: 5em;
+  }
+}
+
+.LcoySearchFilters-label {
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: var(--lcoy-primary);
+}
+
+.LcoySearchFilters-field .FormControl {
+  width: 100%;
+  height: 38px;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.LcoySearchFilters-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.LcoySearchFilters-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  cursor: pointer;
+
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  input {
+    accent-color: var(--lcoy-accent);
+  }
+}
+
+.LcoySearchFilters-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--lcoy-space-2);
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-weight: normal;
+    font-size: 0.8706em;
+    color: var(--lcoy-primary-high);
+  }
+}
+
+.LcoySearchFilters .LcoySearchFilters-number {
+  max-width: 120px;
+}
+
+.LcoySearchFilters-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.LcoySearchFilters-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 2px 2px 10px;
+  background: var(--lcoy-primary-100);
+  border-radius: var(--lcoy-radius-pill);
+  font-size: 0.8706em;
+}
+
+.LcoySearchFilters-chipRemove.Button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 10px;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoySearchFilters .LcoySearchFilters-tagAdd {
+  width: auto;
+  flex: 1;
+  min-width: 140px;
+}
+
+.LcoySearchFilters-note {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin: var(--lcoy-space-3) 0 0;
+  font-size: 0.8706em;
+  color: var(--lcoy-primary-high);
+}
+
+@media (max-width: 639px) {
+  .LcoySearch-form {
+    flex-direction: column;
+  }
+
+  .LcoySearch-field,
+  .LcoySearch-submit.Button {
+    flex: none;
+    width: 100%;
+  }
+
+  .LcoySearchFilters-grid {
+    column-count: 1;
+  }
+
+  .LcoySearchFilters-dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// ── 批量选择 ─────────────────────────────────────────────────
+
+.LcoyBulk-toggle.active {
+  background: var(--lcoy-selected);
+  color: var(--lcoy-accent-active);
+}
+
+// 滚动时吸附在卡片顶部，紧贴站点头部下方。
+.LcoyBulkBar {
+  position: sticky;
+  top: ~"calc(var(--lcoy-header-height) + 8px)";
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lcoy-space-2) var(--lcoy-space-4);
+  margin: var(--lcoy-space-2) 0;
+  padding: 8px 12px;
+  background: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  box-shadow: var(--lcoy-shadow-card);
+}
+
+.LcoyBulkBar-status,
+.LcoyBulkBar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+}
+
+.LcoyBulkBar-count {
+  font-weight: 600;
+}
+
+.LcoyBulkBar-link.Button {
+  padding: 0 4px;
+  color: var(--lcoy-link);
+}
+
+.LcoyBulkBar-hint {
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyBulkBar-action.Button {
+  height: 32px;
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyBulkBar-action--danger.Button {
+  color: var(--lcoy-danger);
+}
+
+.LcoyBulkCheck {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  padding: 0 10px 0 4px;
+  margin: 0;
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--lcoy-accent);
+    cursor: pointer;
+  }
+}
+
+.DiscussionListItem.LcoyBulk-selected {
+  background: var(--lcoy-selected);
+}
+
+// ── 按时段最佳 ─────────────────────────────────────────────
+
+.LcoyTopPeriod-button.Button {
+  height: 32px;
+  border-radius: var(--lcoy-radius-pill);
+}
+
+// ── 文字大小 ─────────────────────────────────────────────────
+// 主题的基础字体（body 16px，与 Discourse 一致）和帖子字体会一起缩放；
+// 以 em/rem 计量的内容会自动跟随。
+
+.lcoy-text-size(@scale, @percent) {
+  font-size: @percent;
+  --lcoy-text-scale: @scale;
+  --post-font-size: calc(16px * @scale);
+
+  body {
+    font-size: calc(16px * @scale);
+  }
+}
+
+html.lcoy-text-smaller {
+  .lcoy-text-size(0.85, 85%);
+}
+
+html.lcoy-text-larger {
+  .lcoy-text-size(1.15, 115%);
+}
+
+html.lcoy-text-largest {
+  .lcoy-text-size(1.3, 130%);
+}
+
+.LcoyTextSize {
+  max-width: 320px;
+}
+
+.LcoyTextSize-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+// ── 打印 ─────────────────────────────────────────────────────────
+
+// 屏幕上，打印视图覆盖页面（浏览器对话框
+// 在其上方打开，若用户取消，"关闭"触手可及）。
+.LcoyPrint {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  overflow: auto;
+  padding: var(--lcoy-space-6) ~"max(var(--lcoy-space-4), calc((100vw - 800px) / 2))";
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+}
+
+.LcoyPrint-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--lcoy-space-2);
+  margin-bottom: var(--lcoy-space-4);
+}
+
+.LcoyPrint-title {
+  margin: 0 0 6px;
+  font-size: var(--lcoy-font-up-4);
+  line-height: 1.2;
+}
+
+.LcoyPrint-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyPrint-post {
+  padding: var(--lcoy-space-4) 0;
+  border-top: 1px solid var(--lcoy-border);
+  break-inside: avoid-page;
+}
+
+.LcoyPrint-header {
+  padding-bottom: var(--lcoy-space-4);
+}
+
+.LcoyPrint-postHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  .Avatar {
+    --size: 28px;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    line-height: 28px;
+  }
+}
+
+.LcoyPrint-date,
+.LcoyPrint-number {
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyPrint-number {
+  margin-left: auto;
+}
+
+html.lcoy-printing {
+  overflow: hidden;
+}
+
+@media print {
+  // 打印视图打开时，只有它进入纸张。
+  html.lcoy-printing {
+    overflow: visible;
+
+    body > *:not(#lcoy-print) {
+      display: none !important;
+    }
+
+    .LcoyPrint {
+      position: static;
+      overflow: visible;
+      padding: 0;
+    }
+
+    .LcoyPrint-toolbar {
+      display: none;
+    }
+  }
+
+  // 在话题页直接按 Ctrl+P：去掉外壳、侧边栏、
+  // 时间线、编辑器和按钮，只保留帖子。
+  .App-header,
+  .App-navigation,
+  .App-drawer,
+  #lcoy-sidebar,
+  .LcoySidebar,
+  .App-composer,
+  .App-footer,
+  .DiscussionPage .Page-sidebar,
+  .PostStreamScrubber,
+  .Post-actions,
+  .Post-footer,
+  .PostStream-item .ReplyPlaceholder,
+  .LcoyTopicFooter,
+  .LcoySuggested,
+  .LcoyBulkBar,
+  #alerts,
+  #modal {
+    display: none !important;
+  }
+
+  body,
+  .App,
+  .App-content,
+  .Page-container {
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .App-content,
+  .Page-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .PostStream-item,
+  .LcoyPrint-post {
+    break-inside: avoid-page;
+  }
+
+  .Post-body a::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #666;
+    word-break: break-all;
+  }
+}
+
+// ── 「已编辑」的铅笔 ─────────────────────────────────────────────
+
+.LcoyPostEdited {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: var(--lcoy-radius);
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-primary-100);
+    color: var(--lcoy-primary);
+  }
+}
