@@ -1,0 +1,118 @@
+{
+    "name": "lcoy/roselle",
+    "description": "Roselle — 为 lcoy 的论坛打造的 Flarum 2 主题，灵感来自 Discourse Horizon。",
+    "keywords": [
+        "flarum",
+        "theme",
+        "discourse",
+        "roselle"
+    ],
+    "homepage": "https://gitee.com/lcoy/flarum-roselle",
+    "type": "flarum-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lcoy",
+            "email": "1498127009@qq.com"
+        }
+    ],
+    "support": {
+        "issues": "https://gitee.com/lcoy/Flarum-roselle/issues",
+        "source": "https://gitee.com/lcoy/Flarum-roselle"
+    },
+    "require": {
+        "flarum/core": "^2.0.0"
+    },
+    "require-dev": {
+        "flarum/tags": "^2.0.0",
+        "phpunit/phpunit": "^11.5 || ^12.0 || ^13.2.0",
+        "phpstan/phpstan": "^2.1",
+        "roave/security-advisories": "dev-latest",
+        "fof/pages": "^2.0",
+        "fof/polls": "^3.0"
+    },
+    "suggest": {
+        "flarum/tags": "侧栏、列表和分类页中的分类与标签。",
+        "flarum/subscriptions": "“关注”链接和主题通知铃铛。",
+        "flarum/likes": "主题信息与个人主页摘要中的赞。",
+        "flarum/messages": "用户菜单和个人主页中的私信标签页。",
+        "fof/polls": "Discourse 投票插件风格的投票。",
+        "fof/best-answer": "已采纳的解决方案（discourse-solved）。",
+        "fof/reactions": "表情回应（discourse-reactions）。",
+        "fof/upload": "在编辑器中上传图片和文件。",
+        "fof/follow-tags": "关注/静音分类与标签。",
+        "fof/split": "拆分主题。",
+        "fof/merge-discussions": "合并主题。",
+        "fof/ignore-users": "忽略用户。",
+        "fof/terms": "注册时的条款与社区准则。",
+        "fof/formatting": "剧透、折叠和更多格式。",
+        "fof/links": "自定义链接。",
+        "fof/oauth": "社交账号登录。",
+        "fof/discussion-thumbnail": "主题列表中的缩略图。"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lcoy\\Roselle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lcoy\\Roselle\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=2G"
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Roselle",
+            "category": "theme",
+            "optional-dependencies": [
+                "flarum/tags",
+                "flarum/sticky",
+                "flarum/subscriptions",
+                "flarum/likes",
+                "flarum/mentions",
+                "flarum/lock",
+                "flarum/approval",
+                "flarum/flags",
+                "flarum/messages",
+                "flarum/realtime",
+                "flarum/suspend",
+                "flarum/nicknames",
+                "fof/polls",
+                "fof/best-answer",
+                "fof/reactions",
+                "fof/upload",
+                "fof/follow-tags",
+                "fof/split",
+                "fof/merge-discussions",
+                "fof/ignore-users",
+                "fof/terms",
+                "fof/formatting",
+                "fof/links",
+                "fof/oauth",
+                "fof/discussion-thumbnail"
+            ],
+            "icon": {
+                "image": "icon.png",
+                "backgroundColor": "#fff",
+                "backgroundSize": "cover"
+            }
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": true,
+                "css": true,
+                "locale": true,
+                "typescript": true
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

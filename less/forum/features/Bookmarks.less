@@ -1,0 +1,440 @@
+// =====================================================================
+// 书签——帖子按钮、"编辑书签"弹窗和个人资料标签页。
+// 数值取自 Discourse（bookmark-reminder-modal、bookmark-list 和 topic-list）。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 帖子按钮
+// ---------------------------------------------------------------------
+.LcoyBookmarkButton.Button {
+  position: relative;
+
+  // 已标记：高亮色的实心图标，与 Discourse 的 .bookmarked 一致。
+  &.LcoyBookmarkButton--active,
+  &.LcoyBookmarkButton--active:hover,
+  &.LcoyBookmarkButton--active:focus-visible {
+    color: var(--lcoy-link);
+  }
+
+  // 提醒时钟位于标签中，而核心的 .Button--icon 会隐藏标签。
+  &.Button--icon .Button-label {
+    display: block;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    line-height: 1;
+    pointer-events: none;
+  }
+}
+
+.LcoyBookmarkButton-clock {
+  display: block;
+  font-size: 9px;
+  color: var(--lcoy-link);
+  background: var(--lcoy-surface);
+  border-radius: 50%;
+  // 一圈背景色的轮廓将时钟与其下方的书签分开。
+  box-shadow: 0 0 0 1.5px var(--lcoy-surface);
+}
+
+// ---------------------------------------------------------------------
+// 弹窗
+// ---------------------------------------------------------------------
+.LcoyBookmarkModal {
+  .Form {
+    text-align: left;
+  }
+
+  .Form-group {
+    margin-bottom: var(--lcoy-space-4);
+  }
+}
+
+.LcoyBookmarkModal-label {
+  display: block;
+  margin-bottom: var(--lcoy-space-2);
+  padding: 0;
+  font-weight: 700;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-0);
+}
+
+.LcoyBookmarkModal-reminder {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--lcoy-space-4);
+  min-width: 0;
+}
+
+.LcoyBookmarkModal-existing {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-3);
+  margin: 0 0 var(--lcoy-space-4);
+  padding: var(--lcoy-space-3) var(--lcoy-space-4);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-accent-low);
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-down-1);
+
+  .icon {
+    color: var(--lcoy-link);
+  }
+}
+
+// Discourse 的 "tap tiles"：带图标、标签和时间的按钮网格。
+.LcoyBookmarkModal-presets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--lcoy-space-2);
+}
+
+.LcoyBookmarkModal-preset {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "icon label"
+    "icon hint";
+  align-items: center;
+  column-gap: var(--lcoy-space-3);
+  min-height: 52px;
+  padding: var(--lcoy-space-2) var(--lcoy-space-3);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: var(--lcoy-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background: var(--lcoy-hover);
+  }
+
+  &.is-selected {
+    border-color: var(--lcoy-accent);
+    background: var(--lcoy-selected);
+  }
+}
+
+.LcoyBookmarkModal-presetIcon {
+  grid-area: icon;
+  width: 18px;
+  text-align: center;
+  color: var(--lcoy-primary-high);
+
+  .is-selected & {
+    color: var(--lcoy-link);
+  }
+}
+
+.LcoyBookmarkModal-presetLabel {
+  grid-area: label;
+  font-size: var(--lcoy-font-down-1);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoyBookmarkModal-presetHint {
+  grid-area: hint;
+  font-size: var(--lcoy-font-down-2);
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyBookmarkModal-custom {
+  display: flex;
+  gap: var(--lcoy-space-2);
+  margin-top: var(--lcoy-space-3);
+
+  .FormControl {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.LcoyBookmarkModal-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--lcoy-space-2);
+  margin-bottom: 0;
+}
+
+// 删除单独位于右侧，与 Discourse 的 .delete-bookmark 一致。
+.LcoyBookmarkModal-delete.Button {
+  margin-left: auto;
+  color: var(--lcoy-danger);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-danger);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 个人资料的"书签"标签页
+// ---------------------------------------------------------------------
+.LcoyBookmarks-private {
+  margin: var(--lcoy-space-6) 0;
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyBookmarks-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+  margin-bottom: var(--lcoy-space-4);
+}
+
+.LcoyBookmarks-search {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 420px;
+
+  .FormControl {
+    width: 100%;
+    padding-left: 36px;
+  }
+}
+
+.LcoyBookmarks-searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  transform: translateY(-50%);
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  pointer-events: none;
+}
+
+.LcoyBookmarks-empty {
+  padding: var(--lcoy-space-8) var(--lcoy-space-4);
+  text-align: center;
+  color: var(--lcoy-primary-high);
+
+  p {
+    margin: 0 0 var(--lcoy-space-2);
+  }
+}
+
+.LcoyBookmarks-emptyIcon {
+  display: block;
+  margin: 0 auto var(--lcoy-space-3);
+  font-size: 32px;
+  color: var(--lcoy-primary-low-mid);
+}
+
+.LcoyBookmarks-emptyHelp {
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+// 列表沿用 topic-list：灰色表头，行之间以细边框
+// 分隔，日期在右侧窄列中，"…"在末尾。
+.LcoyBookmarkList-head,
+.LcoyBookmarkList-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px 44px;
+  align-items: start;
+  column-gap: var(--lcoy-space-3);
+}
+
+.LcoyBookmarkList-head {
+  padding: 0 0 var(--lcoy-space-2);
+  border-bottom: 3px solid var(--lcoy-border);
+  font-size: var(--lcoy-font-down-1);
+  font-weight: 400;
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoyBookmarkList-headDate {
+  text-align: center;
+}
+
+.LcoyBookmarkList-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoyBookmarkList-item {
+  padding: var(--lcoy-space-3) 0;
+  border-bottom: 1px solid var(--lcoy-border);
+}
+
+.LcoyBookmarkList-main {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lcoy-space-3);
+  min-width: 0;
+}
+
+.LcoyBookmarkList-avatar.Avatar {
+  --size: 24px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.LcoyBookmarkList-body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.LcoyBookmarkList-title {
+  display: inline;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-1);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    color: var(--lcoy-link);
+    text-decoration: none;
+  }
+}
+
+.LcoyBookmarkList-titleIcon {
+  margin-right: 6px;
+  font-size: var(--lcoy-font-down-2);
+  color: var(--lcoy-link);
+  vertical-align: middle;
+}
+
+.LcoyBookmarkList-badges {
+  margin-top: 2px;
+}
+
+.LcoyBookmarkList-meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1em;
+  row-gap: var(--lcoy-space-1);
+  margin-top: var(--lcoy-space-1);
+  font-size: var(--lcoy-font-down-2);
+  color: var(--lcoy-primary-high);
+  line-height: 1.4;
+}
+
+.LcoyBookmarkList-metaItem {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  min-width: 0;
+
+  span {
+    overflow-wrap: anywhere;
+  }
+}
+
+.LcoyBookmarkList-reminder.is-expired {
+  color: var(--lcoy-danger);
+}
+
+.LcoyBookmarkList-excerpt {
+  margin: var(--lcoy-space-1) 0 0;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-high);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.LcoyBookmarkList-date {
+  padding-top: 3px;
+  text-align: center;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoyBookmarkList-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  .Button--icon {
+    color: var(--lcoy-primary-medium);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--lcoy-primary);
+    }
+  }
+}
+
+.LcoyBookmarkList-delete.Button,
+.LcoyBookmarkList-delete .icon {
+  color: var(--lcoy-danger);
+}
+
+.LcoyBookmarkList-more {
+  padding: var(--lcoy-space-4) 0 0;
+  text-align: center;
+}
+
+// ---------------------------------------------------------------------
+// 手机端：无列头；弹窗中为一列快捷项。
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyBookmarkModal-presets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .LcoyBookmarks-search {
+    max-width: none;
+  }
+
+  .LcoyBookmarkList-head {
+    display: none;
+  }
+
+  .LcoyBookmarkList-items {
+    border-top: 1px solid var(--lcoy-border);
+  }
+
+  .LcoyBookmarkList-item {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: var(--lcoy-space-2);
+  }
+
+  .LcoyBookmarkList-date {
+    text-align: right;
+  }
+}
+
+// 核心将弹窗表单的按钮居中并堆叠
+// （`.Modal .Form-group .Button` 为块级）。在书签中，操作位于
+// 单独一行，与 Discourse 一致：保存 + 取消在左，删除在
+// 右；各分组也更靠近。
+.Modal .LcoyBookmarkModal-footer.Form-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-top: var(--lcoy-space-6);
+  text-align: left;
+
+  > .Button {
+    display: inline-flex;
+    width: auto;
+    margin: 0;
+  }
+}
+
+.LcoyBookmarkModal .Form-group:first-child {
+  margin-bottom: var(--lcoy-space-3);
+}
+
+// 提醒标签最多两行，而非用"…"截断。
+.LcoyBookmarkModal-presetLabel {
+  white-space: normal;
+  line-height: 1.25;
+}

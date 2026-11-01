@@ -1,0 +1,505 @@
+// =====================================================================
+// Discourse 编辑器的功能（composer 本身位于 forum/Composer.less）：
+// #tag 自动补全、帖子中的话题标签、相似话题、
+// "作为关联话题回复"菜单、草稿以及并排
+// 预览。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 自动补全（无 flarum/mentions 的 #tag）
+// ---------------------------------------------------------------------
+
+// textarea 父元素角上的一个点：菜单根据光标定位。
+.LcoyAutocomplete-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  z-index: 5;
+}
+
+.Dropdown-menu.LcoyAutocomplete {
+  display: block;
+  position: absolute;
+  min-width: 220px;
+  max-width: 360px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  background: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  box-shadow: var(--lcoy-shadow-dropdown);
+
+  .Dropdown-header {
+    padding: 4px 8px;
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-2);
+  }
+
+  > li > button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: var(--lcoy-radius-input);
+    background: none;
+    color: var(--lcoy-primary);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  > li.active > button {
+    background: var(--lcoy-selected);
+  }
+
+  img.emoji {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
+
+  mark {
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-weight: 600;
+  }
+}
+
+.LcoyAutocomplete-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoyAutocomplete-meta {
+  margin-left: auto;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyHashtag-tagIcon {
+  color: var(--lcoy-primary-medium);
+  font-size: 12px;
+}
+
+// flarum/emoji 的 ":" 自动补全（启用时）：仅皮肤。
+.ComposerBody-emojiDropdownContainer .EmojiDropdown {
+  padding: 4px;
+  background: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  box-shadow: var(--lcoy-shadow-dropdown);
+
+  .Dropdown-header {
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-2);
+  }
+
+  > li > button {
+    border-radius: var(--lcoy-radius-input);
+  }
+
+  > li.active > button,
+  > li > button:hover {
+    background: var(--lcoy-selected);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 帖子（及预览）中的话题标签：Discourse 的胶囊
+// ---------------------------------------------------------------------
+.LcoyHashtag,
+.Post-body a.LcoyHashtag,
+.Post-body a.TagMention.LcoyHashtag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin: 0 1px;
+  padding: 0 0.4em;
+  border: 0;
+  border-radius: 0.3em;
+  background: var(--lcoy-primary-low) !important;
+  color: var(--lcoy-primary) !important;
+  font-weight: 500;
+  line-height: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: baseline;
+
+  &:hover {
+    background: var(--lcoy-primary-low-mid) !important;
+    text-decoration: none;
+  }
+
+  .LcoyHashtag-symbol {
+    display: inline-flex;
+    align-self: center;
+  }
+
+  .LcoyCategorySymbol {
+    font-size: 0.85em;
+  }
+
+  .LcoyHashtag-symbol > .icon {
+    color: var(--lcoy-primary-medium);
+    font-size: 0.8em;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 相似话题
+// ---------------------------------------------------------------------
+.LcoySimilarTopics {
+  background: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  box-shadow: var(--lcoy-shadow-dropdown);
+  overflow: hidden;
+}
+
+// `.composer-popup` 的头部：右上角的 ✕ 和 h3 标题，
+// 全部位于 composer 背景上（`--composer-popup-background: secondary`）。
+.LcoySimilarTopics-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 0 0 2rem;
+  background: var(--lcoy-surface);
+}
+
+.Composer .ComposerBody-header .LcoySimilarTopics-title,
+.LcoySimilarTopics-title {
+  margin: 2rem 0 10px;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-2);
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.LcoySimilarTopics-close.Button {
+  position: sticky;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 0 0 0 var(--lcoy-button-radius);
+  color: var(--lcoy-primary-medium);
+  background: var(--lcoy-surface) !important;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+  }
+}
+
+.LcoySimilarTopics-list {
+  max-height: none;
+  margin: 0;
+  padding: 0 2rem 2rem;
+  overflow: visible;
+  list-style: none;
+
+  > li + li {
+    margin-top: 0.5em;
+  }
+}
+
+.LcoySimilarTopics-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  color: var(--lcoy-primary);
+  text-decoration: none;
+
+  &:hover .LcoySimilarTopics-itemTitle {
+    color: var(--lcoy-link);
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.LcoySimilarTopics-itemTitle {
+  font-weight: 400;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LcoySimilarTopics-itemMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoySimilarTopics-itemStats {
+  white-space: nowrap;
+}
+
+// 与 Discourse 的 `.composer-popup` 一致：composer 内的气泡，
+// 位于右下角，覆盖在文字之上（宽度 60%；预览打开时
+// 覆盖在预览上）。`.Composer` 是定位参照。
+@media @tablet-up {
+  .ComposerBody-header > .item-lcoySimilar {
+    position: absolute;
+    right: 1rem;
+    bottom: 4.2rem;
+    z-index: 701;
+    width: 60%;
+    max-height: 50%;
+    margin: 0;
+    overflow-y: auto;
+    border-radius: calc(var(--lcoy-radius) * 2);
+    box-shadow: var(--lcoy-shadow-dropdown);
+
+    .show-preview & {
+      right: 1.5rem;
+      width: ~"calc(50% - 2rem)";
+    }
+
+    .LcoySimilarTopics {
+      border: 0;
+      border-radius: inherit;
+      box-shadow: none;
+    }
+  }
+}
+
+@media @phone {
+  .ComposerBody-header > .item-lcoySimilar {
+    flex: 1 1 100%;
+    order: 3;
+    padding: 8px 12px;
+
+    .LcoySimilarTopics {
+      box-shadow: none;
+    }
+
+    .LcoySimilarTopics-list {
+      max-height: 30vh;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 草稿（fof/drafts）：页脚中的错误、关闭时的询问、"新话题"
+// 按钮的"⌄"以及个人资料标签页
+// ---------------------------------------------------------------------
+.LcoyDraftStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  white-space: nowrap;
+
+  &--error {
+    color: var(--lcoy-danger);
+  }
+}
+
+.LcoyDraftStatus-label .icon {
+  margin-right: 4px;
+  font-size: 11px;
+}
+
+@media @phone {
+  .LcoyDraftStatus-label {
+    display: none;
+  }
+}
+
+.LcoyDraftCloseModal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.LcoyDrafts-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoyDrafts-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--lcoy-border);
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.LcoyDrafts-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--lcoy-primary-100);
+  color: var(--lcoy-primary-high);
+  font-size: 13px;
+}
+
+.LcoyDrafts-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.LcoyDrafts-context {
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyDrafts-title {
+  margin: 2px 0 4px;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-1);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.LcoyDrafts-excerpt {
+  margin: 0;
+  color: var(--lcoy-primary-high);
+  overflow-wrap: anywhere;
+}
+
+.LcoyDrafts-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.LcoyDrafts-more {
+  margin-top: var(--lcoy-space-4);
+  text-align: center;
+}
+
+// 用户菜单中"草稿"旁的数字。
+.LcoyDrafts-count {
+  margin-left: 6px;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+// "⌄"菜单（Discourse 的 `topic-drafts-menu`）：每个草稿
+// 一行，类型图标和用省略号截断的标题。
+// 位置（固定，按钮右侧；手机端在下方）在
+// DraftsMenu 中计算：侧边栏会裁切绝对定位的菜单。
+.LcoyDraftsMenu-menu.Dropdown-menu {
+  min-width: 0;
+  padding: 4px 0;
+  z-index: var(--zindex-dropdown, 1000);
+
+  > li > button,
+  > li > a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    padding: 8px 12px;
+    color: var(--lcoy-primary);
+    font-size: var(--lcoy-font-down-1);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .Button-icon {
+    flex: none;
+    width: 14px;
+    margin: 0;
+    color: var(--lcoy-primary-medium);
+  }
+
+  .Button-label {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .LoadingIndicator-container {
+    padding: 8px 0;
+  }
+}
+
+.LcoyDraftsMenu-title {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.LcoyDraftsMenu-all {
+  justify-content: center;
+  border-top: 1px solid var(--lcoy-border);
+  color: var(--lcoy-primary-high) !important;
+}
+
+@media @phone {
+  .LcoyDrafts-item {
+    flex-wrap: wrap;
+  }
+
+  .LcoyDrafts-actions {
+    width: 100%;
+    padding-left: 44px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 并排预览（网格位于 forum/Composer.less）
+// ---------------------------------------------------------------------
+
+// 预览不给行提供高度：可滚动盒为绝对定位，跟随
+// 编辑器的高度，即核心计算的高度。
+.LcoyComposerPreview {
+  position: relative;
+  min-width: 0;
+  border-left: 1px solid var(--lcoy-primary-low);
+
+  .minimized & {
+    display: none;
+  }
+}
+
+// `.d-editor-preview-wrapper`：8px 16px，composer 自身的背景。
+.LcoyComposerPreview-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  padding: 8px 16px;
+  cursor: default;
+}
+
+.LcoyComposerPreview-body {
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+
+  > :first-child {
+    margin-top: 0;
+  }
+}

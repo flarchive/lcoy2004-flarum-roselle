@@ -1,0 +1,51 @@
+name: Release
+
+# 发布 vX.Y.Z 标签时，用它创建带可分发包的 release。
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build package and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 包内包含已编译的 JS（js/dist 已纳入版本控制）。如果标签里没有这些
+      # 文件，宁可失败也不要发布一个没有前端的包。
+      - name: Check compiled assets
+        run: |
+          test -f js/dist/forum.js
+          test -f js/dist/admin.js
+
+      # git archive 会遵循 .gitattributes：tests、js/src、node_modules、
+      # 开发配置和 source map 都不会进入 zip。
+      - name: Build the package
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          git archive --format=zip --prefix="roselle-$version/" -o "roselle-$version.zip" "$GITHUB_REF_NAME"
+          unzip -l "roselle-$version.zip" | tail -n 5
+
+      - name: Create the release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Roselle ${{ env.VERSION }}
+          files: roselle-${{ env.VERSION }}.zip
+          generate_release_notes: true
+          # v1.0.0-rc.1 这类标签会成为预发布。
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
