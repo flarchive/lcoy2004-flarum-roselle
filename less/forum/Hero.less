@@ -1,0 +1,310 @@
+// =====================================================================
+// 首页顶部：Horizon 的欢迎横幅和大尺寸的
+// 分类 hero。两者都位于卡片之外，在着色背景上透明，
+// 并带有一个装饰性的径向渐变。
+// =====================================================================
+
+.LcoyWelcome.Hero,
+.LcoyCategoryHero.Hero {
+  margin: 0;
+  text-align: left;
+  color: var(--lcoy-primary);
+  // 使用 rem，与列表一致：主题的 body 是 15px，而 Discourse 以 16px 计量。
+  font-size: 1rem;
+  // 无自身背景：页面背景的彩色斑点（Core.less）已经
+  // 从后面经过，这里的背景会画出一个硬边矩形。
+  background: none;
+
+  // 宽度跟随正下方的内容卡片。
+  // `width: auto`：核心的 .container 各断点有固定宽度
+  // （最高 1500px），而内容宽度为 90%/100% 时 hero 会变得
+  // 偏窄并与卡片不对齐。
+  .container {
+    width: auto;
+    max-width: var(--lcoy-main-max);
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  h1 {
+    margin: 0;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 欢迎横幅
+// ---------------------------------------------------------------------
+.LcoyWelcome.Hero {
+  padding: var(--lcoy-space-8) var(--lcoy-space-4);
+
+  .container {
+    display: flex;
+    align-items: center;
+    gap: var(--lcoy-space-8);
+  }
+}
+.LcoyWelcome-text {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.LcoyWelcome.Hero .LcoyWelcome-title {
+  font-size: clamp(~"1.728rem, 4vw, 2.296rem");
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--lcoy-primary);
+}
+.LcoyWelcome-message {
+  margin-top: var(--lcoy-space-2);
+  font-size: var(--lcoy-font-0);
+  line-height: 1.5;
+  color: var(--lcoy-primary-high);
+
+  p {
+    margin: 0 0 0.5em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.LcoyWelcome-search {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 560px;
+
+  .Search {
+    width: 100%;
+  }
+
+  // 与页头相同的按钮，采用大胶囊：打开核心的 SearchModal。
+  .Search-input {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    // `.welcome-banner .search-input`：字段边框和 --d-border-radius。
+    height: 42px;
+    padding: 0 16px;
+    border: 1px solid var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-0);
+    text-align: left;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--lcoy-accent);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary-high);
+    }
+
+    &:focus-visible {
+      border-color: var(--lcoy-accent);
+      box-shadow: 0 0 0 1px var(--lcoy-accent);
+    }
+
+    .Button-icon {
+      margin: 0;
+      color: var(--lcoy-primary-medium);
+    }
+
+    .Button-label {
+      overflow: hidden;
+    }
+
+    .Button-labelText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .Search--active .Search-input {
+    color: var(--lcoy-link);
+  }
+}
+
+@media (max-width: 799px) {
+  .LcoyWelcome.Hero .container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--lcoy-space-4);
+  }
+
+  .LcoyWelcome-search {
+    max-width: none;
+  }
+}
+
+// Discourse 在 640px 以下隐藏该横幅（`viewport.until(sm)`）。
+@media (max-width: 639px) {
+  .LcoyWelcome.Hero {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 分类 hero（印刷稿 p4-i）
+// ---------------------------------------------------------------------
+// `.block-category-banner__content`：上下各 24px，标题与描述之间 8px，
+// 到列表卡片 24px。在 Meta 上文字从卡片边框
+// 开始，因此 hero 抵消了 .Page-hero 的左右内边距。
+.LcoyCategoryHero.Hero {
+  padding: 24px 0;
+  margin-bottom: 8px;
+
+  @media @tablet-up {
+    margin-left: calc(~"var(--lcoy-space-4) * -1");
+    margin-right: calc(~"var(--lcoy-space-4) * -1");
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+// Meta 使用 Kaio 字体 50.4px/700（行高 1.4）；改用 Inter 时，
+// 800 字重和负字距能形成同样的深色块面。
+.LcoyCategoryHero.Hero .LcoyCategoryHero-title {
+  font-size: clamp(~"2.25rem, 4vw, 3.15rem");
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  color: var(--lcoy-primary);
+  overflow-wrap: anywhere;
+}
+
+// Flarum 标签的图标，位于名称之前，使用标签颜色。
+.LcoyCategoryHero-icon {
+  display: inline-flex;
+  margin-right: 0.3em;
+  font-size: 0.7em;
+  vertical-align: middle;
+  color: var(--tag-color, var(--lcoy-primary-medium));
+
+  .icon {
+    color: inherit;
+  }
+}
+
+// `__description`：18px，行高 1.5，最宽 900px，使用文字颜色。
+.LcoyCategoryHero-description {
+  margin: 0;
+  max-width: 900px;
+  font-size: 1.125em;
+  line-height: 1.5;
+  color: var(--lcoy-primary);
+}
+
+// `__subcategories`：3 列网格，间距 20px，上方 16px。
+.LcoyCategoryHero-children {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 16px 0 0;
+  list-style: none;
+}
+
+// `.category-card__layout`：大圆角白色卡片，12px 内边距，
+// 以及 Horizon 的带色调阴影。
+.LcoySubcategoryCard {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: var(--lcoy-radius-large);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font-size: 1.125em;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  box-shadow: 0 2px 6px 0 ~"oklch(from var(--lcoy-accent) l c h / 0.24)";
+
+  // 在 Meta 上卡片悬停时不变（无环）；只有键盘焦点
+  // 会获得高亮色的细边框。
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1px var(--lcoy-accent),
+      0 2px 6px 0 ~"oklch(from var(--lcoy-accent) l c h / 0.24)";
+  }
+}
+[data-theme^=dark] .LcoySubcategoryCard {
+  box-shadow: 0 2px 6px 0 ~"oklch(from var(--lcoy-accent) l c h / 0.05)";
+}
+
+// `.category-card__logo`：48px，圆角 12px，分类颜色 15% 透明度；小方块
+// 为 15px，圆角 3px。
+.LcoySubcategoryCard-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  margin-right: 16px;
+  border-radius: 12px;
+  background: ~"color-mix(in srgb, var(--category-color, var(--lcoy-accent)) 15%, transparent)";
+  font-size: 18px;
+
+  .LcoyCategorySymbol--square::before {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+  }
+}
+.LcoySubcategoryCard-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 999px) {
+  .LcoyCategoryHero-children {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media @phone {
+  .LcoyCategoryHero.Hero {
+    padding: 16px 12px;
+  }
+
+  .LcoyCategoryHero-description {
+    font-size: var(--lcoy-font-0);
+  }
+
+  .LcoyCategoryHero-children {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .LcoySubcategoryCard {
+    height: 60px;
+    padding: 8px;
+    font-size: var(--lcoy-font-0);
+  }
+
+  .LcoySubcategoryCard-tile {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+    margin-right: 12px;
+  }
+}
