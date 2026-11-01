@@ -1,0 +1,1384 @@
+// =====================================================================
+// 具有 Horizon（Discourse）观感的通用组件：按钮、字段、
+// select、开关、下拉菜单、弹窗、提示、徽章、
+// 分页、占位符和加载指示器。
+//
+// 选择器是全局的，而非绑定在 `.Lcoy` 上：弹窗、提示和
+// tooltip 位于 #app 之外（#modal、#alerts、body）。因此按钮
+// 的形态来自根上的一个变量，通过 `:has()` 与外壳在
+// #app 上设置的类关联（当"胶囊按钮"选项启用时）。
+// =====================================================================
+
+:root {
+  --lcoy-button-radius: var(--lcoy-radius);
+}
+
+:root:has(#app.Lcoy--pillButtons) {
+  --lcoy-button-radius: var(--lcoy-radius-pill);
+}
+
+[data-theme^=light],
+[data-theme^=dark] {
+  --switch-on-color: var(--lcoy-accent);
+  --loading-indicator-color: var(--lcoy-accent);
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --shadow-color: rgba(0, 0, 0, 0.12);
+
+  // 提示框：淡染的浅色背景和主题文字，与 Discourse 的提示一致。
+  --alert-bg: var(--lcoy-accent-low);
+  --alert-color: var(--lcoy-primary);
+  --alert-error-bg: ~"color-mix(in srgb, var(--lcoy-danger) 14%, var(--lcoy-surface))";
+  --alert-error-color: ~"color-mix(in srgb, var(--lcoy-danger) 75%, var(--lcoy-primary))";
+  --alert-success-bg: ~"color-mix(in srgb, var(--lcoy-success) 14%, var(--lcoy-surface))";
+  --alert-success-color: ~"color-mix(in srgb, var(--lcoy-success) 70%, var(--lcoy-primary))";
+
+  --control-danger-bg: var(--lcoy-danger);
+  --control-danger-color: #fff;
+}
+
+// ---------------------------------------------------------------------
+// 按钮
+// ---------------------------------------------------------------------
+.Button {
+  border-radius: var(--lcoy-button-radius);
+  font-weight: 400;
+  // Discourse 中 `--d-button-transition: none`：悬停和焦点立即切换。
+  transition: none;
+
+  // 核心用内阴影压暗按钮；Horizon 只切换背景。
+  &:active,
+  &.active,
+  .open > &.Dropdown-toggle {
+    box-shadow: none;
+  }
+}
+
+// 默认：浅灰色，图标为高亮色。悬停和焦点只切换
+// 背景，与 Discourse 的 .btn 一致（无环）。
+.Button:where(:not(.Button--primary, .Button--link, .Button--text, .Button--flat, .Button--danger, .Button--ua-reset)) > .Button-icon {
+  color: var(--lcoy-accent);
+}
+
+.Button:where(:not(.Button--link, .Button--text, .Button--flat, .Button--icon, .Button--ua-reset, .Button--more)) {
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+    background: var(--lcoy-primary-200);
+    color: var(--lcoy-primary);
+  }
+}
+
+.Button--primary {
+  font-weight: 400;
+  padding-left: 16px;
+  padding-right: 16px;
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+
+  .Button-icon {
+    color: var(--lcoy-accent-text);
+  }
+
+  // --d-button-primary-bg-color--hover: var(--tertiary-hover)。
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-accent-hover);
+    color: var(--lcoy-accent-text);
+  }
+
+  &:active,
+  &.active {
+    background: var(--lcoy-accent-active);
+  }
+
+  &.disabled,
+  &[disabled] {
+    background: var(--lcoy-accent);
+    opacity: 0.5;
+  }
+}
+
+.Button--danger {
+  background: var(--lcoy-danger);
+  color: #fff;
+
+  .Button-icon {
+    color: #fff;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: ~"color-mix(in srgb, var(--lcoy-danger) 82%, #000)";
+    color: #fff;
+  }
+}
+
+// 无背景：独立图标和链接（帖子控件、关闭弹窗……）。
+.Button--flat,
+.Button--link {
+  color: var(--lcoy-primary-high);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-primary);
+  }
+}
+
+.Button--flat {
+  border-radius: var(--lcoy-button-radius);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+  }
+}
+
+.Button--link.Button--text,
+.Button--text.Button--link {
+  color: var(--lcoy-link);
+}
+
+// 图标按钮：圆形。
+.Button--icon {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  &:not(.Button--link):not(.Button--flat):hover {
+    background: var(--lcoy-primary-low);
+  }
+}
+
+// 键盘焦点从不在按钮上绘制浏览器圆环（Discourse 的
+// `.btn:focus-visible { outline: none }`）：它表现得像
+// 悬停——背景或颜色变化。
+.Button:focus-visible {
+  outline: none;
+}
+
+// 通过键盘（仅 :focus-visible，点击时不会）按钮会获得
+// 细且外扩的轮廓，外加悬停背景——没有粗环。
+.Button:not(.Button--link):not(.Button--text):not(.Button--icon):focus-visible {
+  outline: 1.5px solid var(--lcoy-accent);
+  outline-offset: 2px;
+}
+
+.Button--icon:not(.Button--link):not(.Button--flat):focus-visible {
+  background: var(--lcoy-primary-low);
+}
+
+.Button--link.Button--icon:hover,
+.Button--link.Button--icon:focus-visible {
+  // 核心在 Button--link 上的 `!important` 将背景归零；这里只改变颜色。
+  color: var(--lcoy-primary);
+}
+
+.Button-badge {
+  font-weight: 400;
+  color: var(--lcoy-primary-medium);
+}
+
+// 页头控件和菜单项有自己的样式：不继承默认按钮的圆环
+// 或彩色图标。
+.App-header .Button,
+.App-navigation .Button,
+.Dropdown-menu .Button {
+  &:hover,
+  &:focus-visible {
+    box-shadow: none;
+  }
+}
+
+.App-header .Button > .Button-icon,
+.App-navigation .Button > .Button-icon {
+  color: inherit;
+}
+
+.Dropdown-menu .Button > .Button-icon {
+  color: var(--lcoy-primary-high);
+}
+
+// ---------------------------------------------------------------------
+// 字段（Discourse 的 `input[type=text]`）：内边距 .5em .65em，16px，
+// 1px 边框，聚焦时为高亮色的边框和内部 2px 轮廓
+// ——周围没有光晕。
+// ---------------------------------------------------------------------
+.FormControl {
+  height: var(--lcoy-control-height);
+  padding: 0.5em 0.65em;
+  font-size: 16px;
+  line-height: normal;
+  color: var(--lcoy-primary);
+  background-color: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  box-shadow: none;
+  transition: none;
+  .placeholder(var(--lcoy-primary-medium));
+
+  &:hover:not(:focus):not([disabled]) {
+    border-color: var(--lcoy-primary-low-mid);
+  }
+
+  // 焦点：高亮色边框，周围无环。
+  &:focus,
+  &:focus-visible {
+    background-color: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+    border-color: var(--lcoy-accent);
+    outline: none;
+    box-shadow: none;
+  }
+
+  // 无效（扩展和核心用 aria-invalid 标记）：错误色边框。
+  &[aria-invalid="true"] {
+    border-color: var(--lcoy-danger);
+  }
+
+  &[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// 核心会用控件背景填充弹窗中的字段。
+.Modal-body .FormControl,
+.Modal--flat .Modal-body .FormControl:not(:focus) {
+  --form-control-bg: var(--lcoy-surface);
+  --form-control-color: var(--lcoy-primary);
+  background-color: var(--lcoy-surface);
+}
+
+textarea.FormControl {
+  height: auto;
+  padding: 0.5em 0.65em;
+  line-height: 1.5;
+}
+
+.Form-group > label,
+.FieldSet-label,
+.Form-header > label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--lcoy-primary);
+}
+
+.helpText {
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+// 带核心箭头的原生 select
+.Select select.FormControl {
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.Select-caret {
+  color: var(--lcoy-primary-medium);
+}
+
+// 浮动标签（Discourse 登录的 `.input-group`）：标签位于
+// 字段内部，聚焦或有文字时上移到边框处。JS
+// （composer/installModals）将标签放在字段之后，占位符为 " "。
+.LcoyFloat {
+  position: relative;
+
+  // 胜过核心的 `.Form--centered .FormControl[type=…]`（50px，15px 20px）。
+  > .FormControl,
+  .Form--centered & > .FormControl[type] {
+    height: var(--lcoy-control-height-lg);
+    margin: 0;
+    padding: 12px 12.32px;
+    font-size: 16px;
+    text-align: left;
+  }
+
+  > .LcoyFloat-label {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    max-width: ~"calc(100% - 20px)";
+    margin: 0;
+    padding: 0 3.48px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transform: translateY(-50%);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary-medium);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.2;
+    pointer-events: none;
+    transition: 0.2s;
+  }
+
+  > .FormControl:focus + .LcoyFloat-label,
+  > .FormControl:not(:placeholder-shown) + .LcoyFloat-label,
+  > .FormControl:autofill + .LcoyFloat-label,
+  > .FormControl:-webkit-autofill + .LcoyFloat-label {
+    top: 0;
+    font-size: var(--lcoy-font-down-1);
+    color: var(--lcoy-primary-medium);
+  }
+
+  > .FormControl:focus {
+    border-color: var(--lcoy-accent);
+    outline: 0;
+    box-shadow: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 复选框和开关（d-toggle-switch：45 × 24，18px 圆点）
+// ---------------------------------------------------------------------
+.Checkbox--switch {
+  --left-pad: 56px;
+
+  input[type="checkbox"] {
+    top: -2px;
+    width: 45px;
+    height: 24px;
+  }
+
+  .Checkbox-display {
+    margin-top: -2px;
+  }
+}
+
+.Checkbox--switch .Checkbox-display {
+  width: 45px;
+  height: 24px;
+  padding: 0;
+  border-radius: 24px;
+  background: var(--lcoy-primary-low-mid);
+  box-sizing: border-box;
+  transition: background-color 0.25s;
+
+  &::before {
+    width: 18px;
+    height: 18px;
+    top: 3px;
+    left: 3px;
+    border-radius: 50%;
+    background: var(--lcoy-secondary);
+    box-shadow: none;
+    transform: translateX(0);
+    transition: transform 0.25s;
+  }
+
+  .on& {
+    background: var(--lcoy-accent);
+
+    &::before {
+      transform: translateX(21px);
+    }
+  }
+
+  .LoadingIndicator {
+    --size: 18px !important;
+  }
+}
+
+// 核心会压暗弹窗内关闭状态的开关。
+.Modal-body .off.Checkbox--switch .Checkbox-display {
+  background: var(--lcoy-primary-low-mid);
+}
+
+.Checkbox--switch:hover .Checkbox-display {
+  background: var(--lcoy-primary-high);
+}
+
+.Checkbox--switch.on:hover .Checkbox-display {
+  background: var(--lcoy-accent-active);
+}
+
+.Checkbox--switch.loading .Checkbox-display {
+  background: transparent !important;
+}
+
+.Checkbox input[type="checkbox"]:focus-visible + .Checkbox-display {
+  outline: 2px solid var(--lcoy-accent);
+  outline-offset: 2px;
+}
+
+// ---------------------------------------------------------------------
+// 下拉菜单与菜单（`.fk-d-menu` + `.dropdown-menu`）：圆角 8 的白色
+// 卡片，边框和 `--shadow-dropdown` 阴影；条目内边距 8px × 4px，
+// 图标距文字 8px。以 `float-down` 下降展开（250ms）。
+// ---------------------------------------------------------------------
+@keyframes lcoy-float-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lcoy-float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.Dropdown-menu {
+  font-size: 16px;
+  color: var(--lcoy-primary);
+  background: var(--lcoy-surface);
+
+  > li > a,
+  > li > button,
+  > li > span {
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 16px;
+    color: var(--lcoy-primary);
+  }
+
+  > li > a,
+  > li > button {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lcoy-hover);
+      color: var(--lcoy-primary);
+    }
+  }
+
+  > li.active > a,
+  > li.active > button,
+  > li.active > .Dropdown-item {
+    background: var(--lcoy-selected);
+  }
+
+  .Dropdown-separator {
+    background-color: var(--lcoy-border);
+  }
+}
+
+.Dropdown-header {
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-2);
+  letter-spacing: 0.04em;
+  border-top-color: var(--lcoy-border);
+}
+
+@media @tablet-up {
+  .Dropdown-menu {
+    padding: 4px;
+    margin: 6px 0;
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
+    box-shadow: var(--lcoy-shadow-dropdown);
+
+    > li + li {
+      margin-top: 2px;
+    }
+
+    > li > a,
+    > li > button {
+      border-radius: var(--lcoy-radius);
+    }
+  }
+
+  // 像 `.fk-d-menu.-animated` 一样下降展开。
+  .Dropdown.open > .Dropdown-menu {
+    animation: lcoy-float-down 250ms ease forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .Dropdown.open > .Dropdown-menu {
+      animation-duration: 0s;
+    }
+  }
+
+  .Dropdown-separator {
+    margin: 4px 0;
+  }
+
+  // 展开的列表（侧边导航、"inline"菜单）不加边框
+  // 也不加动画。
+  .Dropdown-menu--inline,
+  .Dropdown.open > .Dropdown-menu--inline {
+    border: 0;
+    box-shadow: none;
+    animation: none;
+  }
+}
+
+[data-theme^=dark] .Dropdown-menu {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.45);
+}
+
+// 手机端：从底部升起的面板，顶部为圆角
+// （Discourse 的 `fk-d-menu-modal`）。
+@media @phone {
+  .Dropdown .Dropdown-menu {
+    border-radius: 16px 16px 0 0;
+    background: var(--lcoy-surface);
+
+    > li > a,
+    > li > button {
+      background: var(--lcoy-surface);
+    }
+
+    > .active > a,
+    > .active > button {
+      &,
+      &:hover {
+        background: var(--lcoy-selected) !important;
+        color: var(--lcoy-primary) !important;
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 弹窗（`.d-modal`）：屏幕中央的圆角 8 卡片，
+// `--shadow-modal` 阴影，头部左侧是标题（font-up-3，加粗），
+// 右侧是位于一条分隔线上的 ✕，主体内边距 16px × 24px，页脚是
+// 按钮。在 60% 的黑色背景上从 70% 放大进入（250ms；背景 300ms）；
+// 手机端则像面板一样从底部升起。
+// ---------------------------------------------------------------------
+.Modal-content {
+  background-color: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+}
+
+.Modal-header h3 {
+  color: var(--lcoy-primary);
+}
+
+.Modal-body {
+  background-color: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+}
+
+.Modal-footer {
+  color: var(--lcoy-primary-high);
+
+  a,
+  .Button--link {
+    color: var(--lcoy-link);
+  }
+}
+
+.Modal-divider {
+  border-color: var(--lcoy-border);
+}
+
+// 按钮内的 spinner（提交、保存中……）：小尺寸，位于文字
+// 旁边，不改变按钮高度。否则，页面加载的间距规则
+// 若作用于按钮会使其变大。
+.Button .LoadingIndicator-container {
+  --size: 1em;
+  --thickness: 2px;
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  height: auto !important;
+  margin: 0 0 0 0.5em;
+  padding: 0 !important;
+  vertical-align: middle;
+}
+
+// 背景：60% 黑色，300ms 出现，250ms 消失。
+.Modal-backdrop {
+  background: #000;
+  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &[data-showing] {
+    opacity: 0.6;
+    transition: opacity 300ms ease;
+  }
+}
+
+// 所有弹窗（主题、核心和扩展）的间距集中在一处：
+// 将页脚拉伸到边缘的规则使用相同的值。
+.Modal {
+  --lcoy-modal-pad-x: 20px;
+  --lcoy-modal-pad-y: 14px;
+  --lcoy-modal-close: 32px;
+}
+
+// 旧货店的 ✕：小而低调的圆形，非常浅的灰色，仅在
+// 悬停时变深——没有粗焦点环（键盘焦点是
+// 浏览器的细轮廓）。
+.Modal-close .Button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--lcoy-modal-close);
+  height: var(--lcoy-modal-close);
+  min-height: 0;
+  padding: 0 !important;
+  border-radius: 50%;
+  background: var(--lcoy-primary-very-low) !important;
+  color: var(--lcoy-primary-medium);
+  line-height: 1;
+
+  .Button-icon {
+    margin: 0;
+    font-size: 14px;
+    color: inherit;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-primary-low) !important;
+    color: var(--lcoy-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: 1px;
+  }
+}
+
+@media @tablet-up {
+  // 屏幕居中（`.d-modal` 是 flex）：在可伸缩的列上使用
+  // `margin: auto`，能容纳时居中，不能容纳时从顶部滚动。
+  .ModalManager {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .Modal {
+    --lcoy-modal-shadow: 0 8px 60px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 540px;
+    margin: auto;
+    border-radius: var(--lcoy-radius);
+    box-shadow: var(--lcoy-modal-shadow);
+    // `modal-enter-desktop`/`modal-exit-desktop`。核心切换
+    // `in`/`out` 类并等待过渡结束再继续。
+    opacity: 0;
+    transform: scale(0.7);
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.in {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    &.out {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+  }
+
+  [data-theme^=dark] .Modal {
+    --lcoy-modal-shadow: 0 8px 60px rgba(0, 0, 0, 0.9);
+  }
+
+  .Modal--small {
+    max-width: 380px;
+  }
+
+  .Modal--medium {
+    max-width: 600px;
+  }
+
+  .Modal--large {
+    max-width: 800px;
+  }
+
+  .Modal-content {
+    border-radius: var(--lcoy-radius);
+  }
+
+  .Modal-close {
+    top: 10px;
+    right: 10px;
+  }
+
+  // 紧凑且无分隔线的头部（标题本身已起分隔作用），与旧货店一致：
+  // 左侧 1.15em 的标题，与 ✕ 中心对齐。
+  .Modal-header {
+    display: flex;
+    align-items: center;
+    min-height: ~"calc(var(--lcoy-modal-close) + 20px)";
+    padding: 10px ~"calc(var(--lcoy-modal-close) + 20px)" 0 var(--lcoy-modal-pad-x);
+    text-align: left;
+    background: transparent;
+    border-bottom: 0;
+
+    h3 {
+      margin: 0;
+      font-size: var(--lcoy-font-up-1);
+      font-weight: 700;
+      line-height: 1.25;
+      text-align: left;
+    }
+  }
+
+  .Modal-body {
+    padding: 8px var(--lcoy-modal-pad-x) var(--lcoy-modal-pad-y);
+  }
+
+  .Modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 12px var(--lcoy-modal-pad-x);
+    border-top: 1px solid var(--lcoy-primary-low);
+    text-align: left;
+
+    > p {
+      margin: 0;
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  // 核心的"简单"和"扁平"弹窗沿用相同头部。
+  .Modal--simple,
+  .Modal--flat,
+  .Modal--inverted {
+    .Modal-header {
+      background: transparent;
+      padding: 10px ~"calc(var(--lcoy-modal-close) + 20px)" 0 var(--lcoy-modal-pad-x);
+
+      h3 {
+        font-size: var(--lcoy-font-up-1);
+        color: var(--lcoy-primary);
+      }
+    }
+
+    .Modal-body {
+      background: transparent;
+      padding: 8px var(--lcoy-modal-pad-x) var(--lcoy-modal-pad-y);
+    }
+  }
+}
+
+@media @tablet-up and (prefers-reduced-motion: reduce) {
+  // 用 1ms 而不是 0：核心等待 `transitionend` 来打开和关闭。
+  // 背景保留正常时长：打开按需加载的弹窗时，
+  // 它会在某一帧失去 `data-showing`，若过渡在该帧结束，
+  // 核心会把它移出屏幕。
+  .Modal {
+    transition-duration: 1ms;
+  }
+}
+
+// 手机端：从底部升起的面板（`modal-enter-mobile`，250ms），最高 85%
+// 高度，标题和 ✕ 在第一行——而不是核心那种带蓝色
+// 头部的全屏样式。
+@media @phone {
+  .ModalManager {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .Modal {
+    top: auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    transform: translateY(100%) !important;
+    transition: transform 250ms ease;
+
+    &.in {
+      top: auto;
+      transform: translateY(0) !important;
+    }
+
+    &.out {
+      transform: translateY(100%) !important;
+    }
+  }
+
+  .Modal-content {
+    min-height: 0;
+    max-height: 85dvh;
+    overflow-y: auto;
+    padding-top: 0;
+    border-radius: var(--lcoy-radius) var(--lcoy-radius) 0 0;
+    box-shadow: 0 8px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .Modal {
+    --lcoy-modal-pad-x: 16px;
+  }
+
+  .Modal-close.App-backControl {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px;
+    left: auto;
+    z-index: 2;
+
+    > .Button {
+      width: var(--lcoy-modal-close);
+      height: var(--lcoy-modal-close);
+      padding: 0 !important;
+      color: var(--lcoy-primary-medium) !important;
+    }
+  }
+
+  .Modal-header {
+    display: flex;
+    align-items: center;
+    min-height: ~"calc(var(--lcoy-modal-close) + 20px)";
+    padding: 10px ~"calc(var(--lcoy-modal-close) + 20px)" 0 var(--lcoy-modal-pad-x);
+    border-bottom: 0;
+
+    h3.App-titleControl,
+    h3 {
+      position: static !important;
+      width: auto;
+      margin: 0;
+      left: auto;
+      color: var(--lcoy-primary) !important;
+      font-size: var(--lcoy-font-up-1);
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: left;
+      white-space: normal;
+    }
+  }
+
+  .Modal-body {
+    padding: 8px var(--lcoy-modal-pad-x) var(--lcoy-modal-pad-y);
+  }
+
+  .Modal-footer {
+    padding: 12px var(--lcoy-modal-pad-x);
+    border-top: 1px solid var(--lcoy-primary-low);
+  }
+}
+
+@media @phone and (prefers-reduced-motion: reduce) {
+  .Modal {
+    transition-duration: 1ms;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 登录 / 注册 / 忘记密码：Discourse 的登录页，
+// 置于卡片中——大标题（"欢迎回来"，36px，加粗），
+// 46px 带浮动标签的字段，宽的主色胶囊按钮，以及
+// 一条分隔线下的"还没有账号？"和"注册"。
+// ---------------------------------------------------------------------
+.LogInModal,
+.SignUpModal {
+  .Modal-header {
+    border-bottom: 0;
+  }
+
+  .Form--centered {
+    --gap: 16px;
+    text-align: left;
+
+    .FormControl[type=text],
+    .FormControl[type=email],
+    .FormControl[type=password] {
+      text-align: left;
+    }
+
+    .Button--primary.Button--block {
+      width: 100%;
+      height: auto;
+      min-height: 38px;
+      padding: 8px 10.4px;
+      font-size: 16px;
+    }
+
+    .helpText {
+      margin-bottom: 16px;
+      text-align: left;
+      color: var(--lcoy-primary-high);
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  }
+
+  // "记住我"低调呈现，与登录页的小字一致；同样 16px 的
+  // 复选框，使用 fof/terms 接受项的高亮色。
+  .checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    color: var(--lcoy-primary-high);
+    font-size: var(--lcoy-font-down-1);
+
+    input[type="checkbox"] {
+      position: static;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--lcoy-accent);
+      cursor: pointer;
+    }
+  }
+
+  // "还没有账号？"为灰色，下一行是"注册"。
+  .Modal-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+
+    // "注册"/"登录"：带边框的次要按钮，宽度与上方
+    // 主按钮一致——而不是零散的文字。
+    .Button--link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 38px;
+      margin: 8px 0 0;
+      padding: 8px 12px;
+      border: 1px solid var(--lcoy-primary-low-mid);
+      border-radius: var(--lcoy-button-radius);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover,
+      &:focus-visible {
+        border-color: var(--lcoy-primary-medium);
+        background: var(--lcoy-primary-very-low);
+        color: var(--lcoy-primary);
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+// "忘记密码"位于密码下方（14px，链接颜色）。
+.LcoyLogin-forgot {
+  margin-top: -12px;
+  text-align: left;
+
+  .Form--centered & .Button.Button--link,
+  .Button.Button--link {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 4px 0 0;
+    text-align: left;
+    font-size: var(--lcoy-font-down-1);
+    color: var(--lcoy-link);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// "重置密码"：一个普通的 `.d-modal`——灰色加粗文字，
+// 宽字段，页脚中的"重置密码"（非全宽），上方有
+// 一条贯穿边缘的分隔线。
+.ForgotPasswordModal {
+  .Form--centered {
+    text-align: left;
+  }
+
+  .helpText {
+    margin: 0 0 4px;
+    color: var(--lcoy-primary-high);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .Form-group:not(.Form-controls) .FormControl {
+    width: 100%;
+    text-align: left;
+  }
+
+  .Form-controls {
+    align-self: stretch;
+    justify-content: flex-start;
+    width: auto;
+    margin: 24px ~"calc(-1 * var(--lcoy-modal-pad-x))" ~"calc(-1 * var(--lcoy-modal-pad-y))";
+    padding: 12px var(--lcoy-modal-pad-x);
+    border-top: 1px solid var(--lcoy-primary-low);
+    text-align: left;
+
+    .Button {
+      width: auto;
+      height: auto;
+      margin: 0;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  }
+}
+
+@media @tablet-up {
+  .ForgotPasswordModal.Modal {
+    max-width: 440px;
+  }
+}
+
+
+// 举报（`.flag-modal-body`）：每个原因左侧为单选按钮，名称
+// 加粗，描述在下；页脚左侧为"举报帖子"，
+// 上方是贯穿边缘的分隔线。
+.FlagPostModal {
+  .Form--centered {
+    text-align: left;
+  }
+
+  .Form-body > .Form-group:first-child {
+    align-self: stretch;
+  }
+
+  .Form-group > div > .checkbox {
+    position: relative;
+    display: block;
+    margin: 0 0 0.75em;
+    padding-left: 1.75em;
+    color: var(--lcoy-primary);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+
+    > input[type="radio"] {
+      position: absolute;
+      top: 0.3em;
+      left: 0;
+      margin: 0;
+      accent-color: var(--lcoy-accent);
+    }
+
+    > strong {
+      display: block;
+      margin-bottom: 0.25em;
+      font-weight: 700;
+    }
+
+    > .FormControl {
+      display: block;
+      width: 100%;
+      height: 3em;
+      min-height: 3em;
+      margin-top: 0.5em;
+    }
+  }
+
+  .Form-controls {
+    align-self: stretch;
+    justify-content: flex-start;
+    width: auto;
+    margin: 16px ~"calc(-1 * var(--lcoy-modal-pad-x))" ~"calc(-1 * var(--lcoy-modal-pad-y))";
+    padding: 12px var(--lcoy-modal-pad-x);
+    border-top: 1px solid var(--lcoy-primary-low);
+    text-align: left;
+
+    .Button {
+      width: auto;
+      height: auto;
+      margin: 0;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  }
+}
+
+
+// 页脚链接移到了密码下方。
+.LogInModal .LogInModal-forgotPassword {
+  display: none;
+}
+
+@media @tablet-up {
+  .LogInModal,
+  .SignUpModal {
+    --lcoy-auth-pad: 28px;
+    max-width: 400px;
+
+    .Modal-header {
+      min-height: 0;
+      padding: var(--lcoy-auth-pad) 56px 0 var(--lcoy-auth-pad);
+
+      h3 {
+        font-size: var(--lcoy-font-up-4);
+        font-weight: 700;
+        line-height: 1.2;
+      }
+    }
+
+    .Modal-body {
+      padding: 16px var(--lcoy-auth-pad) 8px;
+    }
+
+    .Modal-footer {
+      margin: 0 var(--lcoy-auth-pad);
+      padding: 12px 0 24px;
+      border-top: 1px solid var(--lcoy-primary-low);
+    }
+  }
+
+  // 使用社交登录时，Discourse 的两栏布局：表单在
+  // 左侧，按钮在右侧，由一条分隔线隔开。
+  .LogInModal:has(.LogInButtons:not(:empty)),
+  .SignUpModal:has(.LogInButtons:not(:empty)) {
+    max-width: 720px;
+
+    .Modal-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      column-gap: 0;
+    }
+
+    .Form {
+      grid-row: 1;
+      grid-column: 1;
+      padding-right: var(--lcoy-auth-pad);
+    }
+
+    .LogInButtons {
+      grid-row: 1;
+      grid-column: 2;
+      align-self: start;
+      margin: 0;
+      padding: 0 0 0 var(--lcoy-auth-pad);
+      border-left: 1px solid var(--lcoy-primary-low);
+    }
+  }
+}
+
+.LogInButtons {
+  width: auto;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.LogInButton.Button {
+  height: 46px;
+  padding: 12px 12.32px;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font-size: 16px;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-surface);
+    border-color: var(--lcoy-primary-low-mid);
+    box-shadow: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 提示框。页面内使用 Discourse 的 `.alert`：浅色横带，无圆角。
+// 出现后自动消失的提示（AlertManager）是 toast
+// （`.fk-d-toast`）：右上角带边框和阴影的白色卡片，
+// 从下方 2vh 处以 300ms 进入。
+// ---------------------------------------------------------------------
+@keyframes lcoy-toast-opening {
+  from {
+    transform: translateY(2vh);
+  }
+}
+
+.Alert {
+  padding: 0.5em 1em;
+  border-radius: 0;
+  font-size: 16px;
+}
+
+.AlertManager {
+  // `.fk-d-toasts` 的 `z("max")`：位于弹窗和编辑器之上。
+  z-index: 9999;
+  top: ~"calc(var(--lcoy-header-height, 52px) + 0.33rem)";
+  right: 5px;
+  bottom: auto;
+  left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+
+  .Alert {
+    display: flex;
+    margin: 0;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+    max-width: ~"min(480px, calc(100vw - 10px))";
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+    box-shadow: var(--lcoy-shadow-dropdown);
+    animation: lcoy-toast-opening 0.3s ease-in-out;
+    transition: opacity 0.5s;
+
+    &:hover {
+      border-color: var(--lcoy-primary-300);
+    }
+
+    // 类型颜色体现在图标上（`.LcoyToast-icon`，见 Motion.less）。
+
+    &,
+    a,
+    .Button {
+      color: var(--lcoy-primary);
+    }
+  }
+
+  @media @phone {
+    left: 5px;
+    align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .AlertManager .Alert {
+    animation: none;
+  }
+}
+
+.Alert-controls > li > a,
+.Alert-controls > li > .Button {
+  text-transform: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+// tooltip 在 Motion.less 中绘制（卡片、箭头以及关闭时
+// "立即消失"）；这里的规则只在该文件尚未就绪时存在。
+
+// ---------------------------------------------------------------------
+// 徽章（分组、置顶、锁定……）：扁平，不带核心的阴影。
+// ---------------------------------------------------------------------
+.Badge {
+  box-shadow: none;
+}
+
+.badges--packed .Badge {
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
+}
+
+.Pill {
+  border-radius: var(--lcoy-radius-pill);
+}
+
+// ---------------------------------------------------------------------
+// 分页、"加载更多"、占位符和加载
+// ---------------------------------------------------------------------
+.DiscussionList-loadMore,
+.PostList-loadMore {
+  text-align: center;
+  margin-top: var(--lcoy-space-4);
+
+  .Button:not(.Button--primary) {
+    padding: 8px 20px;
+  }
+}
+
+.Pagination {
+  gap: var(--lcoy-space-2);
+
+  .Button {
+    min-width: 36px;
+  }
+
+  &-pageNumber {
+    color: var(--lcoy-primary-high);
+  }
+}
+
+.Placeholder {
+  margin-top: var(--lcoy-space-8);
+  padding: var(--lcoy-space-8) var(--lcoy-space-4);
+  border-radius: var(--lcoy-radius);
+
+  p {
+    font-size: var(--lcoy-font-up-1);
+    color: var(--lcoy-primary-medium);
+  }
+}
+
+.LoadingIndicator-container {
+  color: var(--loading-indicator-color, var(--lcoy-accent));
+}
+
+// ---------------------------------------------------------------------
+// 核心的标签页（搜索、带标签页的弹窗）
+// ---------------------------------------------------------------------
+.Tabs-nav > .Button {
+  font-size: 15px;
+  padding: 10px 12px;
+  color: var(--lcoy-primary);
+  border-bottom-width: 2px;
+
+  &:hover {
+    color: var(--lcoy-link);
+  }
+
+  &[active] {
+    --button-color: var(--lcoy-link);
+    --link-color: var(--lcoy-link);
+    color: var(--lcoy-link);
+    border-color: var(--lcoy-accent);
+    font-weight: 400;
+  }
+}
+
+.Tabs-divider {
+  border-color: var(--lcoy-border);
+}
+
+// 核心的表格（通知网格、访问令牌）
+.NotificationGrid,
+.AccessTokensList {
+  --control-bg: var(--lcoy-primary-very-low);
+}
+
+// 菜单打开时，按钮的 tooltip 消失：点击后焦点仍留在按钮上，
+// 而 tooltip（"hover focus"触发器）会盖在菜单之上。
+.Dropdown.open .tooltip {
+  display: none !important;
+}
+
+// 帖子内打开的菜单（帖子日期、"…"、表情回应）位于
+// 时间线和后续帖子之上：帖子创建了层叠上下文
+// （isolation/sticky），而时间线列在 DOM 中更靠后，
+// 因此绘制在其上。
+.PostStream-item:has(.Dropdown.open),
+.MessageStream-item:has(.Dropdown.open) {
+  position: relative;
+  z-index: 20;
+}
+
+// 侧边 tooltip（例如草稿的"⌄"）只占一行：它们是短
+// 标签，右侧的位置计算会把它们挤成多行。
+.tooltip.right .tooltip-inner,
+.tooltip.left .tooltip-inner {
+  white-space: nowrap;
+  max-width: none;
+}

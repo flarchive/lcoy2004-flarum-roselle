@@ -1,0 +1,204 @@
+// =====================================================================
+// "配色方案"缩略图，采用主题布局（themePreview.tsx）。
+// 一切按缩略图的比例缩放，缩略图尺寸随屏幕变化。
+// =====================================================================
+
+.LcoyThemePreview {
+  --tp-line: var(--lcoy-primary-low-mid);
+  --tp-line-strong: var(--lcoy-primary-high);
+
+  display: flex;
+  flex-direction: column;
+  background: var(--lcoy-page-bg);
+  overflow: hidden;
+
+  // 高对比度：线条更深（浅色模式）或更浅（深色模式）。
+  [data-theme$='-hc'] & {
+    --tp-line: var(--lcoy-primary-high);
+    --tp-line-strong: var(--lcoy-primary);
+  }
+
+  span, i, b {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+// 页头：汉堡菜单、Logo、中间的胶囊形搜索框和头像。
+.LcoyThemePreview-header {
+  display: flex;
+  align-items: center;
+  gap: 5%;
+  height: 13%;
+  padding: 0 5%;
+  background: var(--lcoy-surface);
+  border-bottom: 1px solid var(--lcoy-primary-low);
+}
+
+.LcoyThemePreview-burger {
+  width: 6%;
+  height: 1px;
+  background: var(--tp-line);
+  box-shadow: 0 -2px 0 var(--tp-line), 0 2px 0 var(--tp-line);
+}
+
+.LcoyThemePreview-logo {
+  width: 12%;
+  height: 32%;
+  border-radius: 2px;
+  background: var(--tp-line-strong);
+}
+
+.LcoyThemePreview-search {
+  flex: 1 1 auto;
+  height: 45%;
+  margin: 0 4%;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: 99px;
+  background: var(--lcoy-surface);
+}
+
+.LcoyThemePreview-avatar {
+  width: 9%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--lcoy-primary-low-mid);
+}
+
+.LcoyThemePreview-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+// 侧边栏："新话题"、链接（第一项为激活态）和分类。
+.LcoyThemePreview-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4%;
+  width: 30%;
+  padding: 4% 3%;
+  box-sizing: border-box;
+  background: var(--lcoy-surface);
+  border-right: 1px solid var(--lcoy-primary-low);
+}
+
+.LcoyThemePreview-newTopic {
+  height: 7%;
+  margin-bottom: 4%;
+  border-radius: 99px;
+  background: var(--lcoy-accent);
+}
+
+.LcoyThemePreview-link {
+  display: flex !important;
+  align-items: center;
+  gap: 8%;
+  height: 5%;
+  padding: 0 6%;
+  border-radius: 99px;
+
+  i {
+    width: 10%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--tp-line);
+  }
+
+  b {
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--tp-line);
+  }
+
+  &--active {
+    background: var(--lcoy-primary-100);
+
+    i, b {
+      background: var(--tp-line-strong);
+    }
+  }
+}
+
+.LcoyThemePreview-section {
+  width: 45%;
+  height: 1px;
+  margin: 6% 0 2% 6%;
+  background: var(--tp-line);
+}
+
+// 带标签页和列表的内容卡片。
+.LcoyThemePreview-main {
+  flex: 1 1 auto;
+  padding: 4% 5% 0;
+  min-width: 0;
+}
+
+.LcoyThemePreview-card {
+  height: 100%;
+  padding: 6% 6% 0;
+  box-sizing: border-box;
+  border-radius: 6px 6px 0 0;
+  background: var(--lcoy-surface);
+}
+
+.LcoyThemePreview-nav {
+  display: flex;
+  align-items: center;
+  gap: 7%;
+  height: 12%;
+  margin-bottom: 4%;
+  border-bottom: 1px solid var(--lcoy-border);
+}
+
+.LcoyThemePreview-tab {
+  width: 12%;
+  height: 1px;
+  background: var(--tp-line);
+
+  &--active {
+    height: 2px;
+    background: var(--lcoy-accent);
+  }
+}
+
+.LcoyThemePreview-button {
+  width: 22%;
+  height: 55%;
+  margin-left: auto;
+  border-radius: 99px;
+  background: var(--lcoy-accent);
+}
+
+.LcoyThemePreview-row {
+  position: relative;
+  height: 15%;
+  border-bottom: 1px solid var(--lcoy-border);
+}
+
+.LcoyThemePreview-title {
+  position: absolute;
+  top: 28%;
+  left: 0;
+  height: 1px;
+  background: var(--tp-line-strong);
+}
+
+.LcoyThemePreview-badge {
+  position: absolute;
+  top: 58%;
+  left: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 1px;
+  box-shadow: 4px 1px 0 -1px var(--tp-line);
+}
+
+.LcoyThemePreview-count {
+  position: absolute;
+  top: 40%;
+  right: 4%;
+  width: 6%;
+  height: 2px;
+  background: var(--tp-line-strong);
+}
