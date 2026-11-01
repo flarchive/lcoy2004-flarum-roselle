@@ -1,0 +1,117 @@
+/*
+ * /notifications 页面，使用用户菜单的列表（Discourse 的
+ * `.user-notifications-list` 使用与 `.quick-access-panel` 相同的 CSS）
+ * 以及菜单中的通知标签页作为横向标签页（`?filter=replies`、`likes`、`other`）。
+ * 同一视图也用于资料的“通知”标签页（`/u/:username/notifications`）。
+ */
+import app from 'flarum/forum/app';
+import Button from 'flarum/common/components/Button';
+import Link from 'flarum/common/components/Link';
+import classList from 'flarum/common/utils/classList';
+import type Mithril from 'mithril';
+
+import UserMenu, { type UserMenuTab } from './UserMenu';
+import { NotificationItem, dismissNotifications, filteredNotifications, type NotificationFilter } from './notifications';
+import { EmptyState, NotificationSkeleton, preferencesLink, um, umText, neverLoaded } from './panels';
+import { menuIcon } from './icons';
+
+/** 仅用于过滤通知的菜单标签页，以及 URL 中使用的名称。 */
+function pageTabs(): { key: string; tab: UserMenuTab }[] {
+  const menu: any = Object.create(UserMenu.prototype);
+  menu.attrs = {};
+
+  const keys: Record<string, string> = {
+    'all-notifications': '',
+    'other-notifications': 'other',
+  };
+
+  return (menu.resolvedTopTabs() as UserMenuTab[]).filter((tab) => !!tab.filter).map((tab) => ({ key: tab.id in keys ? keys[tab.id] : tab.id, tab }));
+}
+
+/** 为填满一个过滤标签页还要额外请求多少页（与菜单中一致）。 */
+const MAX_EXTRA_PAGES = 3;
+const MIN_ITEMS = 10;
+let extraPages = 0;
+
+/**
+ * 在条目很少的过滤标签页中，继续请求后续页面，与菜单面板一致：
+ * 否则菜单标签页（会请求）显示的某些通知，页面和“全部”标签页
+ * 还没有加载。
+ */
+function fill(filter: NotificationFilter, count: number): void {
+  const state: any = app.notifications;
+  const filtered = !!(filter.types || filter.exclude);
+
+  if (!filtered || count >= MIN_ITEMS || extraPages >= MAX_EXTRA_PAGES) return;
+  if (state.isLoading() || state.isLoadingNext?.() || !state.hasItems() || !state.hasNext()) return;
+
+  extraPages++;
+  setTimeout(() => Promise.resolve(state.loadNext()).catch(() => {}), 0);
+}
+
+/** 各标签页的地址：/notifications；在资料中则是 /u/:username/notifications。 */
+export type NotificationsHref = (filter: string) => string;
+
+const defaultHref: NotificationsHref = (filter) => app.route('notifications', filter ? { filter } : {});
+
+export default function NotificationsPageView(href: NotificationsHref = defaultHref): Mithril.Children {
+  const state: any = app.notifications;
+  const tabs = pageTabs();
+  const current = String(m.route.param('filter') || '');
+  const active = tabs.find((entry) => entry.key === current) || tabs[0];
+  const filter = active?.tab.filter || {};
+  const notifications = filteredNotifications(filter);
+
+  fill(filter, notifications.length);
+  const anyUnread = (app.session.user?.unreadNotificationCount() ?? 0) > 0;
+
+  let list: Mithril.Children;
+
+  if (notifications.length) {
+    list = <ul className="LcoyUserMenu-list">{notifications.map((notification) => NotificationItem(notification))}</ul>;
+  } else if (state.isLoading() || neverLoaded(state)) {
+    list = NotificationSkeleton(8);
+  } else if (!active || active.key === '') {
+    list = EmptyState(um('empty.page_title'), [
+      um('empty.page_body_1', { b: <b /> }),
+      um('empty.notifications_body_2', { icon: menuIcon('bell'), a: preferencesLink() }),
+    ]);
+  } else {
+    list = EmptyState(um('empty.generic'));
+  }
+
+  return (
+    <div className="LcoyNotificationsPage-body">
+      <div className="LcoyNotificationsPage-controls">
+        <ul className="LcoyNotificationsPage-tabs" role="tablist">
+          {tabs.map((entry) => (
+            <li className={classList('LcoyNotificationsPage-tab', { active: entry === active })}>
+              <Link href={href(entry.key)} role="tab" aria-selected={entry === active ? 'true' : 'false'}>
+                {entry.tab.pageLabel || entry.tab.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        {anyUnread ? (
+          <button
+            type="button"
+            className="Button LcoyUserMenu-dismiss"
+            title={umText('dismiss_notifications_tooltip')}
+            onclick={() => dismissNotifications(filter)}
+          >
+            {menuIcon('check')}
+            <span className="LcoyUserMenu-dismissLabel">{um('dismiss')}</span>
+          </button>
+        ) : null}
+      </div>
+      <div className="LcoyNotificationsList user-notifications-list show-avatars">{list}</div>
+      {state.hasNext() ? (
+        <div className="LcoyNotificationsPage-more">
+          <Button className="Button" loading={state.isLoadingNext()} onclick={() => state.loadNext()}>
+            {app.translator.trans('core.forum.discussion_list.load_more_button')}
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
