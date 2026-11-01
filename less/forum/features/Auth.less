@@ -1,0 +1,244 @@
+// =====================================================================
+// /login 和 /signup：Discourse 的整页（`.login-fullpage`、
+// `.signup-fullpage`）。表单是核心弹窗绘制在页面内
+// （features/auth）：这里它失去弹窗的外观（定位、动画、
+// 暗色遮罩），变成着色背景中央的卡片，上方是论坛
+// logo。没有侧边栏和汉堡菜单，与 Discourse 一致。
+// =====================================================================
+
+.Lcoy--authPage {
+  #lcoy-sidebar,
+  .LcoySidebar-backdrop,
+  .LcoyHeader-toggle {
+    display: none !important;
+  }
+}
+
+@media @tablet-up {
+  .Lcoy--authPage.Lcoy--sidebarOpen {
+    .App-content,
+    .App-footer {
+      margin-left: 0;
+      padding-left: var(--lcoy-main-gap-wide);
+      padding-right: var(--lcoy-main-gap-wide);
+    }
+
+    .App-header > .container {
+      grid-template-columns: minmax(auto, 1fr) auto minmax(0, var(--lcoy-main-max)) auto minmax(auto, 1fr);
+    }
+
+    .App-header .Header-title {
+      min-width: max-content;
+    }
+  }
+}
+
+.LcoyAuthPage {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0 64px;
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+    max-width: 460px;
+  }
+
+  // 使用社交登录时，分为两栏：卡片会变宽。
+  &:has(.LogInButtons:not(:empty)) &-inner {
+    max-width: 760px;
+  }
+
+  &-logo {
+    display: inline-flex;
+    align-self: center;
+    align-items: center;
+    max-width: 100%;
+    color: var(--lcoy-primary);
+    text-decoration: none !important;
+  }
+
+  &-logoImage {
+    display: block;
+    max-width: 260px;
+    max-height: 48px;
+    object-fit: contain;
+
+    &--dark {
+      display: none;
+    }
+  }
+
+  [data-theme^=dark] &-logoImage--light {
+    display: none;
+  }
+
+  [data-theme^=dark] &-logoImage--dark {
+    display: block;
+  }
+
+  &-logoText {
+    font-size: var(--lcoy-font-up-3);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  // 仅表单的加载，绝不是按钮内的 spinner。
+  &-inner > .LoadingIndicator-container {
+    padding: 48px 0;
+  }
+
+  // "返回登录"，位于卡片下方。
+  &-back {
+    margin: 0;
+    text-align: center;
+    font-size: var(--lcoy-font-down-1);
+
+    a {
+      color: var(--lcoy-link);
+    }
+  }
+}
+
+// 页面中的"弹窗"：静态、可见，无动画也无 ✕。
+.LcoyAuthPage .Modal.LcoyAuthForm {
+  position: static;
+  top: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none;
+  border: 1px solid var(--lcoy-primary-low);
+  border-radius: var(--lcoy-radius-large);
+  box-shadow: var(--lcoy-shadow-card);
+  background: var(--lcoy-surface);
+
+  .Modal-content {
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    padding-top: 0;
+    border-radius: inherit;
+    box-shadow: none;
+  }
+
+  .Modal-close {
+    display: none;
+  }
+}
+
+// 手机端核心把 `.App-titleControl` 固定在头部（固定，
+// 带 `!important`，位于 `.App.affix` 内）；普通弹窗位于 #app 之外
+// 因而避开它，但页面内的弹窗不会。
+.App .LcoyAuthPage .Modal-header .App-titleControl {
+  position: static !important;
+  top: auto;
+  left: auto;
+  width: auto;
+  padding: 0;
+  white-space: normal;
+}
+
+// Discourse 页面的大标题（"欢迎回来"，font-up-6）。
+@media @tablet-up {
+  .LcoyAuthPage .Modal.LcoyAuthForm {
+    --lcoy-auth-pad: 36px;
+
+    .Modal-header {
+      min-height: 0;
+      padding: var(--lcoy-auth-pad) var(--lcoy-auth-pad) 0;
+
+      h3 {
+        font-size: var(--lcoy-font-up-4);
+        font-weight: 700;
+        line-height: 1.2;
+      }
+    }
+
+    .Modal-body {
+      padding: 16px var(--lcoy-auth-pad) var(--lcoy-auth-pad);
+    }
+
+    .Modal-footer {
+      margin: 0 var(--lcoy-auth-pad);
+      padding: 12px 0 32px;
+      border-top: 1px solid var(--lcoy-primary-low);
+    }
+
+    // 登录和注册有页脚：主体结束得更靠近分隔线。
+    &.LogInModal .Modal-body,
+    &.SignUpModal .Modal-body {
+      padding-bottom: 8px;
+    }
+  }
+}
+
+// 重置密码（请求和更改）：表单左对齐，
+// 与登录一致，主按钮宽度与卡片一致。
+.LcoyAuthPage .LcoyAuthForm {
+  .Form--centered {
+    --gap: 16px;
+    text-align: left;
+
+    .FormControl {
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  .helpText {
+    margin: 0 0 4px;
+    color: var(--lcoy-primary-high);
+    font-size: var(--lcoy-font-0);
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .Button--primary.Button--block,
+  &.ForgotPasswordModal .Form-controls .Button {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+
+  // 重置请求：页面中没有贯穿边缘的页脚。
+  &.ForgotPasswordModal .Form-controls {
+    margin: 8px 0 0;
+    padding: 0;
+    border-top: 0;
+  }
+}
+
+@media @phone {
+  .LcoyAuthPage {
+    padding: 20px 16px 40px;
+  }
+
+  .LcoyAuthPage .Modal.LcoyAuthForm {
+    .Modal-header {
+      min-height: 0;
+      padding: 24px 16px 0;
+
+      h3 {
+        font-size: var(--lcoy-font-up-3);
+      }
+    }
+
+    .Modal-body {
+      padding: 16px 16px 8px;
+    }
+
+    .Modal-footer {
+      margin: 0 16px;
+      padding: 12px 0 20px;
+      border-top: 1px solid var(--lcoy-primary-low);
+    }
+  }
+}
