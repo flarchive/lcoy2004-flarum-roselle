@@ -1,0 +1,192 @@
+// ---------------------------------------------------------------------
+// fof/oauth：Discourse 登录的社交按钮（`.btn-social`）。
+// 全部为带边框的白色，图标为品牌色；登录页的右列
+// 已属于主题（Components.less）。
+// ---------------------------------------------------------------------
+.LogInButtons .LogInButtonContainer {
+  margin: 0;
+
+  &:last-child {
+    margin: 0;
+  }
+}
+
+.FoFLogInButton.LogInButton.Button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  width: 100%;
+  border: 1px solid var(--lcoy-primary-300);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  font-weight: normal;
+
+  .Button-label {
+    margin: 0;
+  }
+
+  .Button-icon {
+    margin: 0;
+    font-size: 1.15em;
+  }
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    border-color: var(--lcoy-primary-low-mid);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+  }
+
+  &.LogInButton--discord .Button-icon {
+    color: #5865f2;
+  }
+
+  &.LogInButton--facebook .Button-icon {
+    color: #1877f2;
+  }
+
+  &.LogInButton--gitlab .Button-icon {
+    color: #e24329;
+  }
+
+  &.LogInButton--linkedin .Button-icon {
+    color: #0a66c2;
+  }
+
+  &.LogInButton--github .Button-icon,
+  &.LogInButton--twitter .Button-icon {
+    color: var(--lcoy-primary);
+  }
+}
+
+// 仅图标：排成一行的方形按钮。
+.FoFLogInButtons--icons {
+  gap: var(--lcoy-space-2);
+
+  .FoFLogInButton.LogInButton.Button {
+    width: 46px;
+    padding: 0;
+  }
+}
+
+// 手机端：社交按钮位于表单之前（核心的顺序）；
+// 一条线将它们与字段分开，此前字段紧贴最后一个按钮。
+@media @phone {
+  .LogInModal,
+  .SignUpModal {
+    .LogInButtons:not(:empty) {
+      margin: 0 0 16px;
+      padding: 0 0 16px;
+      border-bottom: 1px solid var(--lcoy-primary-low);
+      gap: 10px;
+    }
+
+    .FoFLogInButton.LogInButton.Button {
+      height: 42px;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 已关联账户（fof/oauth，个人资料的"安全"标签页）：与
+// 会话列表相同的模式（.AccessTokensList）：表面上的行，行间
+// 有细线；左侧为图标、名称和数据；"移除关联"为主题
+// 的次要按钮，始终位于行内。
+// ---------------------------------------------------------------------
+.LinkedAccountsList {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+
+  &-item {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+    padding: 14px 16px;
+    border-radius: 0;
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+
+    & + & {
+      border-top: 1px solid var(--lcoy-border);
+    }
+
+    &-icon {
+      width: auto;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--lcoy-primary-high);
+    }
+
+    &-data {
+      min-width: 0;
+      font-size: var(--lcoy-font-down-1);
+      line-height: 1.5;
+      color: var(--lcoy-primary-high);
+
+      // "…的 ID：值"以简单行显示，不再使用会溢出的网格。
+      > div,
+      > p {
+        display: block;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+    }
+
+    &-title {
+      margin: 0 0 2px;
+      font-size: var(--lcoy-font-0);
+      font-weight: 700;
+      color: var(--lcoy-primary);
+
+      &-sub {
+        font-style: normal;
+        color: var(--lcoy-primary-medium);
+      }
+    }
+
+    &-actions {
+      margin-left: 0;
+      justify-self: end;
+
+      .Button,
+      .FoFLogInButton {
+        height: auto;
+        padding: 6px 12px;
+        border: 1px solid var(--lcoy-border) !important;
+        border-radius: var(--lcoy-radius-pill, 999px);
+        background: var(--lcoy-surface) !important;
+        color: var(--lcoy-primary) !important;
+        font-size: var(--lcoy-font-down-1);
+        font-weight: 500;
+        box-shadow: none;
+
+        &:hover,
+        &:focus-visible {
+          background: var(--lcoy-hover) !important;
+        }
+
+        .Button-icon,
+        .icon {
+          color: var(--lcoy-primary-medium) !important;
+        }
+      }
+    }
+  }
+}
+
+@media @phone {
+  .LinkedAccountsList-item {
+    grid-template-columns: 40px minmax(0, 1fr);
+
+    &-actions {
+      grid-column: 1 / -1;
+      justify-self: start;
+      margin-top: 8px;
+    }
+  }
+}
