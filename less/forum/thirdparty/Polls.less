@@ -1,0 +1,240 @@
+// ---------------------------------------------------------------------
+// fof/polls，采用 Discourse 投票风格（Meta 的 css-poll.css）
+//
+// 网格：选项在左，信息列（10em）在右并带大号
+// 计数，按钮横带在下方。扩展的页脚
+// （信息 + 投票按钮）通过 `display: contents` 拆解，
+// 使各部分落入各自区域。
+// ---------------------------------------------------------------------
+.Post-poll {
+  --lcoy-poll-bar: var(--lcoy-primary-medium);
+  --lcoy-poll-bar-chosen: var(--lcoy-accent);
+  --lcoy-poll-bar-bg: var(--lcoy-primary-low);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "header"
+    "content"
+    "info"
+    "buttons";
+  gap: 0;
+  margin: 1em 0;
+  border: 1px solid var(--lcoy-border);
+  background: var(--lcoy-surface);
+
+  .Poll-header {
+    grid-area: header;
+    margin: 0 1em;
+    padding: 1em 0 0.5em;
+    border-bottom: 1px solid var(--lcoy-border);
+  }
+
+  .Poll-title {
+    font-size: var(--lcoy-font-0);
+    font-weight: bold;
+    line-height: 1.4;
+  }
+
+  .Poll-subtitle {
+    margin-top: 0.25em;
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  .Poll-controls .Button {
+    color: var(--lcoy-primary-low-mid);
+  }
+
+  .Poll-content {
+    grid-area: content;
+    align-self: center;
+    padding: 0.5em 1em 1em;
+  }
+
+  .Poll-options {
+    gap: 0;
+  }
+
+  // 页脚作为盒子消失；子元素成为网格项。
+  .Poll-footer {
+    display: contents;
+  }
+
+  .PollInfoText {
+    grid-area: info;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1em;
+    padding: 1em;
+    border-top: 1px solid var(--lcoy-border);
+    color: var(--lcoy-primary-medium);
+    line-height: 1.4;
+
+    > li {
+      display: flex;
+      gap: 0.5em;
+    }
+
+    .icon {
+      margin: 0.2em 0 0;
+      font-size: var(--lcoy-font-down-1);
+    }
+  }
+
+  // 按钮横带：上边框，1em 间距。伪元素
+  // 即使按钮是唯一项也会绘制横带。
+  &:has(.Poll-submit)::after {
+    content: "";
+    grid-area: buttons;
+    border-top: 1px solid var(--lcoy-border);
+  }
+
+  .Poll-submit.Button {
+    grid-area: buttons;
+    z-index: 1;
+    justify-self: start;
+    margin: 1em;
+  }
+}
+
+// 大号计数（"0 / 票"，info-number font-up-6 和 info-label font-up-2）。
+.LcoyPollCount {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.LcoyPollCount-number,
+.LcoyPollCount-label {
+  color: var(--lcoy-primary-medium);
+}
+
+@media @tablet-up {
+  .Post-poll {
+    grid-template-columns: minmax(0, 1fr) 10em;
+    grid-template-areas:
+      "header info"
+      "content info"
+      "buttons buttons";
+
+    .PollInfoText {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 0;
+      padding: 0.5em;
+      border-top: 0;
+      border-left: 1px solid var(--lcoy-border);
+      text-align: center;
+
+      > li + li {
+        margin-top: 1.25em;
+        padding-top: 1.25em;
+        border-top: 1px solid var(--lcoy-border);
+      }
+    }
+  }
+
+  .LcoyPollCount {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .LcoyPollCount-number {
+    font-size: var(--lcoy-font-up-6);
+  }
+
+  .LcoyPollCount-label {
+    font-size: var(--lcoy-font-up-2);
+  }
+}
+
+// 每个选项：无盒子，左侧圆圈，文字为 font-up-1，
+// `.5em 0` 间距。投票后，文字下方的细条
+// （`.results .bar`，.75em）以及右侧的百分比。
+.Post-poll .PollOption {
+  border-radius: 0;
+  background: none;
+
+  &:hover {
+    background: none;
+  }
+}
+
+.Post-poll .PollBar {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.5em;
+  padding: 0.5em 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-1);
+  overflow: visible;
+
+  // 进度条：浅色背景贯穿两端，填充宽度对应票数。
+  &::after {
+    content: none;
+  }
+
+  .PollOption-input {
+    width: 1em;
+    height: 1em;
+    margin-top: 0.2em;
+    accent-color: var(--lcoy-poll-bar-chosen);
+  }
+}
+
+.Post-poll .PollOption-text {
+  flex-wrap: wrap;
+  word-break: break-word;
+  mix-blend-mode: normal !important;
+}
+
+.Post-poll .PollOption-percent {
+  order: 2;
+  margin-left: 0.25em;
+  padding: 0;
+  color: var(--lcoy-primary-medium);
+  font-size: inherit;
+  font-weight: normal;
+}
+
+// 计数可见时（已投票或已结束），条显示在文字下方。
+.Post-poll .PollOption:has(.PollOption-percent) .PollBar {
+  padding: 0.25em 0;
+
+  .PollOption-text::after {
+    content: "";
+    order: 3;
+    flex: 0 0 100%;
+    height: 0.75em;
+    margin-top: 0.25em;
+    background: ~"linear-gradient(var(--lcoy-poll-bar), var(--lcoy-poll-bar)) no-repeat 0 0 / var(--poll-option-width, 0%) 100%, var(--lcoy-poll-bar-bg)";
+  }
+
+  &[data-selected] .PollOption-text::after {
+    background: ~"linear-gradient(var(--lcoy-poll-bar-chosen), var(--lcoy-poll-bar-chosen)) no-repeat 0 0 / var(--poll-option-width, 0%) 100%, var(--lcoy-poll-bar-bg)";
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .Post-poll .PollOption:has(.PollOption-percent) .PollBar .PollOption-text::after {
+    transition: background-size 0.75s ease-in-out;
+  }
+}
+
+// 已选：实心圆，使用所选条的颜色（`.chosen`）。
+.Post-poll .PollOption--voted .PollOption-answer {
+  color: var(--lcoy-primary);
+}
+
+// 投票者窗口和表单：主题的字段和按钮已生效；
+// 只需处理分隔线。
+.PollForm-answer + .PollForm-answer {
+  padding-top: 0;
+}
