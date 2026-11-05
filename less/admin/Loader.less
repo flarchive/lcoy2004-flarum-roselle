@@ -1,0 +1,161 @@
+// "加载指示器"卡片（js/src/admin/components/LoaderPicker.tsx）。
+// 预览把 SVG 涂成论坛的样子（less/forum/Loader.less）：用文字色
+// 做遮罩，或使用带原文件颜色的图片。
+.LcoyLoaderPicker {
+  color: var(--primary-color);
+
+  .helpText,
+  .LcoyAdmin-label,
+  .Form-group > label {
+    color: var(--text-color);
+  }
+}
+
+.LcoyLoaderPicker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+}
+
+.LcoyLoaderPicker-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px 10px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+  background: var(--body-bg);
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: var(--muted-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  &.is-selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+  }
+}
+
+.LcoyLoaderPicker-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+
+  .LoadingIndicator-container {
+    color: var(--muted-color);
+  }
+}
+
+.LcoyLoaderPicker-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.LcoyLoaderPicker-svg {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--lcoy-lp-size, 32px);
+  height: var(--lcoy-lp-size, 32px);
+  background: currentColor;
+  -webkit-mask-image: var(--lcoy-lp-image);
+  mask-image: var(--lcoy-lp-image);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  &--image {
+    background: var(--lcoy-lp-image) center no-repeat;
+    background-size: contain;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+.LcoyLoaderPicker-empty {
+  font-size: 22px;
+  color: var(--muted-color);
+}
+
+.LcoyLoaderPicker-code {
+  font-family: var(--font-family-monospace, ui-monospace, monospace);
+  font-size: 12px;
+}
+
+.LcoyLoaderPicker-error {
+  color: var(--alert-error-color, #d83e3e);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+// 隐藏在按钮内的 <input type=file>：点击标签会打开选择器。
+.LcoyLoaderPicker-upload {
+  position: relative;
+  overflow: hidden;
+
+  input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.LcoyLoaderPicker-colorRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.LcoyLoaderPicker-color {
+  width: 44px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+  background: var(--body-bg);
+  cursor: pointer;
+}
+
+.LcoyLoaderPicker-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 16px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+}
+
+.LcoyLoaderPicker-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+
+  .LcoyLoaderPicker-buttonIcon {
+    display: inline-flex;
+    color: var(--button-primary-color, #fff);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LcoyLoaderPicker-option {
+    transition: none;
+  }
+}
