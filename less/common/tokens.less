@@ -1,0 +1,241 @@
+// =====================================================================
+// Lcoy 的令牌（tokens）—— Horizon 的调色板与尺寸，Horizon 是
+// Discourse 的默认主题，数值在 meta.discourse.org 上核对过。
+//
+// 整个调色板由 Flarum 的主色（外观设置）推导而来，正如
+// Horizon 从 "tertiary" 推导一切：略带色调的背景、选中态、链接、
+// 焦点环。推导使用 CSS 的相对颜色语法
+// (`oklch(from …)`)，并用 ~"" 转义，因为 less.php 无法解析它。
+//
+// 约定：主题令牌以 `--lcoy-` 开头。核心令牌
+// (--body-bg、--control-bg…) 在本文件末尾被重定义，使得
+// 主题未重新绘制的一切（弹窗、扩展的下拉菜单）都直接呈现
+// Discourse 的观感。
+// =====================================================================
+
+.lcoy-font(inter) {
+  --lcoy-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+.lcoy-font(jakarta) {
+  --lcoy-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+.lcoy-font(system) {
+  --lcoy-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+:root {
+  .lcoy-font(@config-lcoy-font);
+
+  // 尺寸（meta.discourse.org，1440px，1:1 比例）
+  --lcoy-header-height: 52px;
+  --lcoy-sidebar-width: 280px;
+  --lcoy-main-max: 1110px;      // 内容卡片
+  --lcoy-space-1: 4px;
+  --lcoy-space-2: 8px;
+  --lcoy-space-3: 12px;
+  --lcoy-space-4: 16px;
+  --lcoy-space-6: 24px;
+  --lcoy-space-8: 32px;
+
+  --lcoy-radius-large: 16px;    // 主卡片、分类框（--d-border-radius-large，在 Meta 上测量）
+  --lcoy-radius: 8px;           // 方形按钮、下拉菜单、小框
+  --lcoy-radius-input: 6px;
+  --lcoy-radius-pill: 6.25rem;  // Horizon 的按钮
+
+  // 字体排版（Discourse 基础 font-size 16px；--font-up/down-N 层级在 Meta 上测量）
+  --lcoy-font-up-6: 2.296em;
+  --lcoy-font-up-4: 1.7511em;
+  --lcoy-font-up-3: 1.5157em;
+  --lcoy-font-up-2: 1.3195em;
+  --lcoy-font-up-1: 1.1487em;
+  --lcoy-font-0: 1em;
+  --lcoy-font-down-1: 0.8706em;
+  --lcoy-font-down-2: 0.7579em;
+  --lcoy-font-down-3: 0.6599em;
+
+  --lcoy-accent: var(--primary-color);
+  --lcoy-accent-text: #fff;
+
+  --lcoy-danger: #c80001;
+  --lcoy-success: #009900;
+  --lcoy-highlight: #ffff4d;
+  --lcoy-love: #fa6c8d;               // 点赞的心形（Discourse 的 `--love`）
+
+  // 列表中"热度"计数的颜色（Discourse 的 .heatmap-low/med/high）
+  --lcoy-heat-low: #9b764f;
+  --lcoy-heat-med: #cf7721;
+  --lcoy-heat-high: #fe7a15;
+
+  --lcoy-shadow-card: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --lcoy-shadow-dropdown: 0 2px 12px rgba(0, 0, 0, 0.15);
+
+  // 控件基础（"旧货店"式做法：每个控件只有一种尺寸和一个
+  // 状态，且集中在一处）。普通字段与按钮的高度，以及登录
+  // 表单的高度。字段焦点只有高亮色边框——
+  // 周围没有粗环。
+  --lcoy-control-height: 36px;
+  --lcoy-control-height-lg: 46px;
+}
+
+// 深色模式下阴影需要更高的不透明度才能显现。
+[data-theme^=dark] {
+  --lcoy-shadow-card: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --lcoy-shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+// ---------------------------------------------------------------------
+// 浅色
+// ---------------------------------------------------------------------
+[data-theme^=light] {
+  --lcoy-primary: #1a1a1a;            // 文本
+  --lcoy-secondary: #ffffff;          // 表面
+  --lcoy-primary-very-low: #f8f8f8;
+  --lcoy-primary-low: #e9e9e9;
+  --lcoy-primary-100: #f2f2f2;        // 默认按钮背景
+  --lcoy-primary-200: #e0e0e0;
+  --lcoy-primary-300: #d1d1d1;        // 字段边框
+  --lcoy-primary-low-mid: #b3b3b3;
+  --lcoy-primary-medium: #8f8f8f;
+  --lcoy-primary-high: #646464;       // 次要文本
+  --lcoy-primary-very-high: #333333;
+  --lcoy-border: #e9e9e9;             // 列表和卡片的细分隔线
+
+  --lcoy-surface: #ffffff;
+  // 内容卡片让页面背景透出——即 Flarum 的默认
+  // 背景，以及管理员自定义 CSS 时其置于背后的图片。
+  --lcoy-surface-glass: ~"color-mix(in srgb, var(--lcoy-surface) 62%, transparent)";
+  --lcoy-selected: ~"oklch(from var(--lcoy-accent) 92% calc(c * 0.5) h)";
+  --lcoy-hover: ~"oklch(from var(--lcoy-accent) 92% calc(c * 0.5) h / 0.75)";
+  --lcoy-sidebar-suffix: ~"oklch(from var(--lcoy-accent) l calc(c * 0.9) h)";
+  --lcoy-link: var(--lcoy-accent);
+  // Horizon 的悬停环（`--button-box-shadow`）。配合 Discourse 的
+  // "tertiary"（#595bca）时它非常浅；更暗的主色，如
+  // 本论坛的，会让环过强——因此亮度设有下限。
+  --lcoy-ring: ~"oklch(from var(--lcoy-accent) clamp(0.86, calc(l * 1.5), 0.94) calc(c * 0.3) h)";
+  --lcoy-accent-active: ~"oklch(from var(--lcoy-accent) 40% c h)";
+  --lcoy-accent-low: ~"oklch(from var(--lcoy-accent) 95% calc(c * 0.3) h)";
+  --lcoy-blob-1: ~"oklch(from var(--lcoy-accent) 85% calc(c * 0.6) h / 0.5)";
+  --lcoy-blob-2: ~"oklch(from var(--lcoy-accent) 80% calc(c * 0.7) calc(h + 60) / 0.35)";
+}
+
+// ---------------------------------------------------------------------
+// 深色
+// ---------------------------------------------------------------------
+[data-theme^=dark] {
+  --lcoy-primary: #f2f2f2;
+  --lcoy-secondary: #1a1a1a;
+  --lcoy-primary-very-low: #222222;
+  --lcoy-primary-low: #2e2e2e;
+  --lcoy-primary-100: #2a2a2a;
+  --lcoy-primary-200: #3a3a3a;
+  --lcoy-primary-300: #4a4a4a;
+  --lcoy-primary-low-mid: #6b6b6b;
+  --lcoy-primary-medium: #8f8f8f;
+  --lcoy-primary-high: #b5b5b5;
+  --lcoy-primary-very-high: #dedede;
+  --lcoy-border: #2e2e2e;
+
+  --lcoy-surface: #1a1a1a;
+  --lcoy-surface-glass: ~"color-mix(in srgb, var(--lcoy-surface) 62%, transparent)";
+  --lcoy-selected: ~"oklch(from var(--lcoy-accent) calc(l * 0.7) calc(c * 0.25) h)";
+  --lcoy-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.7) calc(c * 0.25) h / 0.75)";
+  --lcoy-sidebar-suffix: ~"oklch(from var(--lcoy-accent) l calc(c * 0.9) h)";
+  --lcoy-link: ~"oklch(from var(--lcoy-accent) calc(l * 1.2) c h)";
+  --lcoy-ring: ~"oklch(from var(--lcoy-accent) clamp(0.28, calc(l * 0.6), 0.36) calc(c * 0.45) h)";
+  --lcoy-accent-active: ~"oklch(from var(--lcoy-accent) 50% c h)";
+  --lcoy-accent-low: ~"oklch(from var(--lcoy-accent) 25% calc(c * 0.4) h)";
+  --lcoy-blob-1: ~"oklch(from var(--lcoy-accent) 35% calc(c * 0.6) h / 0.35)";
+  --lcoy-blob-2: ~"oklch(from var(--lcoy-accent) 30% calc(c * 0.7) calc(h + 60) / 0.3)";
+}
+
+// ---------------------------------------------------------------------
+// 外壳（页头、侧边栏、背景和卡片），在
+// meta.discourse.org 上测量：命名沿用每个令牌所复现的
+// Discourse 变量。
+// ---------------------------------------------------------------------
+:root {
+  --lcoy-card-radius: 16px;           // .list-container / .regular
+  --lcoy-main-gap: 16px;              // 侧边栏展开时的 --d-main-content-gap
+  --lcoy-main-gap-wide: 32px;         // ……以及侧边栏收起时
+  --lcoy-header-pad: 0.67rem;         // .d-header > .wrap (10,72px)
+  --lcoy-row-height: 2.3rem;          // --d-sidebar-row-height (36,8px)
+}
+
+// 在 768 到 1023px 之间，侧边栏稍窄一些。
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  :root {
+    --lcoy-sidebar-width: 240px;
+  }
+}
+
+[data-theme^=light] {
+  --lcoy-shell-icon: #d0d0d0;          // header_primary-low-mid：汉堡菜单、图标、"PT" 的边框
+  --lcoy-shell-locale: var(--lcoy-primary-medium);
+  --lcoy-placeholder: #757575;
+  --lcoy-hover-accent: ~"oklch(from var(--lcoy-accent) l c h / 0.15)";   // --d-hover
+  --lcoy-hover-accent-text: var(--lcoy-accent);
+  --lcoy-accent-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.81) c h)"; // --tertiary-hover
+  --lcoy-header-button-bg: var(--lcoy-accent);
+  --lcoy-page-bg: ~"oklch(from var(--lcoy-accent) 97.8% calc(c * 0.035) h)";
+  --lcoy-card-shadow: ~"0 2px 6px oklch(from var(--lcoy-accent) l c h / 0.24)";
+  --lcoy-panel-shadow: 0 0 30px -2px rgba(0, 0, 0, 0.5);
+  --lcoy-cloak: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme^=dark] {
+  --lcoy-shell-icon: #989898;
+  --lcoy-shell-locale: var(--lcoy-primary-very-high);
+  --lcoy-placeholder: #757575;
+  --lcoy-hover-accent: ~"oklch(from var(--lcoy-accent) l c h / 0.15)";
+  --lcoy-hover-accent-text: ~"oklch(from var(--lcoy-accent) 73% calc(c * 0.65) h)";
+  --lcoy-accent-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.81) c h)";
+  --lcoy-header-button-bg: var(--lcoy-accent-hover);
+  --lcoy-page-bg: #000;
+  --lcoy-card-shadow: ~"0 2px 6px oklch(from var(--lcoy-accent) l c h / 0.05)";
+  --lcoy-panel-shadow: 0 0 30px -2px rgba(0, 0, 0, 0.5);
+  --lcoy-cloak: rgba(0, 0, 0, 0.3);
+}
+
+// ---------------------------------------------------------------------
+// 用上述调色板重定义的核心令牌
+// ---------------------------------------------------------------------
+[data-theme^=light],
+[data-theme^=dark] {
+  --body-bg: var(--lcoy-surface);
+  --body-bg-shaded: var(--lcoy-primary-very-low);
+  --body-bg-light: var(--lcoy-surface);
+  --text-color: var(--lcoy-primary);
+  --heading-color: var(--lcoy-primary);
+  --muted-color: var(--lcoy-primary-high);
+  --muted-more-color: var(--lcoy-primary-medium);
+  --link-color: var(--lcoy-link);
+  --control-bg: var(--lcoy-primary-100);
+  --control-bg-light: var(--lcoy-primary-very-low);
+  --control-bg-shaded: var(--lcoy-primary-low);
+  --control-color: var(--lcoy-primary);
+  --control-body-bg-mix: var(--lcoy-primary-very-low);
+  --header-bg: var(--lcoy-surface);
+  --header-color: var(--lcoy-primary);
+  --header-control-bg: transparent;
+  --header-control-color: var(--lcoy-primary-high);
+  --discussion-title-color: var(--lcoy-primary);
+  --code-bg: var(--lcoy-primary-very-low);
+  --code-color: var(--lcoy-primary-very-high);
+
+  // Horizon 的默认按钮：浅灰色，图标为高亮色
+  --button-bg: var(--lcoy-primary-100);
+  --button-color: var(--lcoy-primary);
+  --button-bg-hover: var(--lcoy-primary-100);
+  --button-color-hover: var(--lcoy-primary);
+  --button-bg-active: var(--lcoy-primary-low);
+  --button-color-active: var(--lcoy-primary);
+  --button-bg-disabled: var(--lcoy-primary-100);
+
+  --button-primary-bg: var(--lcoy-accent);
+  --button-primary-color: var(--lcoy-accent-text);
+  --button-primary-bg-hover: var(--lcoy-accent);
+  --button-primary-color-hover: var(--lcoy-accent-text);
+  --button-primary-bg-active: var(--lcoy-accent-active);
+  --button-primary-color-active: var(--lcoy-accent-text);
+  --button-primary-bg-disabled: var(--lcoy-accent);
+}
