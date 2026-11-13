@@ -1,0 +1,34 @@
+// forumaker/profile-cover（js/src/forum/thirdparty/profileCover.tsx）。
+//
+// 扩展将封面绘制在整个 .UserCard 背景上（style 中的 `--background-image`，
+// 以及其 CSS 中的 `.UserCard`、`.UserHero` 和 `body.dark .UserPage .Hero`）。
+// 主题已绘制同样的封面：个人资料中的
+// .LcoyUserHero-cover 横带以及卡片的遮罩背景。没有这一点，照片会在个人资料中
+// 出现两次（头像和名称之后，无遮罩），卡片也会失去
+// 保持文字可读的遮罩。选择器比扩展的更强，
+// 而扩展在主题之后加载。
+
+// 个人资料：封面只是上方横带。
+.UserPage .UserCard.LcoyUserHero,
+body.dark .UserPage .UserCard.LcoyUserHero.Hero {
+  background-image: none;
+}
+
+// 主题中完全没有封面时的核心 popover（forumaker 无图片，或
+// 后台开关关闭）：下方不能出现原始照片。有封面时，个人资料功能的
+// `.LcoyProfile--hasCardBg` 规则将图片与遮罩一起放入。
+.UserCard.UserCard--popover:not(.LcoyProfile--hasCardBg) {
+  background-image: none;
+}
+
+// 编辑弹窗采用主题颜色：空预览使用表面的
+// 灰色，位置控制为高亮色。
+.Cover-modal {
+  .CoverEditor-cover {
+    background-color: var(--lcoy-primary-100);
+  }
+
+  .CoverEditor-positionSlider {
+    accent-color: var(--lcoy-accent);
+  }
+}

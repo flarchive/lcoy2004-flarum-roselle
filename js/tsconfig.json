@@ -1,0 +1,16 @@
+{
+  "extends": "flarum-tsconfig",
+  // 三种布局：workbench/roselle（vendor 就在旁边）、CI（单独 checkout 后
+  // 执行 `composer update`），以及作为扩展安装在 vendor/lcoy/roselle
+  // （论坛的 vendor 位于 js/ 往上三层）。
+  "include": ["src/**/*", "../vendor/*/*/js/dist-typings/@types/**/*", "../../../vendor/*/*/js/dist-typings/@types/**/*", "../../../*/*/js/dist-typings/@types/**/*", "@types/**/*"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "declarationDir": "./dist-typings",
+    "baseUrl": ".",
+    "paths": {
+      "flarum/*": ["../vendor/flarum/core/js/dist-typings/*", "../../../vendor/flarum/core/js/dist-typings/*", "../../../flarum/core/js/dist-typings/*"],
+      "ext:flarum/tags/*": ["../vendor/flarum/tags/js/dist-typings/*", "../../../vendor/flarum/tags/js/dist-typings/*"]
+    }
+  }
+}

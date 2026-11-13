@@ -1,0 +1,58 @@
+// =====================================================================
+// 个人资料：用户卡片上的 forumaker/profile-cover 封面，以及
+// 设置中对应的字段。其余来自核心、fof/user-bio 和
+// fof/socialprofile。
+// =====================================================================
+
+// ── 卡片背景（核心的 popover） ────────────────────────────────
+// 图片上方覆盖一层表面色遮罩，使卡片的文字
+// 在任何照片上都保持可读。
+.UserCard--popover.LcoyProfile--hasCardBg,
+.LcoyUserCard.LcoyProfile--hasCardBg {
+  background-image:
+    linear-gradient(~"color-mix(in srgb, var(--lcoy-surface) 78%, transparent)", ~"color-mix(in srgb, var(--lcoy-surface) 92%, transparent)"),
+    var(--lcoy-user-card-bg);
+  background-size: cover;
+  background-position: var(--lcoy-cover-position, center);
+}
+
+// ── 图片字段 ──────────────────────────────────────────────────
+.LcoyProfileImage-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: var(--lcoy-space-2);
+  border: 1px dashed var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background-color: var(--lcoy-primary-very-low);
+  background-size: cover;
+  background-position: center;
+
+  &.has-image {
+    border-style: solid;
+    border-color: var(--lcoy-border);
+  }
+}
+
+// 宽封面的比例。
+.LcoyProfileImage--cover .LcoyProfileImage-preview {
+  aspect-ratio: ~"4 / 1";
+}
+
+.LcoyProfileImage-empty {
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoyProfileImage-controls {
+  display: flex;
+  gap: var(--lcoy-space-2);
+  margin-bottom: var(--lcoy-space-2);
+}
+
+@media @phone {
+  .LcoyProfileImage--cover .LcoyProfileImage-preview {
+    aspect-ratio: ~"2.5 / 1";
+  }
+}

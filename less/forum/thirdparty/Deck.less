@@ -1,0 +1,46 @@
+// flarum/deck（/deck）：主题只处理外壳造成干扰的部分。
+//
+// Deck 将自身高度计算为 `100dvh - var(--header-height)`——主题
+// 头部的 52px 与核心一致，因此计算成立。不成立的
+// 是主题的 `.Page` 在底部为编辑器预留 48px
+// （Shell.less）：Deck 已通过 `--deck-bottom-gap` 处理，这 48px
+// 会吃掉列的一部分。全屏时 Deck 隐藏 `#header` 和
+// `#app-navigation`，但它不知道主题的侧边栏，也不知道
+// 侧边栏在内容中留下的外边距。
+
+.Lcoy.App--deck {
+  // Deck 的高度等于窗口：底部属于它，而非编辑器。
+  .Page {
+    padding-bottom: 0;
+  }
+
+  // 列行横向滚动。
+  .DeckRow-columns {
+    overflow-x: auto;
+  }
+}
+
+// 全屏：只有 Deck。核心的头部和导航由 Deck 自身
+// 移除；这里移除主题的全局栏、手机端面板背景以及
+// 外壳在内容中留下的间距。
+.Lcoy.App--deckFullscreen {
+  padding-top: 0;
+
+  #lcoy-sidebar,
+  .LcoySidebar-backdrop {
+    display: none;
+  }
+
+  .App-content,
+  .App-footer {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .DeckPage {
+    height: 100vh;
+    height: 100dvh;
+    padding-bottom: 0;
+  }
+}
