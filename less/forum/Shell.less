@@ -1,0 +1,110 @@
+// =====================================================================
+// 外壳（平板和桌面）：固定页头、左侧侧边栏，以及
+// 位于着色背景之上的白色卡片中的内容，尺寸参照
+// meta.discourse.org（#main-outlet-wrapper）：
+//
+//   ┌──────────────────── .App-header (52px) ────────────────────┐
+// │ aside.LcoySidebar │ ≥16px │ .Page-hero（卡片外）        │
+// │ (280px; 240px 至    │       │ ┌─ .Page-container ────────┐ │
+// │  1023px)            │       │ │ （卡片，最大 1110px）    │ │
+// =====================================================================
+
+@media @tablet-up {
+  .Lcoy.App {
+    padding-top: var(--lcoy-header-height);
+  }
+
+  // 内容：侧边栏吸附时为其留出空间。
+  // Discourse 在侧边栏与卡片之间至少留 16px，侧边栏关闭时
+  // 两侧各留 32px。
+  .Lcoy .App-content,
+  .Lcoy .App-footer {
+    padding-left: var(--lcoy-main-gap-wide);
+    padding-right: var(--lcoy-main-gap-wide);
+    box-sizing: border-box;
+    // 打开/关闭侧边栏时没有动画，与 Meta 一致。
+    transition: none;
+  }
+
+  .Lcoy--sidebarOpen {
+    .App-content,
+    .App-footer {
+      margin-left: var(--lcoy-sidebar-width);
+      padding-left: var(--lcoy-main-gap);
+      padding-right: var(--lcoy-main-gap);
+    }
+  }
+
+  // Discourse 的列表在页面底部上方 48px 处结束。
+  .Lcoy .Page {
+    padding-bottom: 48px;
+  }
+
+  // hero（欢迎横幅、分类）位于卡片之外、着色背景之上，
+  // 并与其宽度保持一致。
+  .Lcoy .Page-hero:not(.Page-hero--inline) {
+    max-width: var(--lcoy-main-max);
+    margin: 0 auto;
+    padding: 0 var(--lcoy-space-4);
+    box-sizing: border-box;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // 卡片（Discourse 的 .list-container / .regular）：页头下方 16px，
+  // 16px 内边距，16px 圆角以及带色调的阴影。
+  // ---------------------------------------------------------------------
+  .Lcoy .Page-container.container {
+    width: auto;
+    max-width: var(--lcoy-main-max);
+    margin: var(--lcoy-space-4) auto 0;
+    padding: var(--lcoy-space-4);
+    box-sizing: border-box;
+    gap: var(--lcoy-space-6);
+  }
+
+  .Lcoy--card .Page-container.container {
+    // 半透明：页面背景（主题渐变，或管理员自定义 CSS
+    // 置于背后的图片）透过卡片可见。
+    background: var(--lcoy-surface-glass);
+    border-radius: var(--lcoy-card-radius);
+    box-shadow: var(--lcoy-card-shadow);
+  }
+
+  // 没有着色背景时，卡片需要边框才能成立。
+  .Lcoy--card:not(.Lcoy--tinted) .Page-container.container {
+    border: 1px solid var(--lcoy-border);
+    box-shadow: none;
+  }
+
+  .Lcoy .Page-content,
+  .Lcoy .Page-sidebar {
+    margin-top: 0;
+  }
+
+  // PageStructure 放入卡片内的 hero（话题和个人资料）占据
+  // 内容上方的整行。
+  .Lcoy .Page-container:has(> .Page-hero--inline) {
+    flex-wrap: wrap;
+
+    > .Page-hero--inline {
+      flex: 0 0 100%;
+      min-width: 0;
+    }
+  }
+
+  // 首页和标签页的导航已移至全局侧边栏。
+  // 适用于任何使用核心 IndexSidebar 的页面（扩展和主题功能的
+  // 页面亦然），而不只是核心页面。
+  .Lcoy:not(.Lcoy--noSidebar) {
+    .IndexPage .Page-sidebar,
+    .TagsPage .Page-sidebar,
+    .Page-sidebar:has(.IndexPage-nav),
+    .Page-sidebar:empty {
+      display: none;
+    }
+  }
+}

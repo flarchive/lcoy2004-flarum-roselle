@@ -1,0 +1,78 @@
+// ---------------------------------------------------------------------
+// fof/upload：Discourse 编辑器的"发送中…"（#file-uploading）、
+// 拖拽文件时的高亮以及文件管理器。工具栏中的按钮
+// 属于编辑器（Composer.less）。
+// ---------------------------------------------------------------------
+.LcoyUploadProgress {
+  display: flex;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+  padding: var(--lcoy-space-1) 0;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyUploadProgress-label {
+  white-space: nowrap;
+}
+
+.LcoyUploadProgress-bar {
+  position: relative;
+  flex: 0 1 160px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--lcoy-primary-low);
+}
+
+.LcoyUploadProgress-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--lcoy-accent);
+}
+
+@keyframes lcoy-upload-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .LcoyUploadProgress-fill {
+    animation: lcoy-upload-indeterminate 1.2s ease-in-out infinite;
+  }
+}
+
+// 发送时，扩展把图标换成 spinner 并显示"加载中…"：
+// 上方的提示已说明，因此按钮只保留 spinner。
+.fof-upload-button.uploading.Button {
+  width: auto;
+  padding: 0 8px;
+
+  .Button-label {
+    display: none;
+  }
+}
+
+// 在编辑器上拖拽文件时：Discourse 的虚线轮廓。
+.Composer.fof-upload-dragging {
+  background: var(--lcoy-surface);
+  box-shadow: none;
+  outline: 2px dashed var(--lcoy-accent);
+  outline-offset: -6px;
+}
+
+.FofUpload-TextPreview {
+  border-color: var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-very-low);
+  color: var(--lcoy-primary);
+}

@@ -1,0 +1,665 @@
+// =====================================================================
+// Discourse 中此前缺失的功能（js/src/forum/gaps）：代码
+// 按钮、标题锚点、表格、折叠剧透、话题内阅读进度、
+// 时间线上的"返回"、可编辑标题、分享、列表中的"最后
+// 访问"和"忽略"，以及 realtime 的新话题栏。
+// 数值取自 meta.discourse.org 的 css-common.css。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 代码块："复制"和"全屏"（.codeblock-buttons）
+// ---------------------------------------------------------------------
+pre.LcoyCodeBlock {
+  position: relative;
+  overflow: visible;
+
+  > code {
+    padding-right: 4.5em;
+  }
+}
+
+.LcoyCodeBlock-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  font-family: var(--lcoy-font);
+  white-space: normal;
+}
+
+.LcoyCodeButton.Button {
+  min-height: 0;
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-2);
+  opacity: 0.7;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: transparent;
+    color: var(--lcoy-primary);
+    opacity: 1;
+  }
+
+  .Button-icon {
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &--done,
+  &--done:hover {
+    color: var(--lcoy-accent);
+    opacity: 1;
+    cursor: auto;
+  }
+}
+
+// 在电脑上，按钮仅在鼠标悬停于代码块时出现。
+@media @tablet-up {
+  .LcoyCodeButton:not(.LcoyCodeButton--done) {
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.2s;
+  }
+
+  pre.LcoyCodeBlock:hover .LcoyCodeButton,
+  pre.LcoyCodeBlock:focus-within .LcoyCodeButton {
+    visibility: visible;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 标题锚点（a.anchor）
+// ---------------------------------------------------------------------
+.Post-body {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    position: relative;
+    scroll-margin-top: calc(var(--lcoy-header-height, 52px) + 16px);
+  }
+}
+
+.LcoyAnchor {
+  position: absolute;
+  left: -1.1em;
+  top: 50%;
+  display: inline-flex;
+  width: 1em;
+  justify-content: center;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  text-decoration: none;
+
+  &::before {
+    content: "";
+    display: block;
+    width: 0.7em;
+    height: 0.7em;
+    background: var(--lcoy-primary-medium);
+    // 与 Discourse 相同的链条图标，作为遮罩以跟随颜色。
+    -webkit-mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath d='M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath d='M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+
+    &::before {
+      background: var(--lcoy-primary);
+    }
+  }
+}
+
+.Post-body h1:hover,
+.Post-body h2:hover,
+.Post-body h3:hover,
+.Post-body h4:hover,
+.Post-body h5:hover,
+.Post-body h6:hover {
+  .LcoyAnchor {
+    opacity: 1;
+  }
+}
+
+// 手机端没有悬停：锚点保持隐藏（Discourse 也如此）。
+@media @phone {
+  .LcoyAnchor {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 宽表格："展开表格"
+// ---------------------------------------------------------------------
+.LcoyTableExpand {
+  position: sticky;
+  left: 0;
+  caption-side: top;
+  text-align: left;
+  padding: 0 0 var(--lcoy-space-1);
+
+  .LcoyTableExpand-button.Button {
+    display: inline-flex;
+    gap: 0.35em;
+    width: auto;
+    height: auto;
+    padding: 0.2em 0.6em;
+    border-radius: var(--lcoy-radius);
+    font-size: var(--lcoy-font-down-1);
+    opacity: 0;
+    visibility: visible;
+    transition: 0.25s ease-in-out opacity;
+  }
+}
+
+.Post-body table:hover .LcoyTableExpand-button,
+.LcoyTableExpand-button:focus-visible {
+  opacity: 1;
+}
+
+@media @phone {
+  .LcoyTableExpand .LcoyTableExpand-button.Button {
+    opacity: 1;
+  }
+}
+
+// 在电脑上按钮浮于表格之上（绝对定位，与 Discourse 的
+// .fullscreen-table-wrapper__buttons 一致）：不可见，不能
+// 把表格向下推而在其上方留下空洞。
+@media @tablet-up {
+  .LcoyTableExpand {
+    height: 0;
+    padding: 0;
+
+    .LcoyTableExpand-button.Button {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      z-index: 1;
+      // 位于表格头部之上：需要背景（按钮继承代码按钮的
+      // 透明），与 Discourse 的 btn-default 一致。
+      border: 1px solid var(--lcoy-border);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary-high);
+      box-shadow: var(--lcoy-shadow-dropdown);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--lcoy-primary-low);
+        color: var(--lcoy-primary);
+      }
+    }
+  }
+}
+
+.LcoyFullscreenModal {
+  .Modal-dialog {
+    max-width: ~"min(1400px, 95vw)";
+  }
+
+  &-content {
+    max-height: 75vh;
+    overflow: auto;
+
+    pre {
+      margin: 0;
+    }
+
+    table {
+      display: table;
+      width: 100%;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 模糊剧透（spoiler-alert）
+// ---------------------------------------------------------------------
+.LcoySpoiler {
+  transform: translateZ(0);
+
+  // Litedown 的剧透绘制为深色块；Discourse 的是模糊。
+  &.spoiler,
+  &.spoiler * {
+    background: none;
+    color: inherit;
+  }
+
+  &.spoiler img {
+    visibility: visible;
+  }
+
+  &--blurred {
+    cursor: pointer;
+    user-select: none;
+    filter: blur(0.5em);
+
+    a,
+    button,
+    details,
+    iframe,
+    img,
+    input,
+    video {
+      pointer-events: none;
+    }
+
+    img {
+      filter: blur(1em);
+    }
+
+    &:hover,
+    &:focus-visible {
+      filter: blur(0.18em);
+      outline: none;
+
+      img {
+        filter: blur(0.5em);
+      }
+    }
+  }
+}
+
+details.LcoySpoiler {
+  padding: 0;
+  background: none;
+
+  > .LcoySpoiler-summary {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 话题内阅读进度：未读小圆点和"最后访问"线
+// ---------------------------------------------------------------------
+.Post-header li.item-lcoyReadState {
+  // 帖子头部各项有 `order`（话题区域）：小圆点
+  // 位于日期之后、角落处，与 Discourse 的 .read-state 一致。
+  order: 99;
+  margin-left: 0.4em;
+}
+
+.LcoyReadState {
+  display: inline-flex;
+  align-items: center;
+  color: var(--lcoy-accent);
+  font-size: 0.571em;
+
+  &--read {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      visibility 1s,
+      opacity ease-out 1s;
+  }
+}
+
+.LcoyVisitedLine {
+  position: relative;
+  z-index: 3;
+  margin: var(--lcoy-space-4) 0 -1px;
+  border-bottom: 1px solid var(--lcoy-danger);
+  line-height: 0;
+  text-align: center;
+  color: var(--lcoy-danger);
+  font-size: var(--lcoy-font-down-1);
+
+  &-message {
+    padding: 0 0.5em;
+    background: var(--lcoy-surface);
+  }
+}
+
+// 用 j/k 选中的帖子（.topic-post.selected）：左侧的竖条。
+.PostStream-item.LcoyPostSelected > .Post,
+.PostStream-item.LcoyPostSelected > .CommentPost,
+.PostStream-item.LcoyPostSelected > .EventPost {
+  box-shadow: -3px 0 0 var(--lcoy-accent);
+}
+
+// ---------------------------------------------------------------------
+// 时间线：回到已读位置的"返回"（.timeline-last-read）
+// ---------------------------------------------------------------------
+.Scrubber-scrollbar {
+  position: relative;
+}
+
+.LcoyTimelineBack {
+  position: absolute;
+  left: -0.35em;
+  z-index: 3;
+  display: none;
+  transform: translateY(-50%);
+
+  &--visible {
+    display: block;
+  }
+
+  &-button.Button {
+    min-height: 0;
+    padding: 0.25em 0.65em;
+    font-size: var(--lcoy-font-down-1);
+    white-space: nowrap;
+  }
+}
+
+// 手机端时间线面板没有按钮的位置。
+@media @phone {
+  .LcoyTimelineBack {
+    display: none !important;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 话题页头中的可编辑标题（#topic-title .edit-topic-title）
+// ---------------------------------------------------------------------
+.LcoyTitleEditor-display {
+  display: inline;
+
+  .DiscussionHero-title {
+    display: inline;
+  }
+}
+
+.LcoyTitleEditor-edit.Button {
+  margin-left: 0.25em;
+  vertical-align: middle;
+  color: var(--lcoy-primary-medium);
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .DiscussionHero:hover &,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  &:hover {
+    color: var(--lcoy-primary);
+  }
+}
+
+@media (hover: none) {
+  .LcoyTitleEditor-edit.Button {
+    opacity: 1;
+  }
+}
+
+// 标题字段与图标（星标、锁）在同一行；按钮
+// （Tags、保存、取消）位于下一行。
+.LcoyTitleEditor {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em;
+  min-width: 0;
+
+  &-input.FormControl {
+    flex: 1 1 100%;
+    width: auto;
+    min-width: 0;
+    font-size: var(--lcoy-font-up-2);
+    font-weight: 600;
+  }
+
+  &-actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    gap: 0.5em;
+    align-items: center;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 分享与"跳到…"
+// ---------------------------------------------------------------------
+.LcoyShareModal {
+  &-instructions {
+    margin: 0 0 var(--lcoy-space-3);
+    color: var(--lcoy-primary-high);
+  }
+
+  &-link {
+    display: flex;
+    gap: var(--lcoy-space-2);
+
+    .FormControl {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &-copied {
+    margin: var(--lcoy-space-2) 0 0;
+    color: var(--lcoy-success);
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  &-networks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lcoy-space-2);
+    margin-top: var(--lcoy-space-4);
+  }
+
+  &-network.Button {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    text-decoration: none;
+  }
+}
+
+.LcoyJumpModal {
+  &-row {
+    display: flex;
+    align-items: center;
+    gap: var(--lcoy-space-3);
+
+    .FormControl {
+      width: 8em;
+    }
+  }
+
+  &-of {
+    color: var(--lcoy-primary-high);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 列表："最后访问"、"忽略"和 realtime 的新话题
+// ---------------------------------------------------------------------
+.DiscussionList-discussions > li.LcoyLastVisit {
+  display: block;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--lcoy-danger);
+  line-height: 0;
+  text-align: center;
+  list-style: none;
+}
+
+.LcoyLastVisit-label {
+  position: relative;
+  padding: 0 var(--lcoy-space-2);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-danger);
+  font-size: var(--lcoy-font-down-1);
+}
+
+.LcoyDismiss {
+  display: flex;
+  justify-content: flex-end;
+
+  &--top {
+    margin-bottom: var(--lcoy-space-2);
+  }
+
+  &--bottom {
+    margin-top: var(--lcoy-space-4);
+  }
+}
+
+@media @phone {
+  // 手机端 Discourse 让"忽略"浮在屏幕底部。
+  .LcoyDismiss--top {
+    position: fixed;
+    right: 50%;
+    bottom: calc(env(safe-area-inset-bottom) + var(--lcoy-space-4));
+    z-index: 2;
+    margin: 0;
+    transform: translateX(50%);
+
+    .Button {
+      box-shadow: var(--lcoy-shadow-dropdown);
+    }
+  }
+
+  .LcoyDismiss--bottom {
+    display: none;
+  }
+}
+
+// "有 N 个新话题或已更新话题"（.show-more .alert.alert-info.clickable）。
+.IndexPage .DiscussionList-update.Button {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto var(--lcoy-space-3);
+  padding: var(--lcoy-space-2) var(--lcoy-space-4);
+  border: 0;
+  border-radius: var(--lcoy-radius-large);
+  background: var(--lcoy-accent-low);
+  color: var(--lcoy-accent);
+  font-size: var(--lcoy-font-down-1);
+  animation: LcoyFloatDown 250ms ease-in-out forwards;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-accent-low);
+    color: var(--lcoy-accent-hover);
+  }
+}
+
+@keyframes LcoyFloatDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion) {
+  .IndexPage .DiscussionList-update.Button {
+    animation: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 侧边栏："审核"中的举报数量
+// ---------------------------------------------------------------------
+.LcoySidebar-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6em;
+  padding: 0 0.45em;
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+  font-size: var(--lcoy-font-down-2);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+// 计数固定在条目右端，与 Discourse 一致，不影响
+// 不影响标签的布局（它会用省略号截断文字）：条目在右侧
+// 为其预留空间。
+.LcoySidebar a:has(.LcoySidebar-count) {
+  position: relative;
+  padding-right: 2.1em;
+
+  .LcoySidebar-count {
+    position: absolute;
+    top: 50%;
+    right: 0.4em;
+    transform: translateY(-50%);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 本地日期（[date=…]，discourse-local-dates）
+// ---------------------------------------------------------------------
+.LcoyLocalDate {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+  padding: 0 0.25em;
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-very-low);
+  color: var(--lcoy-link);
+  white-space: nowrap;
+  cursor: help;
+
+  .icon {
+    font-size: 0.85em;
+  }
+}
+
+// 导航栏中的分类铃铛（fof/follow-tags）：圆形，
+// 与时间线中话题的一致。
+.LcoyNav .LcoyCategoryNotifications > .Dropdown-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.LcoyCategoryNotifications.LcoyNotifications--watching > .Dropdown-toggle,
+.LcoyCategoryNotifications.LcoyNotifications--watching_first_post > .Dropdown-toggle {
+  color: var(--lcoy-accent);
+}
+
+// 编辑标题时：图标（星标、锁、图钉）和字段在
+// 同一行；标签（如有）仍在下方。
+.DiscussionHero-items:has(.LcoyTitleEditor) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.5em;
+
+  > li {
+    margin: 0;
+  }
+
+  > .item-badges {
+    flex: 0 0 auto;
+  }
+
+  > .item-title {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  > li:not(.item-badges):not(.item-title) {
+    flex-basis: 100%;
+  }
+}
