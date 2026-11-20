@@ -1,0 +1,243 @@
+// =====================================================================
+// 讨论列表的交互层：
+//   · 桌面：悬停浮层（摘要 / 最近回复者），绝对定位、不改变行高；
+//   · 手机：卡片流 + 左右滑动操作层 + 参与者头像堆叠。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 桌面悬停浮层
+// ---------------------------------------------------------------------
+.LcoyTopic-peek {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .LcoyTopic-peek {
+    display: block;
+    position: absolute;
+    left: var(--lcoy-space-3);
+    right: var(--lcoy-space-3);
+    top: calc(100% - 6px);
+    z-index: 3;
+    padding: 10px 14px;
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius-large);
+    background: var(--lcoy-surface-raised);
+    box-shadow: var(--lcoy-card-shadow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition:
+      opacity var(--lcoy-duration) var(--lcoy-ease),
+      transform var(--lcoy-duration) var(--lcoy-ease),
+      visibility 0s linear var(--lcoy-duration);
+  }
+
+  .LcoyList .DiscussionListItem:hover .LcoyTopic-peek,
+  .LcoyList .DiscussionListItem:focus-within .LcoyTopic-peek {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+}
+
+.LcoyTopic-peekText {
+  margin: 0 0 8px;
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.5;
+  color: var(--lcoy-primary-high);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.LcoyTopic-peekRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-high);
+}
+
+.LcoyTopic-peekAvatar {
+  .Avatar--size(20px);
+  flex: none;
+}
+
+.LcoyTopic-peekName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--lcoy-primary);
+}
+
+.LcoyTopic-peekMeta {
+  flex: none;
+
+  & + &::before {
+    content: '·';
+    margin-right: 6px;
+  }
+}
+
+@media @phone {
+  .LcoyTopic-peek {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机：卡片流
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyList .DiscussionList-discussions {
+    display: grid;
+    gap: var(--lcoy-space-2);
+    padding-bottom: var(--lcoy-space-2);
+  }
+
+  .LcoyList .DiscussionListItem {
+    border: 1px solid var(--lcoy-border);
+    border-bottom: 1px solid var(--lcoy-border);
+    border-radius: 14px;
+    background: var(--lcoy-surface);
+    overflow: hidden;
+
+    &:hover,
+    &:focus-within {
+      background: var(--lcoy-surface);
+    }
+  }
+
+  // 内容层必须不透明：滑动时它就是盖在操作层上的“卡片面”。
+  .LcoyList .DiscussionListItem .DiscussionListItem-content {
+    position: relative;
+    z-index: 1;
+    padding: var(--lcoy-space-3);
+    border-radius: 14px;
+    background: var(--lcoy-surface);
+
+    &.is-swiping,
+    .is-swiping & {
+      will-change: transform;
+    }
+  }
+
+  .LcoyList .DiscussionListItem.is-swiping .DiscussionListItem-content {
+    box-shadow: 0 2px 10px ~"oklch(from var(--lcoy-primary) l c h / 0.12)";
+  }
+}
+
+// ---------------------------------------------------------------------
+// 滑动操作层（位于内容之下，随 `data-swipe` 淡入）
+// ---------------------------------------------------------------------
+.LcoySwipeLayer {
+  display: none;
+}
+
+@media @phone {
+  .LcoySwipeLayer {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--lcoy-duration) var(--lcoy-ease);
+
+    &.is-disabled {
+      display: none;
+    }
+  }
+
+  // 向右滑（内容右移）：左侧露出“标记已读”。
+  .LcoySwipeLayer--read {
+    justify-content: flex-start;
+    background: ~"color-mix(in srgb, var(--lcoy-success) 12%, var(--lcoy-surface))";
+    color: var(--lcoy-success);
+  }
+
+  // 向左滑：右侧露出“关注 / 取消关注”。
+  .LcoySwipeLayer--subscribe {
+    justify-content: flex-end;
+    background: var(--lcoy-accent-low);
+    color: var(--lcoy-accent);
+  }
+
+  .LcoyList .DiscussionListItem[data-swipe='right'] .LcoySwipeLayer--read,
+  .LcoyList .DiscussionListItem[data-swipe='left'] .LcoySwipeLayer--subscribe {
+    opacity: 1;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 卡片中的参与者头像堆叠（仅手机绘制）
+// ---------------------------------------------------------------------
+.LcoyTopic-mobilePosters {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  padding-right: 4px;
+}
+
+.LcoyTopic-mobilePoster {
+  display: inline-flex;
+  flex: none;
+  margin-left: -6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  .Avatar {
+    .Avatar--size(20px);
+  }
+}
+
+.LcoyTopic-mobilePostersMore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--lcoy-accent-low);
+  color: var(--lcoy-accent);
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
+}
+
+@media (min-width: 768px) {
+  .LcoyTopic-mobilePosters {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 触控目标：小圆点/计数按钮向外扩展命中区域
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyUnread {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+    }
+  }
+}

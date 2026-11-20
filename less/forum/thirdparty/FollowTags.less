@@ -1,0 +1,127 @@
+// ---------------------------------------------------------------------
+// fof/follow-tags：Discourse 的分类通知按钮
+// （`.category-notifications-button`，仅图标的 btn-default）以及
+// 采用 Discourse 通知选项形式的选项窗口。
+// 按钮出现的位置由列表栏决定；这里只处理外观。
+// ---------------------------------------------------------------------
+.SubscriptionButton.Button {
+  width: auto;
+  height: 34px;
+  padding: 6.5px 10px;
+  border: 0;
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-100);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-0);
+  box-shadow: none;
+
+  .Button-icon {
+    margin: 0;
+    color: var(--lcoy-primary-high);
+  }
+
+  // 仅图标，与 Discourse 一致；标签留给屏幕阅读器。
+  .Button-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-primary-200);
+    color: var(--lcoy-primary);
+
+    .Button-icon {
+      color: var(--lcoy-primary);
+    }
+  }
+
+  // 关注 / 旁观：图标为高亮色（铃铛状态）。
+  &.SubscriptionButton--follow,
+  &.SubscriptionButton--lurk {
+    background: var(--lcoy-primary-100);
+    color: var(--lcoy-primary-high);
+
+    .Button-icon {
+      color: var(--lcoy-accent);
+    }
+  }
+}
+
+.SubscriptionModal {
+  .Modal-body {
+    color: var(--lcoy-primary);
+  }
+
+  .Button.Button--primary {
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
+  }
+}
+
+// 每个选项：图标在左，标题和描述两行，选中项
+// 右侧为对勾；选中项带选中背景。
+.SubscriptionOption {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "icon title check"
+    "icon desc check";
+  align-items: start;
+  column-gap: var(--lcoy-space-2);
+  margin: 0;
+  padding: var(--lcoy-space-2) var(--lcoy-space-3);
+  border: 0;
+  border-radius: var(--lcoy-radius);
+  background: none;
+  color: var(--lcoy-primary);
+
+  &:hover {
+    background: var(--lcoy-hover);
+  }
+
+  &.selected {
+    background: var(--lcoy-selected);
+    color: var(--lcoy-primary);
+
+    .SubscriptionOption-icon,
+    .SubscriptionOption-title,
+    .SubscriptionOption-description {
+      color: inherit;
+    }
+  }
+
+  &.disabled:hover {
+    background: none;
+  }
+
+  .SubscriptionOption-icon {
+    grid-area: icon;
+    margin-top: 0.2em;
+    font-size: 1em;
+    text-align: center;
+    color: var(--lcoy-primary-high);
+  }
+
+  .SubscriptionOption-title {
+    grid-area: title;
+    flex: none;
+    font-weight: normal;
+  }
+
+  .SubscriptionOption-description {
+    grid-area: desc;
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+  }
+
+  .SubscriptionOption-selectedIcon {
+    grid-area: check;
+    align-self: center;
+    color: var(--lcoy-success);
+  }
+}
