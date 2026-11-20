@@ -1,0 +1,38 @@
+// 统计："新帖/未读"标签页的 "(N)" 和侧边栏"话题"的
+// 圆点。浏览列本身位于列表（List.less）。
+
+// "新帖 (3)"：数字与标签页同色调，只是略浅，与
+// Discourse 一致——激活的标签页会同时绘制两者。
+.LcoyStatsCount {
+  font-variant-numeric: tabular-nums;
+  font-weight: inherit;
+  color: inherit;
+}
+
+// 侧边栏的圆点，紧接标签之后。它位于
+// .Button-label 内部（LinkButton 把收到的所有内容都放在那里），因此是 inline：
+// 标签会用省略号截断文字，块级会被一并截断。
+.LcoySidebar .Button-label {
+  .LcoyStatsDot {
+    display: inline-block;
+    vertical-align: middle;
+    width: 6px;
+    height: 6px;
+    margin-left: var(--lcoy-space-2);
+    border-radius: 50%;
+    background: var(--lcoy-accent);
+  }
+}
+
+// 列表之外的浏览量热度（推荐话题）：Discourse 的
+// `heatmap-*` 类，颜色与列表列相同。
+.heatmap-low {
+  color: var(--lcoy-heat-low) !important;
+}
+.heatmap-med {
+  color: var(--lcoy-heat-med) !important;
+}
+.heatmap-high {
+  color: var(--lcoy-heat-high) !important;
+  font-weight: 500;
+}
