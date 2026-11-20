@@ -1,0 +1,407 @@
+// =====================================================================
+// 偏好设置（个人资料标签页）与 Discourse 一致：每个标签页是一个
+// 连续的表单，没有卡片——`form-vertical` 500px，标签
+// 加粗在上，帮助文字灰色在下，组与组之间 2em。
+// 标签页本身是个人资料导航的第二行（User.less）。
+// =====================================================================
+
+.SettingsPage,
+.UserSecurityPage {
+  margin-top: 0;
+  max-width: 720px;
+  color: var(--lcoy-primary);
+
+  > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      margin: 0;
+    }
+  }
+
+  .FieldSet {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lcoy-space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  // Discourse 的 `control-label`：文字大小，仅加粗。
+  .FieldSet-label {
+    margin: 0 0 0.25em;
+    padding: 0;
+    font-size: var(--lcoy-font-0);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--lcoy-primary);
+    text-transform: none;
+    letter-spacing: 0;
+    border: 0;
+  }
+
+  .FieldSet-description {
+    margin-top: calc(~"-1 * var(--lcoy-space-2)");
+  }
+
+  // 嵌套区块（例如位于"隐私"内部）。
+  .FieldSet .FieldSet .FieldSet-label {
+    font-size: var(--lcoy-font-0);
+    font-weight: 600;
+  }
+
+  .FieldSet-items {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75em;
+  }
+
+  .FieldSet--col .FieldSet-items {
+    gap: var(--lcoy-space-2);
+  }
+
+  .helpText {
+    display: block;
+    margin: 0.25em 0 0;
+    font-size: var(--lcoy-font-down-1);
+    line-height: 1.5;
+    color: var(--lcoy-primary-medium);
+  }
+
+  // 开关，标签在右，帮助文字在下，与 Discourse 一致。
+  .Checkbox--switch {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--lcoy-primary);
+
+    .helpText {
+      margin-top: 2px;
+    }
+  }
+
+  // 字段宽度与 Discourse 的表单一致。
+  .FormControl,
+  .Select {
+    max-width: 500px;
+  }
+
+  .Select {
+    width: auto;
+    min-width: 220px;
+  }
+
+  .Form-group {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  // 按钮为文字大小，左对齐（核心会拉伸 FieldSet--col 的子元素）。
+  .FieldSet-items > .Button,
+  .FieldSet > .Button,
+  .UserSecurityPage-controls .Button {
+    width: auto;
+    align-self: flex-start;
+  }
+
+  // 配色方案缩略图并排，而非堆叠。
+  .Settings-colorScheme .FieldSet-items {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--lcoy-space-3);
+  }
+}
+
+.LcoyPrefs-empty {
+  margin: 0;
+  padding: var(--lcoy-space-6) 0;
+  color: var(--lcoy-primary-medium);
+}
+
+// ---------------------------------------------------------------------
+// 账户标签页的分组（`control-group`）：标签、控件和帮助文字
+// ---------------------------------------------------------------------
+.LcoyPrefs-account {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  width: 100%;
+}
+
+// "账户"本身就是标签页：区块标题会与导航重复。
+.LcoyPrefs .Settings-account > .FieldSet-label {
+  display: none;
+}
+
+.LcoyPrefs-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35em;
+  max-width: 500px;
+}
+
+.LcoyPrefs-label {
+  font-weight: 700;
+  color: var(--lcoy-primary);
+}
+
+.LcoyPrefs-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+}
+
+.LcoyPrefs-static {
+  color: var(--lcoy-primary);
+  word-break: break-all;
+}
+
+.LcoyPrefs-help {
+  margin: 0;
+  font-size: var(--lcoy-font-down-1);
+  line-height: 1.5;
+  color: var(--lcoy-primary-medium);
+}
+
+.LcoyPrefs-extra > ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lcoy-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// 照片：90px，与 `pref-avatar` 一致；点击仍会打开核心的菜单。
+.LcoyPrefs-avatar .LcoyPrefs-controls {
+  gap: var(--lcoy-space-3);
+}
+
+.LcoyPrefs-avatarEditor {
+  margin: 0;
+
+  .Avatar {
+    --size: 90px;
+    width: 90px;
+    height: 90px;
+    font-size: 40px;
+    line-height: 90px;
+  }
+
+  width: 90px;
+  height: 90px;
+
+  // 核心给遮罩留了 4px 边距（是为带边框的个人资料头像
+  // 设计的）：这里它恰好覆盖照片，不会歪斜。
+  > .Dropdown-toggle {
+    inset: 0;
+    width: 90px;
+    height: 90px;
+    margin: 0;
+    border-radius: 50%;
+  }
+}
+
+// 与文字混合：在浅色和深色模式下都可读。
+.LcoyPrefs-remove {
+  color: ~"color-mix(in oklch, var(--lcoy-danger) 80%, var(--lcoy-primary))" !important;
+}
+
+// 邮箱及胶囊形式的状态（主要、已验证 / 未验证）。
+.LcoyPrefs-emailRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em 0.5em;
+  margin-bottom: 0.25em;
+}
+
+.LcoyPrefs-emailAddress {
+  margin-right: 0.25em;
+  word-break: break-all;
+}
+
+.LcoyPrefs-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15em 0.6em;
+  border-radius: var(--lcoy-radius-pill);
+  font-size: var(--lcoy-font-down-2);
+  font-weight: 600;
+  line-height: 1.5;
+  background: var(--lcoy-primary-very-low);
+  color: var(--lcoy-primary-high);
+
+  &--primary {
+    background: var(--lcoy-accent-low);
+    color: ~"color-mix(in oklch, var(--lcoy-link) 80%, var(--lcoy-primary))";
+  }
+
+  &--ok {
+    background: ~"color-mix(in oklch, var(--lcoy-success) 16%, transparent)";
+    color: ~"color-mix(in oklch, var(--lcoy-success) 75%, var(--lcoy-primary))";
+  }
+
+  &--warn {
+    background: ~"color-mix(in oklch, var(--lcoy-danger) 16%, transparent)";
+    color: ~"color-mix(in oklch, var(--lcoy-danger) 75%, var(--lcoy-primary))";
+  }
+}
+
+.LcoyPrefs-resend {
+  padding: 0 !important;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-link) !important;
+}
+
+// "侧边栏"区块（"导航菜单"标签页）。
+.Settings-lcoyNavMenu .LcoyPrefs-group {
+  margin-top: var(--lcoy-space-2);
+}
+
+// ---------------------------------------------------------------------
+// 通知网格
+// ---------------------------------------------------------------------
+.NotificationGrid {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  border-collapse: separate;
+  overflow: hidden;
+
+  td,
+  th {
+    border-bottom: 1px solid var(--lcoy-border);
+    color: var(--lcoy-primary);
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  thead th {
+    padding: 12px 20px;
+    font-size: var(--lcoy-font-down-1);
+    font-weight: 600;
+    color: var(--lcoy-primary-high);
+    background: var(--lcoy-primary-very-low);
+
+    .icon {
+      color: var(--lcoy-link);
+      font-size: 16px;
+    }
+  }
+
+  .NotificationGrid-groupToggle {
+    font-size: 15px;
+    // 在手机端的窄列中，"E-mail" 不会在连字符处换行。
+    white-space: nowrap;
+
+    .icon {
+      color: var(--lcoy-primary-high);
+    }
+
+    &:hover {
+      background: var(--lcoy-hover);
+    }
+  }
+
+  .NotificationGrid-checkbox {
+    .Checkbox:hover:not(.disabled) {
+      background: var(--lcoy-hover);
+    }
+
+    &.highlighted .Checkbox:not(.disabled) {
+      background: var(--lcoy-hover);
+    }
+  }
+
+  .Checkbox-display {
+    font-size: 16px;
+  }
+
+  .on .Checkbox-display {
+    color: var(--lcoy-link);
+  }
+
+  .off .Checkbox-display {
+    color: var(--lcoy-primary-low-mid);
+  }
+}
+
+// 网格占满整个宽度；在手机端文字会换行，如果仍
+// 放不下，则横向滚动。
+.Settings-notifications .FieldSet-items {
+  align-items: stretch;
+}
+
+@media @phone {
+  .Settings-notifications .FieldSet-items {
+    overflow-x: auto;
+  }
+
+  .NotificationGrid-groupToggle:first-child,
+  .NotificationGrid td:first-child {
+    white-space: normal;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 安全：令牌与会话
+// ---------------------------------------------------------------------
+.AccessTokensList {
+  gap: 1px;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-border);
+
+  &-item {
+    padding: 14px 16px 14px 0;
+    background-color: var(--lcoy-surface);
+    color: var(--lcoy-primary);
+
+    &-icon {
+      color: var(--lcoy-primary-medium);
+    }
+
+    &-title {
+      font-weight: 600;
+    }
+
+    &-title-sub {
+      color: var(--lcoy-primary-medium);
+      font-style: normal;
+    }
+
+    &--active .AccessTokensList-item-title-sub {
+      color: var(--lcoy-success);
+    }
+  }
+
+  &--empty {
+    padding: 14px 16px;
+    border: 1px dashed var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius);
+    color: var(--lcoy-primary-medium);
+    background: none;
+  }
+}
+
+@media @phone {
+  .LcoyPrefs-group,
+  .SettingsPage .Form-group,
+  .SettingsPage .FormControl {
+    max-width: none;
+  }
+}

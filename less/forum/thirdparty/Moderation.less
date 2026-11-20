@@ -1,0 +1,106 @@
+// ---------------------------------------------------------------------
+// fof/split、fof/merge-discussions 和 fof/ignore-users：控件采用
+// 主题外观。
+// ---------------------------------------------------------------------
+
+// 拆分话题：扩展放在帖子上的按钮，与帖子栏的文字
+// 按钮一致；完成按钮为高亮样式。
+.flagrow-split-startSplitButton,
+.flagrow-split-endSplitButton.Button,
+.flagrow-split-cancelSplitButton.Button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  height: 38px;
+  padding: 8px 0.65em;
+  border-radius: var(--lcoy-radius-pill);
+  color: var(--lcoy-primary-high);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-hover);
+    color: var(--lcoy-primary);
+    text-decoration: none;
+  }
+}
+
+// 核心的 `Button--link` 将背景归零：没有 !important 时白色文字
+// 在白色帖子上不可见。
+.flagrow-split-endSplitButton.Button {
+  padding: 8px 1em;
+  background: var(--lcoy-accent) !important;
+  color: var(--lcoy-accent-text) !important;
+
+  .Button-icon {
+    color: var(--lcoy-accent-text);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lcoy-accent-hover) !important;
+    color: var(--lcoy-accent-text) !important;
+  }
+}
+
+// "拆分到此处"和"取消拆分"并排，右对齐，
+// 与正上方的操作栏一致。
+.Post-footer .item-splitTo {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--lcoy-space-2);
+}
+
+// 流中的"已拆分/已合并"提示：Discourse 的 small action。
+.EventPost-Split-target,
+.DiscussionMergePost {
+  color: var(--lcoy-primary-medium);
+}
+
+.DiscussionMergeModal h3 {
+  margin: var(--lcoy-space-4) 0 var(--lcoy-space-2);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-0);
+  font-weight: 600;
+}
+
+// 忽略用户：个人资料页中的列表。
+.ignorePage-avatar {
+  .Avatar--size(32px);
+  margin-right: var(--lcoy-space-2);
+  vertical-align: middle;
+}
+
+.ignorePage-button.Button {
+  border-radius: var(--lcoy-radius);
+}
+
+// 合并讨论：搜索使用核心的 `.Search-input`（放大镜 + 字段），
+// 其定位在头部之外未被主题的搜索覆盖。放大镜
+// 位于字段内部左侧，高度居中。
+.FoFMergeDiscussionsModal .MergeDiscussions-Search .Search-input {
+  position: relative;
+  display: block;
+  width: 100%;
+
+  > .icon,
+  > svg {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    z-index: 1;
+    margin: 0;
+    transform: translateY(-50%);
+    color: var(--lcoy-primary-medium);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  .FormControl,
+  input {
+    width: 100%;
+    height: var(--lcoy-control-height, 36px);
+    padding-left: 36px;
+  }
+}
