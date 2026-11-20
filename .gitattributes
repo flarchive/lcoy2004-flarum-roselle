@@ -1,0 +1,23 @@
+# O pacote distribuído leva só o que roda: código PHP, LESS, locale,
+# migrações, views e o JS já compilado. Ferramentas de desenvolvimento ficam
+# fora do `composer install`.
+/.vscode export-ignore
+/.github export-ignore
+/.phpunit.cache export-ignore
+/tests export-ignore
+/js/node_modules export-ignore
+/js/src export-ignore
+/js/scripts export-ignore
+/js/eslint-local-rules export-ignore
+/js/eslint.config.mjs export-ignore
+/js/tsconfig.json export-ignore
+/js/webpack.config.js export-ignore
+/js/package.json export-ignore
+/js/package-lock.json export-ignore
+/js/dist/**/*.map export-ignore
+/js/dist/**/*.LICENSE.txt export-ignore
+/phpstan.neon export-ignore
+/phpstan-baseline.neon export-ignore
+/phpunit.xml.dist export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore

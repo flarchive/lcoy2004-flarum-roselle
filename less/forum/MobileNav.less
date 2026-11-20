@@ -1,0 +1,125 @@
+// =====================================================================
+// 手机端底部导航（讨论 · 标签 · 发帖 · 通知 · 我的）。
+//
+// 固定在最底部、含安全区；编辑器打开（body.Lcoy--composing）或
+// 向下滚动（#app.Lcoy--navHidden）时整体收起。发帖按钮从栏顶
+// 凸出，是唯一的高饱和元素。
+// =====================================================================
+
+:root {
+  --lcoy-mobilenav-height: 56px;
+}
+
+.LcoyMobileNav {
+  display: none;
+}
+
+@media @phone {
+  .LcoyMobileNav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--zindex-header);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    height: calc(var(--lcoy-mobilenav-height) + env(safe-area-inset-bottom, 0px));
+    padding: 4px 0 env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+    background: var(--lcoy-surface);
+    border-top: 1px solid var(--lcoy-border);
+    transform: translateY(0);
+    transition: transform var(--lcoy-duration-slow) var(--lcoy-ease);
+  }
+
+  .Lcoy--navHidden .LcoyMobileNav,
+  body.Lcoy--composing .LcoyMobileNav {
+    transform: translateY(105%);
+  }
+
+  .LcoyMobileNav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 44px;
+    padding: 3px 2px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--lcoy-primary-medium);
+    font-size: 11px;
+    line-height: 1;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: color var(--lcoy-duration) var(--lcoy-ease);
+
+    > .icon {
+      font-size: 19px;
+    }
+
+    &.is-active {
+      color: var(--lcoy-accent);
+      font-weight: 600;
+    }
+
+    &:active {
+      color: var(--lcoy-primary);
+    }
+  }
+
+  .LcoyMobileNav-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // 发帖：圆形按钮凸出栏顶，视觉上唯一的主操作。
+  .LcoyMobileNav-compose {
+    cursor: pointer;
+  }
+
+  .LcoyMobileNav-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    margin-top: -24px;
+    border-radius: 50%;
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
+    box-shadow: 0 4px 12px ~"oklch(from var(--lcoy-accent) l c h / 0.35)";
+    transition:
+      transform var(--lcoy-duration) var(--lcoy-ease),
+      background-color var(--lcoy-duration) var(--lcoy-ease);
+
+    > .icon {
+      font-size: 18px;
+    }
+  }
+
+  .LcoyMobileNav-compose:active .LcoyMobileNav-fab {
+    transform: scale(0.94);
+    background: var(--lcoy-accent-active);
+  }
+
+  .LcoyMobileNav-compose .LcoyMobileNav-label {
+    margin-top: 1px;
+  }
+
+  // 页面底部给导航留出空间，最后一个帖子不会被压住。
+  .Lcoy.App {
+    padding-bottom: calc(var(--lcoy-mobilenav-height) + env(safe-area-inset-bottom, 0px));
+    // 浮在底部的时间线、只看楼主、新回复横条共用这个偏移量。
+    --lcoy-nav-offset: calc(var(--lcoy-mobilenav-height) + env(safe-area-inset-bottom, 0px));
+  }
+
+  // 导航收起（滚动或编辑器打开）时，浮标一起回落。
+  .Lcoy.App.Lcoy--navHidden,
+  body.Lcoy--composing .Lcoy.App {
+    --lcoy-nav-offset: env(safe-area-inset-bottom, 0px);
+  }
+}

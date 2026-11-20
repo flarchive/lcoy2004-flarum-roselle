@@ -1,0 +1,68 @@
+// =====================================================================
+// 阅读聚焦模式（桌面）：标题滚出视口后，时间线降低视觉权重
+// 并略向右让位，把注意力留给正文；指针移回时间线或向上滚动
+// 立即恢复。类由 js/src/forum/shell/readingFocus.ts 切换。
+// =====================================================================
+
+// 时间线只在桌面断点（992px+）是右侧一列：平板与手机上它是
+// 底部的浮动标签页，不参与这里的降权。
+@media @desktop-up {
+  .LcoyTopic .Page-sidebar .DiscussionPage-nav {
+    transition:
+      opacity var(--lcoy-duration-slow) var(--lcoy-ease),
+      transform var(--lcoy-duration-slow) var(--lcoy-ease);
+  }
+
+  .Lcoy--readingFocus .LcoyTopic .DiscussionPage-nav {
+    opacity: 0.38;
+    transform: translateX(12px);
+  }
+
+  // 指针停在时间线上：恢复完整不透明度，方便直接操作。
+  .LcoyTopic .Page-sidebar:hover .DiscussionPage-nav,
+  .LcoyTopic .DiscussionPage-nav:hover {
+    opacity: 1;
+    transform: none;
+  }
+
+  .LcoyTopic .Page-container.container {
+    transition: column-gap var(--lcoy-duration-slow) var(--lcoy-ease);
+  }
+
+  // 宽屏上收紧列间距；不改变时间线列宽（网格轨道宽度不可过渡，
+  // 突变会打断连贯感），视觉让位交给透明度与位移。
+  @media @desktop-hd {
+    .Lcoy--readingFocus .LcoyTopic {
+      --lcoy-topic-timeline-gap: var(--lcoy-space-4);
+    }
+  }
+
+  // 减少动画：只保留透明度变化。
+  @media (prefers-reduced-motion: reduce) {
+    .Lcoy--readingFocus .LcoyTopic .DiscussionPage-nav {
+      transform: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 从列表进入话题：内容轻微上移淡入（类由 topic/layout.tsx 添加，
+// 280ms 后移除）。移动端与桌面一致。
+// ---------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  .Lcoy--entering .LcoyTopic .Page-hero--inline,
+  .Lcoy--entering .LcoyTopic .Page-content {
+    animation: lcoy-page-enter var(--lcoy-duration-slow) var(--lcoy-ease);
+  }
+}
+
+@keyframes lcoy-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
