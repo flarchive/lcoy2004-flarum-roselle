@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_lcoy_roselle=self.webpackChunk_lcoy_roselle||[]).push([["forum/user/activity/SolvedUserPage"],{"./src/forum/user/activity/SolvedUserPage.tsx"(e,s,r){r.r(s),r.d(s,{default:()=>u});var l=r("flarum/forum/components/PostsUserPage"),o=r.n(l),t=r("./src/forum/user/activity/install.tsx");class u extends(o()){show(e){(0,t.dZ)("solved",e)||super.show(e)}params(e){return{filter:{author:e.slug(),solution:"1"}}}}flarum.reg.add("lcoy-roselle","forum/user/activity/SolvedUserPage",u)}}]);
+//# sourceMappingURL=SolvedUserPage.js.map
