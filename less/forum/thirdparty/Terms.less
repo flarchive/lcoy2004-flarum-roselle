@@ -1,0 +1,58 @@
+// ---------------------------------------------------------------------
+// fof/terms：注册时的接受框（Discourse 的 `.user-field.confirm`）、
+// 法律声明以及设置中的条款管理。
+// ---------------------------------------------------------------------
+.FoF-Terms-Check .checkbox {
+  // 方块中小框位于左侧（而非 flex）：文字
+  // "我接受"和条款链接是独立节点，在 flex 中会变成
+  // 零散的列，间距加倍且换行错误。
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0 0 0 26px;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-down-1);
+  font-weight: normal;
+  line-height: 1.45;
+  text-align: left;
+
+  input[type="checkbox"] {
+    position: absolute;
+    top: 0.15em;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--lcoy-accent);
+    cursor: pointer;
+  }
+
+  a {
+    color: var(--lcoy-link);
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// 接受分组紧贴上方的字段，与 Discourse 注册的
+// 额外字段（`.user-field.confirm`）一致。
+.SignUpModal .Form-group:has(> .FoF-Terms-Check) {
+  margin-top: -4px;
+}
+
+.FoF-Terms-SignUp-Legal.Alert {
+  padding: var(--lcoy-space-2) 0;
+  background: none;
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  text-align: left;
+}
+
+.Fof-Terms-Policy-User-Settings-Management {
+  gap: var(--lcoy-space-2);
+  padding: var(--lcoy-space-2) 0;
+  border-bottom: 1px solid var(--lcoy-border);
+}
