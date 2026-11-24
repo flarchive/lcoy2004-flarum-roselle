@@ -1,0 +1,775 @@
+// =====================================================================
+// Discourse 的用户菜单（`.user-menu.revamped.menu-panel`），在
+// meta.discourse.org 上测量（1440×900，1:1）：圆角 8 的面板，带
+// `.menu-panel` 的短阴影，左侧 320px 的列表，右侧 46px 的标签列；
+// 条目头像为 2em，类型图标位于 22px 的徽章中。
+//
+// 使用 16px 的 rem/em，与 Discourse 一致：主题的 body 是 15px。
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// 页头头像（`.header-dropdown-toggle.current-user`）
+// ---------------------------------------------------------------------
+.LcoyUserMenuWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Lcoy .Header-secondary .LcoyUserMenuButton.Button,
+.LcoyUserMenuButton.Button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.55rem;
+  min-width: 2.55rem;
+  height: 2.55rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--lcoy-radius-pill);
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--lcoy-shell-icon);
+  transition: none;
+
+  .Avatar {
+    --size: 32px;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 32px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--lcoy-accent);
+    outline-offset: -2px;
+  }
+}
+
+// 气泡（`.d-header-icons .badge-notification`）：边框为页头
+// 颜色，位于头像上角。
+.LcoyUserMenuButton-badge {
+  position: absolute;
+  // 更靠外：贴紧时气泡会遮住首字母/头像。
+  top: -4px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0.6em;
+  padding: 0.2em 0.4em;
+  border: 2px solid var(--lcoy-surface);
+  border-radius: 10px;
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+  font-size: 0.7579rem;
+  font-weight: normal;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+
+  &--pms,
+  &--reviewables {
+    background: var(--lcoy-success);
+
+    .icon {
+      width: 1em;
+      font-size: 0.8706em;
+    }
+  }
+
+  &--reviewables {
+    background: var(--lcoy-danger);
+    color: #fff;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 面板
+// ---------------------------------------------------------------------
+.LcoyUserMenu {
+  // `.menu-panel` 的 `--list-item-padding`。
+  --lcoy-um-item-padding: 0.5em 1rem;
+
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-height: ~"calc(100dvh - var(--lcoy-header-height) - 1em)";
+  padding: 0;
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  color: var(--lcoy-primary);
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  cursor: default;
+  animation: lcoy-float-down 250ms ease forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 0s;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// `.panel-body-contents` 使用 `row-reverse`：标签页位于右侧。
+.LcoyUserMenu-bodyContents {
+  display: flex;
+  flex-direction: row-reverse;
+  min-height: 0;
+  max-height: 100%;
+  width: 100%;
+}
+
+// ---------------------------------------------------------------------
+// 标签页（`.menu-tabs-container`）
+// ---------------------------------------------------------------------
+.LcoyUserMenu-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.LcoyUserMenu-tabList {
+  display: flex;
+  flex-direction: column;
+
+  &--bottom {
+    border-top: 1px solid var(--lcoy-border);
+  }
+}
+
+// `.btn.user-menu-tab`：图标周围 0.375em，图标有 0.5em 内边距
+// 和圆角 8——每个标签页 46px，带 `.btn` 的透明边框。
+.LcoyUserMenu-tab {
+  position: relative;
+  display: flex;
+  padding: 0.375em;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--lcoy-primary-medium);
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+}
+
+.LcoyUserMenu-tabIcon {
+  display: flex;
+  padding: 0.5em;
+  border-radius: var(--lcoy-radius);
+  color: var(--lcoy-primary-medium);
+
+  .LcoyIcon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.LcoyUserMenu-tab.active .LcoyUserMenu-tabIcon {
+  color: var(--lcoy-primary);
+  background-color: var(--lcoy-primary-100);
+}
+
+.LcoyUserMenu-tab:not(.active):hover .LcoyUserMenu-tabIcon,
+.LcoyUserMenu-tab:not(.active):focus-visible .LcoyUserMenu-tabIcon {
+  background-color: var(--lcoy-hover);
+}
+
+.LcoyUserMenu-tab:focus-visible .LcoyUserMenu-tabIcon {
+  box-shadow: 0 0 0 2px var(--lcoy-accent);
+}
+
+// 标签页的 `.badge-notification`：位于上角，使用高亮色。
+.LcoyUserMenu-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 0.5em;
+  padding: 0.21em 0.42em;
+  border-radius: 10px;
+  background-color: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+  font-size: 0.6599em;
+  font-weight: normal;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media screen and (max-height: 400px) {
+  .LcoyUserMenu-tab {
+    padding: 0.125em 0.375em;
+    font-size: 0.8706em;
+  }
+
+  .LcoyUserMenu-badge {
+    top: 0;
+    right: 3px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 标签页列表（`.quick-access-panel`）
+// ---------------------------------------------------------------------
+.LcoyUserMenu-panel {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 320px;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  border-right: 1px solid var(--lcoy-border);
+  user-select: none;
+}
+
+.LcoyUserMenu-panelInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+}
+
+// 条目（`menu-item` 的 `li`），在菜单和 /notifications 页中。
+.lcoy-um-items() {
+  .LcoyUserMenu-list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .LcoyUserMenu-item {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0;
+    list-style-type: none;
+    background-color: var(--lcoy-surface);
+
+    &.unread,
+    &.pending {
+      background-color: var(--lcoy-hover);
+
+      &:hover,
+      &:focus-within {
+        background-color: var(--lcoy-selected);
+      }
+    }
+
+    &:hover,
+    &:focus-within {
+      background-color: var(--lcoy-hover);
+      outline: none;
+    }
+
+    > a,
+    > button {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+      padding: var(--lcoy-um-item-padding, 0.5em 1rem);
+      border: 0;
+      background: none;
+      color: var(--lcoy-primary);
+      font: inherit;
+      text-align: left;
+      text-decoration: none;
+      outline: 0;
+      cursor: pointer;
+
+      &:hover,
+      &:focus {
+        color: var(--lcoy-primary);
+        text-decoration: none;
+      }
+    }
+  }
+
+  .LcoyUserMenu-itemText {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .LcoyUserMenu-label {
+    overflow: hidden;
+    color: var(--lcoy-primary);
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .LcoyUserMenu-description {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--lcoy-primary);
+    text-overflow: ellipsis;
+    overflow-wrap: break-word;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    .username {
+      font-weight: bold;
+    }
+  }
+
+  // `.icon-avatar`：2em 头像，上角有 22px 徽章。
+  .LcoyUserMenu-iconAvatar {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    width: 2em;
+    height: 2em;
+    margin: 0.3em 1em auto 0;
+    overflow: visible;
+
+    .Avatar {
+      --size: 2em;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      font-size: 0.875em;
+      line-height: 2.2857em;
+    }
+  }
+
+  .LcoyUserMenu-systemAvatar {
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  // 加载时的列表骨架：相同内边距，头像和两行
+  // 条目的文字，使列表出现时不会改变面板高度。
+  .LcoyUserMenu-list--loading {
+    overflow: hidden;
+  }
+
+  .LcoyUserMenu-item--skeleton,
+  .LcoyUserMenu-item--skeleton:hover {
+    background-color: var(--lcoy-surface);
+  }
+
+  .LcoyUserMenu-skeletonRow {
+    display: flex;
+    align-items: center;
+    padding: var(--lcoy-um-item-padding, 0.5em 1rem);
+
+    // 内部无文字时，该列宽度为零，行会消失。
+    .LcoyUserMenu-itemText {
+      flex: 1 1 auto;
+    }
+  }
+
+  .LcoyUserMenu-skeletonAvatar {
+    flex-shrink: 0;
+    width: 2em;
+    height: 2em;
+    margin: 0.3em 1em auto 0;
+    border-radius: 50%;
+  }
+
+
+  .LcoyUserMenu-iconWrapper {
+    position: absolute;
+    top: -0.45em;
+    right: -0.65em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 100%;
+    background: var(--lcoy-surface);
+
+    .icon {
+      display: block;
+      margin: 0;
+      padding: 0;
+      color: var(--lcoy-primary);
+      font-size: 0.8706em;
+      line-height: 1;
+    }
+  }
+
+  .LcoyUserMenu-item.unread .LcoyUserMenu-iconWrapper,
+  .LcoyUserMenu-item.pending .LcoyUserMenu-iconWrapper {
+    background: var(--lcoy-accent);
+
+    .icon {
+      color: var(--lcoy-accent-text);
+    }
+  }
+}
+
+.LcoyUserMenu-panel {
+  .lcoy-um-items();
+}
+
+// `.panel-body-bottom`：带小箭头的宽按钮和"Descartar"。
+.LcoyUserMenu-bottom {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  padding: 0.75em 0.75em ~"max(env(safe-area-inset-bottom), 0.75em)";
+}
+
+// Horizon 的 `.btn.btn-default`：带灰色边框的白色胶囊。
+.LcoyUserMenu-showAll.Button,
+.LcoyUserMenu-dismiss.Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0.5em 0.65em;
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-surface);
+  box-shadow: none;
+  color: var(--lcoy-primary);
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: none;
+
+  .LcoyIcon {
+    width: 1em;
+    height: 1em;
+    color: var(--lcoy-primary-high);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--lcoy-primary-low-mid);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary);
+    text-decoration: none;
+
+    .LcoyIcon {
+      color: var(--lcoy-primary);
+    }
+  }
+}
+
+.LcoyUserMenu-showAll.Button {
+  flex: 1 1 auto;
+}
+
+.LcoyUserMenu-bottom .LcoyUserMenu-dismiss.Button {
+  margin-left: 0.5em;
+}
+
+.LcoyUserMenu-showAll.Button:only-child {
+  margin: 0;
+}
+
+// 空状态（`.empty-state`，`--text-only`）。
+.LcoyUserMenu-empty {
+  padding: 0.5em 1em;
+  user-select: text;
+}
+
+.LcoyUserMenu-emptyTitle {
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-1);
+  font-weight: bold;
+  line-height: 1.2;
+  margin: 0.5em 0;
+}
+
+.LcoyUserMenu-emptyBody {
+  color: var(--lcoy-primary);
+
+  p {
+    margin: 0 0 0.5em;
+  }
+
+  a {
+    color: var(--lcoy-link);
+  }
+
+  .LcoyIcon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+  }
+}
+
+.LcoyUserMenu-spinnerContainer {
+  min-height: 2em;
+  margin: auto;
+  padding: 1em 0;
+}
+
+.LcoyUserMenu-spinner {
+  width: 20px;
+  height: 20px;
+  margin: 0 auto;
+  border: 2px solid var(--lcoy-primary-low);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: lcoy-um-spin 0.75s linear infinite;
+}
+
+@keyframes lcoy-um-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 个人资料标签页（`#quick-access-profile`）：会话菜单的条目
+// 排成最高 3.25em 的行，灰色图标和普通标签。
+// ---------------------------------------------------------------------
+.LcoyUserMenu-profile {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  > li {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    max-height: 3.25em;
+    box-sizing: border-box;
+    width: 100%;
+
+    &:hover,
+    &:focus-within {
+      background-color: var(--lcoy-hover);
+    }
+  }
+
+  // Discourse 在状态与其余内容之间的 `<hr>`。
+  > li.Dropdown-separator {
+    flex: 0 0 auto;
+    height: 0;
+    max-height: none;
+    margin: 0;
+    border-top: 1px solid var(--lcoy-border);
+    background: none;
+  }
+
+  > li > a,
+  > li > .Button,
+  > li > button {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: var(--lcoy-um-item-padding, 0.5em 1rem);
+    border: 0;
+    border-radius: 0;
+    background: none !important;
+    box-shadow: none;
+    color: var(--lcoy-primary) !important;
+    font-size: 1rem;
+    font-weight: normal;
+    line-height: 1.4;
+    text-align: left;
+    text-decoration: none;
+    justify-content: flex-start;
+    white-space: nowrap;
+    transition: none;
+
+    .Button-icon,
+    .icon {
+      width: 1em;
+      margin: 0 0.5em 0 0;
+      color: var(--lcoy-primary-medium);
+      font-size: 1em;
+      text-align: center;
+    }
+
+    .Button-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: normal;
+    }
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// 手机端：面板占满整个宽度，紧贴页头下方。
+// ---------------------------------------------------------------------
+@media @phone {
+  .LcoyUserMenu {
+    position: fixed;
+    top: var(--lcoy-header-height);
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: ~"calc(var(--lcoy-visual-height, 100dvh) - var(--lcoy-header-height))";
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-width: 1px 0;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+
+  .LcoyUserMenu-panel {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  // `(width < 40rem)`：标签页更宽，条目更高以便触摸。
+  .LcoyUserMenu-tab {
+    padding: 0.75em 0.875em;
+  }
+
+  .LcoyUserMenu-panel .LcoyUserMenu-item {
+    padding-block: 0.15em;
+  }
+}
+
+// ---------------------------------------------------------------------
+// /notifications 页（`.user-notifications-list`）：同样的列表，
+// 通知标签页排成一行。
+// ---------------------------------------------------------------------
+.LcoyNotificationsPage {
+  .lcoy-um-items();
+
+  .LcoyNotificationsList {
+    --lcoy-um-item-padding: 0.5em 1rem;
+
+    width: 100%;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--lcoy-primary);
+
+    .LcoyUserMenu-list {
+      overflow: visible;
+    }
+  }
+}
+
+.LcoyNotificationsPage-header {
+  margin: 0 0 12px;
+}
+
+.LcoyNotificationsPage-title {
+  margin: 0;
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-up-3);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.LcoyNotificationsPage-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+
+  .LcoyUserMenu-dismiss.Button {
+    margin-left: auto;
+  }
+}
+
+// Horizon 的 `.nav-pills` 下划线标签页（与列表中的相同）。
+.LcoyNotificationsPage-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LcoyNotificationsPage-tab > a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 0.65em;
+  border-radius: var(--lcoy-radius);
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-0);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.125em;
+    background: transparent;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--lcoy-link);
+    text-decoration: none;
+
+    &::after {
+      background: var(--lcoy-accent);
+    }
+  }
+}
+
+.LcoyNotificationsPage-tab.active > a {
+  color: var(--lcoy-link);
+
+  &::after {
+    background: var(--lcoy-accent);
+  }
+}
+
+.LcoyNotificationsPage-more {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 4px;
+}
