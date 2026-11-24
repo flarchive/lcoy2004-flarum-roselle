@@ -1,0 +1,215 @@
+// ---------------------------------------------------------------------
+// 长表单弹窗（旧货店风格）：桌面端更宽，字段按主题
+// 分为两栏，只有主体滚动，保存按钮
+// 始终显示在页脚。在手机和窄平板上回到
+// 单栏。短弹窗不在此列，仍保持紧凑。
+// 仅布局：表单和保存时任何字段的位置都不变。
+// ---------------------------------------------------------------------
+
+// 从平板起两栏（约 720px 的弹窗：每栏约 340px）。
+@lcoy-modal-two-cols: ~"(min-width: 768px)";
+
+// 头部固定在顶部，主体可滚动，弹窗永不大于窗口。
+// 仅限所列弹窗：带 `overflow` 的主体
+// 会裁剪其他弹窗的悬浮菜单。
+.lcoy-modal-long(@width: 860px) {
+  .Modal-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    > form {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-height: 0;
+    }
+  }
+
+  .Modal-header,
+  .Modal-alert {
+    flex: none;
+  }
+
+  .Modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    // 吸底页脚占据主体末端；否则其下方会留下
+    // 一条空白带。
+    padding-bottom: 0;
+  }
+
+  @media @tablet-up {
+    &.Modal {
+      max-width: ~"min(@{width}, calc(100vw - 48px))";
+    }
+
+    .Modal-content {
+      max-height: ~"calc(100dvh - 48px)";
+    }
+  }
+
+  // 手机上键盘弹出时，让长表单跟着可视区域缩短，
+  // 吸底页脚不会被键盘盖住。
+  @media @phone {
+    .Modal-content {
+      max-height: var(--lcoy-visual-height, 100dvh);
+    }
+  }
+
+  // 保存按钮成为页脚：吸附在滚动区域的底部，
+  // 占弹窗整宽，位于卡片背景之上。
+  .Form-body > .Form-controls,
+  .Form-body > .PollForm-submit {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    align-self: stretch;
+    width: auto;
+    margin: 0 ~"calc(-1 * var(--lcoy-modal-pad-x))";
+    padding: 12px var(--lcoy-modal-pad-x);
+    border-top: 1px solid var(--lcoy-primary-low);
+    background: var(--lcoy-surface);
+  }
+
+  // 两栏：每个字段占一栏；需要整行的（长文本、
+  // 列表、页脚）使用 `1 / -1`。`dense` 让短字段
+  // 上移到前一个旁边的空位。
+  @media @lcoy-modal-two-cols {
+    .Form-body {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: row dense;
+      align-items: start;
+      gap: 16px 24px;
+
+      > * {
+        min-width: 0;
+      }
+
+      > :has(textarea),
+      > .Form-controls,
+      > .PollForm-submit {
+        grid-column: ~"1 / -1";
+      }
+    }
+  }
+}
+
+// 编辑用户：仅当有相应字段时才变为宽弹窗（用户
+// 本人，或只管理分组的人，看到三四个条目，弹窗
+// 保持小尺寸）。
+.EditUserModal:has(.Form-body > :nth-child(5)) {
+  .lcoy-modal-long();
+
+  // 先是账户，然后个人资料，最后是分组和页脚——
+  // 单栏（手机）和双栏下的顺序相同（账户在左，个人资料在
+  // 右，其余占整行）。
+  .Form-body {
+    > [data-item=nickname] {
+      order: 1;
+    }
+
+    > [data-item=groups] {
+      order: 2;
+    }
+
+    > [data-item=submit] {
+      order: 3;
+    }
+  }
+
+  @media @lcoy-modal-two-cols {
+    .Form-body {
+      > [data-item=username],
+      > [data-item=email],
+      > [data-item=password] {
+        grid-column: 1;
+      }
+
+      > [data-item=nickname] {
+        grid-column: 2;
+      }
+
+      > [data-item=groups],
+      > [data-item=submit] {
+        grid-column: ~"1 / -1";
+      }
+    }
+  }
+}
+
+// 卡片网格形式的分组：框、徽章和名称组成可点击的卡片，
+// 每行多个，选中项以高亮色突出。
+.EditUserModal-groups > div {
+  display: grid;
+  // 核心的 `.Form-group` 是顶部对齐的 flex 列：没有
+  // 这一点，网格会收缩到一个卡片的宽度。
+  align-self: stretch;
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+
+  > .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--lcoy-primary-low);
+    border-radius: var(--lcoy-radius);
+    cursor: pointer;
+    overflow-wrap: anywhere;
+
+    > input {
+      flex: none;
+      margin: 0;
+    }
+
+    &:hover {
+      background: var(--lcoy-primary-very-low);
+    }
+
+    &:has(input:checked) {
+      border-color: var(--lcoy-accent);
+      background: var(--lcoy-accent-low);
+    }
+
+    &:has(input:disabled) {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+}
+
+// 投票（创建/编辑，fof/polls）：问题 | 副标题、图片 | 截止
+// 日期；回答和投票选项占整行，分两栏。
+.PollDiscussionModal {
+  .lcoy-modal-long();
+
+  @media @lcoy-modal-two-cols {
+    .Form-body {
+      > .PollForm-answers,
+      > .FieldSet:has(.PollForm-setting) {
+        grid-column: ~"1 / -1";
+      }
+    }
+
+    .PollForm-answers > .FieldSet > .FieldSet-items,
+    .FieldSet-items:has(> .PollForm-setting) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 24px;
+      align-items: start;
+
+      > * {
+        width: auto;
+        min-width: 0;
+      }
+    }
+  }
+}
+
