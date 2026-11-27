@@ -1,0 +1,141 @@
+// ---------------------------------------------------------------------
+// 带 SVG 的加载指示器（后台：外观 > 加载
+// 指示器；变量位于 src/Theme/Loader/LoaderLess.php）。
+//
+// 一条规则即可替换核心所有 `LoadingIndicator` 的图形，使用它的包括
+// 列表、帖子、个人资料、弹窗、菜单、带 `loading` 的按钮、
+// 编辑器和扩展：
+// 边框圆环消失，SVG 作为用 `currentColor` 着色的遮罩进入。
+// 这样颜色仍来自外部（后台所选颜色，或按钮的文字色），
+// 在浅色、深色以及任意主色下都成立。自带颜色的 SVG
+// 则作为背景进入，不使用遮罩。
+//
+// 它位于 Motion.less 之后，后者会调整 Flarum 的圆环：若选择 Flarum
+// 默认样式，本文件不会进入样式表。
+// ---------------------------------------------------------------------
+
+// 图形：遮罩（单色，即文字色）或图片（SVG 本身的颜色）。不要用
+// 简写 `mask: … center / contain`：less.php 会把斜杠读作除法。
+.lcoy-loader-paint() when (@config-lcoy-loader-tint = true) {
+  background: currentColor;
+  -webkit-mask-image: var(--lcoy-loader);
+  mask-image: var(--lcoy-loader);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.lcoy-loader-paint() when not (@config-lcoy-loader-tint = true) {
+  background-color: transparent;
+  background-image: var(--lcoy-loader);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+& when (@config-lcoy-loader-on = true) {
+  :root {
+    --lcoy-loader: @config-lcoy-loader-image;
+    --lcoy-loader-color: @config-lcoy-loader-color;
+    --lcoy-loader-scale: @config-lcoy-loader-scale;
+  }
+
+  .LoadingIndicator-container {
+    color: var(--lcoy-loader-color);
+  }
+
+  // 在按钮、开关或提示中，指示器跟随文字颜色
+  // （与核心圆环一致）：主题色在主色按钮上会看不见。
+  .Button .LoadingIndicator-container,
+  .Checkbox .LoadingIndicator-container,
+  .Alert .LoadingIndicator-container {
+    color: inherit;
+  }
+
+  // 这些 `!important` 用于胜过重绘圆环的扩展规则（边框、
+  // 圆角、旋转）：否则遮罩会被裁切在一个旋转的圆中。
+  .LoadingIndicator {
+    --lcoy-loader-box: calc(var(--size) * var(--lcoy-loader-scale));
+
+    flex-shrink: 0;
+    width: var(--lcoy-loader-box);
+    height: var(--lcoy-loader-box);
+    border-width: 0 !important;
+    border-radius: 0 !important;
+    animation: none !important;
+    .lcoy-loader-paint();
+  }
+
+  // 在按钮和开关内部，尺寸跟随文字（那里的 `--size`），
+  // 而不是所选尺寸：按钮不能在 `loading` 时变大。
+  .Button .LoadingIndicator,
+  .Checkbox .LoadingIndicator {
+    --lcoy-loader-box: var(--size);
+  }
+
+  // 首次加载（JS 之前）：核心的"加载中…"变为该图形，
+  // 文字则留给屏幕阅读器。
+  #flarum-loading {
+    padding: 72px 0;
+    font-size: 0;
+    line-height: 0;
+    color: var(--lcoy-loader-color);
+
+    &::before {
+      content: "";
+      display: block;
+      width: calc(40px * var(--lcoy-loader-scale));
+      height: calc(40px * var(--lcoy-loader-scale));
+      margin: 0 auto;
+      .lcoy-loader-paint();
+    }
+  }
+
+  // Font Awesome 的"加载中"图标（旋转的 `fa-spinner`/`fa-circle-notch`），
+  // 某些扩展用它代替该组件。适用于 <i> 以及继承其类的
+  // Lucide <svg>。
+  .fa-spinner.fa-spin,
+  .fa-circle-notch.fa-spin {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    animation: none !important;
+    .lcoy-loader-paint();
+
+    &::before,
+    > * {
+      visibility: hidden;
+    }
+  }
+
+  // 减少动效：改用 SVG 的静止版本（不含 CSS 和
+  // SMIL 动画，见 LoaderLess::still），图形只是缓慢呼吸，
+  // 仍能表达正在加载。
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --lcoy-loader: @config-lcoy-loader-still;
+    }
+
+    .LoadingIndicator,
+    #flarum-loading::before,
+    .fa-spinner.fa-spin,
+    .fa-circle-notch.fa-spin {
+      animation: lcoy-loader-breathe 2.4s ease-in-out infinite !important;
+    }
+  }
+
+  @keyframes lcoy-loader-breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.45;
+    }
+  }
+}
